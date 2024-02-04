@@ -1,0 +1,19 @@
+{
+  "name": "CoverAI",
+  "version": "1.0.0",
+  "description": "Browser Extension for AI-Generated Cover Letters",
+  "scripts": {
+    "setup": "cd chrome_extension/ && npm i && cd ../client && npm i && cd ../server && npm i"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joshbernsteint/CoverAI.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/joshbernsteint/CoverAI/issues"
+  },
+  "homepage": "https://github.com/joshbernsteint/CoverAI#readme"
+}
