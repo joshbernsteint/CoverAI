@@ -1,0 +1,46 @@
+openapi: 3.0.0
+info:
+  title: CoverAI API
+  version: "1.0.0"
+  description: CoverAI API Documentation
+servers:
+  - url: http://localhost:3000
+paths:
+  /signup:
+    post:
+      summary: User Signup
+      description: Allows users to sign up.
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                  example: John
+                lastName:
+                  type: string
+                  example: Doe
+            required:
+              - firstName
+              - lastName
+      responses:
+        '200':
+          description: User signed up successfully.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: User signed up successfully
+        '401':
+          description: Unauthorized - Invalid or missing authentication token.
+        '500':
+          description: Internal Server Error
+components:
+  schemas:
+    Error:
+     
