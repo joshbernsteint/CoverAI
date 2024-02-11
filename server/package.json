@@ -19,6 +19,7 @@
     "mongodb": "^6.3.0",
     "nodemon": "^3.0.3",
     "pdf-parse": "^1.1.1",
+    "pdf2json": "^3.0.5",
     "pdfkit": "^0.14.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",

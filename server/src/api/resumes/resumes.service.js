@@ -14,8 +14,13 @@ import {
 dotenv.config();
 
 import PDFDocument from "pdfkit";
-import pdf from "pdf-parse";
 import * as fs from "fs";
+import pdf2json from "pdf2json";
+import { fileURLToPath } from "url";
+import path, { dirname } from "path";
+import { decode } from "punycode";
+// import path from "path";
+// import pdf from "pdf-parse";
 
 const resumeSchema = z.object({
   _id: z.string(),
@@ -195,21 +200,37 @@ function extractSection(text, regex) {
   return match ? match[0] : "Section not found.";
 }
 
-const parsePDF = async (resumepdf) => {
+const parsePDF = async (resumepdf, id, callback) => {
   try {
     const dataBuffer = fs.readFileSync(resumepdf);
-    const dataString = dataBuffer.toString();
+    const pdfParser = new pdf2json();
+    let resumeText = "";
 
-    const pdfData = await pdf(dataString);
+    pdfParser.on("pdfParser_dataError", (errData) => {
+      console.error(errData.parserError);
+      // callback(errData.parserError, null, null, null);
+      // return;
+    });
+    pdfParser.on("pdfParser_dataReady", (pdfData) => {
+      const extractedText = pdfData.Pages.flatMap((page) =>
+        page.Texts.map((text) => text.R[0].T)
+      );
+      resumeText = extractedText.join(" ");
+      let normalizedText = decodeURIComponent(resumeText);
+      normalizedText = normalizedText.replace(/\s+/g, " ");
+      console.log("Resume Text:", normalizedText);
+      // callback(null, resumepdf, resumeText, id);
+      // return;
+    });
 
-    const resumeText = pdfData.text;
+    pdfParser.parseBuffer(dataBuffer);
 
     // Extract different sections (modify regular expressions as needed)
     const personalDetails = extractSection(resumeText, /Name: (.+?)\n/);
     const contactDetails = extractSection(resumeText, /Email: (.+?)\n/);
     const educationSection = extractSection(
       resumeText,
-      /Education[\s\S]+?(?=(Work Experience|Skills|$))/i
+      /Education[\s\S]+?(?=(Work Experience|Skills|E D U C A T I O N|$))/i
     );
     const workExperienceSection = extractSection(
       resumeText,
@@ -226,7 +247,8 @@ const parsePDF = async (resumepdf) => {
     console.log("Work Experience Section:", workExperienceSection);
     console.log("Skills Section:", skillsSection);
   } catch (error) {
-    throw new UnexpectedError("Error parsing PDF");
+    // throw new UnexpectedError("Error parsing PDF");
+    throw error;
   }
 };
 
@@ -281,26 +303,37 @@ const createResumeFromJSON = async (resume, id) => {
 };
 
 const createResumeFromPDF = async (resume, id) => {
-  // Add your logic here
-  // if (id) {
-  //   const user = await users().findOne({ _id: id });
-  //   if (!user) {
-  //     throw new NotFoundError("User not found");
-  //   }
-  // }
-
-  // if (!resume) {
-  //   throw new BadRequestError("Resume is required");
-  // }
-
   // Parse the resume
-  const resumeFilePath = "../../../examples/JoshuaGorman_Resume2024a.pdf";
-  parsePDF(resumeFilePath);
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = dirname(__filename);
 
-  // const resumeCollection = await resumes();
-  // if (!resumeCollection) {
-  //   throw new UnexpectedError("Error getting resume collection");
-  // }
+  const resumeFilePath = path.join(__dirname, resume);
+  console.log("Resume File Path:", resumeFilePath);
+  await parsePDF(resumeFilePath, id, resumeCallback);
 };
+
+async function resumeCallback(err, resume, extractedText, id) {
+  // Add your logic here
+  if (err) {
+    throw new UnexpectedError("Error parsing PDF");
+  }
+  if (!id) {
+    throw new BadRequestError("User id is required");
+  }
+  if (!resume) {
+    throw new BadRequestError("Resume is required");
+  }
+  if (!extractedText) {
+    throw new BadRequestError("Extracted text is required");
+  }
+
+  // Check that the user exists
+
+  // Add the resume to the database
+  const resumeCollection = await resumes();
+  if (!resumeCollection) {
+    throw new UnexpectedError("Error getting resume collection");
+  }
+}
 
 export { createResumeFromJSON, createResumeFromPDF };
