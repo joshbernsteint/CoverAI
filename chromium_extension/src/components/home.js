@@ -1,8 +1,7 @@
 import {Button, ButtonGroup, Dropdown} from 'react-bootstrap';
 
 
-export default function Home({...props}){
-
+export default function Home({styleSheet, ...props}){
     async function handleOpenPreview(){
         console.log("Handling opening preview");
     }
@@ -19,9 +18,7 @@ export default function Home({...props}){
         <Button>Generate</Button>
         <Dropdown as={ButtonGroup}>
       <Button onClick={handleOpenPreview}>Open Preview</Button>
-
         <Dropdown.Toggle split id="dropdown-split-basic" />
-
         <Dropdown.Menu>
           <Dropdown.Item onClick={handleDownload}>Download</Dropdown.Item>
         </Dropdown.Menu>

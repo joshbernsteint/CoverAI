@@ -7,48 +7,65 @@
 // } from "react-router-dom";
 
 import {
-  goBack,
-  goTo,
-  popToTop,
   Link,
   Router,
-  getCurrent,
-  getComponentStack,
 } from 'react-chrome-extension-router';
-import { createMemoryHistory } from "history";
 import './App.css';
 import { IoFileTrayFullOutline, IoHome, IoSettingsSharp } from "react-icons/io5";
 import Home from './components/home';
 import Resumes from './components/resumes';
 import Settings from './components/settings';
+import { useState } from 'react';
 
 function App() {
 
 function BottomButton({onClick, label, id, component, ...props}){
     return (
-        // <button style={{width: "33%", textAlign: "center"}} id={id || ""} onClick={onClick || (() => {})} {...props}>{label || "Lorem Ipsum"}</button>
-      <button style={{width: "33%", textAlign: "center"}} onClick={() => goTo(component)}>{label || "Lorem Ipsum"}</button>
+      <td style={{width: "10%", textAlign: "center", fontSize: "larger", ...props.styleSheet}}>
+          <Link component={component} props={{...props}}>
+            {label || "Lorem Ipsum"}
+          </Link>
+      </td>
         );
   }
 
-  console.log(window.location.pathname);
+  // These will be changed to actual stylesheet objects
+  const lightMode = {};
+  const darkMode = {};
 
-  function Test(){
-    return (<>
-    
-    I hate this.</>)
+
+  let style = {};
+
+
+
+  let localStorageSettings = JSON.parse(localStorage.getItem('settings'));
+  if(!localStorageSettings){
+    localStorageSettings = {
+      useDarkMode: true, // Or false
+      SuggestCoverLetter: true, // Or false
+      autoDownloadCoverLetter: false, //Or true
+      savePastResumes: true, //Or false
+      savePastCoverLetters: true, //Or false
+    };
+    localStorage.setItem('settings', JSON.stringify(localStorageSettings));
   }
+  style = localStorageSettings.useDarkMode ? {...darkMode} : {...lightMode};
+  const [userSettings, setUserSettings] = useState(localStorageSettings);
+  const [styleSheet, setStyleSheet] = useState(style);
 
   return (
     <div className="App">
       <Router>
         <Home/>
       </Router>
-      <div style={{position: "fixed", bottom: "0", width: "100%"}}>
-        <BottomButton label={<IoHome />} component={Home}/>
-        <BottomButton label={<IoFileTrayFullOutline />} component={Resumes}/>
-        <BottomButton label={<IoSettingsSharp />} component={Settings}/>
-      </div>
+      <table style={{position: "fixed", bottom: "0", width: "100%", textAlign: "center",...styleSheet}}>
+        <trow>
+        <BottomButton label={<IoHome />} component={Home} styleSheet={styleSheet} userSettings={userSettings}/>
+        <BottomButton label={<IoFileTrayFullOutline />} component={Resumes} styleSheet={styleSheet} userSettings={userSettings}/>
+        <BottomButton label={<IoSettingsSharp />} component={Settings} styleSheet={styleSheet} userSettings={userSettings} setFunctions={
+          {settings: setUserSettings, styleSheet: setStyleSheet}}/>
+        </trow>
+      </table>
     </div>
   );
 }
