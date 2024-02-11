@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "Browser Extension for AI-Generated Cover Letters",
   "scripts": {
-    "setup": "cd chrome_extension/ && npm i && cd ../client && npm i && cd ../server && npm i"
+    "setup": "npm i && cd chromium_extension/ && npm i && cd ../client/ && npm i && cd ../server/ && npm i",
+    "dev": "concurrently \"cd client && npm run dev \" \"cd server && npm run dev \""
   },
   "repository": {
     "type": "git",
