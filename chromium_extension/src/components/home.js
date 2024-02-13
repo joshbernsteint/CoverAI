@@ -1,7 +1,11 @@
+import { useEffect } from 'react';
 import {Button, ButtonGroup, Dropdown} from 'react-bootstrap';
 
 
-export default function Home({styleSheet, ...props}){
+export default function Home({styleSheet, userSettings, ...props}){
+
+    const settings = userSettings.current;
+
     async function handleOpenPreview(){
         console.log("Handling opening preview");
     }
