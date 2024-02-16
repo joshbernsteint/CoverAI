@@ -217,39 +217,19 @@ const parsePDF = async (resumepdf, id, callback) => {
       );
       resumeText = extractedText.join(" ");
       let normalizedText = decodeURIComponent(resumeText);
-      normalizedText = normalizedText.replace(/\s+/g, " ");
-      console.log("Resume Text:", normalizedText);
-      // callback(null, resumepdf, resumeText, id);
-      // return;
+      // normalizedText = normalizedText.replace(/\s+/g, " ");
+      const cleanedText = normalizedText.replace(/\s+/g, ' ');
+      // console.log("Resume Text:", cleanedText);
+      callback(null, resumepdf, cleanedText, id);
+      return;
     });
 
     pdfParser.parseBuffer(dataBuffer);
-
-    // Extract different sections (modify regular expressions as needed)
-    const personalDetails = extractSection(resumeText, /Name: (.+?)\n/);
-    const contactDetails = extractSection(resumeText, /Email: (.+?)\n/);
-    const educationSection = extractSection(
-      resumeText,
-      /Education[\s\S]+?(?=(Work Experience|Skills|E D U C A T I O N|$))/i
-    );
-    const workExperienceSection = extractSection(
-      resumeText,
-      /Work Experience[\s\S]+?(?=(Education|Skills|$))/i
-    );
-    const skillsSection = extractSection(
-      resumeText,
-      /Skills[\s\S]+?(?=(Education|Work Experience|$))/i
-    );
-
-    console.log("Personal Details:", personalDetails);
-    console.log("Contact Details:", contactDetails);
-    console.log("Education Section:", educationSection);
-    console.log("Work Experience Section:", workExperienceSection);
-    console.log("Skills Section:", skillsSection);
   } catch (error) {
     // throw new UnexpectedError("Error parsing PDF");
     throw error;
   }
+  return;
 };
 
 const createResumeFromJSON = async (resume, id) => {
@@ -329,11 +309,14 @@ async function resumeCallback(err, resume, extractedText, id) {
 
   // Check that the user exists
 
+  // console.log("Resume Callback:", resume, extractedText, id);
+
   // Add the resume to the database
-  const resumeCollection = await resumes();
-  if (!resumeCollection) {
-    throw new UnexpectedError("Error getting resume collection");
-  }
+  // const resumeCollection = await resumes();
+  // if (!resumeCollection) {
+  //   throw new UnexpectedError("Error getting resume collection");
+  // }
+  return resume;
 }
 
 export { createResumeFromJSON, createResumeFromPDF };
