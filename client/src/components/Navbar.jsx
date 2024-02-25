@@ -25,10 +25,10 @@ const Navbar = () => {
 
   const navItems = [
     { key: "1", name: "Home", href: "/home" },
-    { key: "2", name: "Profile", href: "/profile" },
-    { key: "3", name: "Settings", href: "/settings" },
+    { key: "2", name: "Profile", href: "/edit-profile" },
+    { key: "3", name: "Cover Letters", href: "/cover-letters" },
     { key: "4", name: "About", href: "/about" },
-    { key: "5", name: "Contact", href: "/contact" },
+    { key: "5", name: "Settings", href: "/settings" },
   ];
   return (
     <header className="w-full bg-white md:bg-transparent fixed top-0 left-0 right-0">
