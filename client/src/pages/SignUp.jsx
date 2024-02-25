@@ -1,5 +1,12 @@
 import { useSignUp } from "@clerk/clerk-react";
 import { useState } from "react";
+import {
+  SignOutButton,
+  SignInButton,
+  SignedIn,
+  SignedOut,
+  UserProfile,
+} from "@clerk/clerk-react";
 
 export default function SignUp() {
   const [emailAddress, setEmailAddress] = useState("");
@@ -33,26 +40,23 @@ export default function SignUp() {
   }
 
   return (
-    <form onSubmit={submit}>
+    <>
       <div>
-        <label htmlFor="email">Email</label>
-        <input
-          type="email"
-          value={emailAddress}
-          onChange={(e) => setEmailAddress(e.target.value)}
-        />
+        <SignedOut>
+          <SignInButton />
+          <p>
+            This content is public. Only signed out users can see the
+            SignInButton above this text.
+          </p>
+        </SignedOut>
+        <SignedIn>
+          <SignOutButton afterSignOutUrl="/" />
+          <p>
+            This content is private. Only signed in users can see the
+            SignOutButton above this text.
+          </p>
+        </SignedIn>
       </div>
-      <div>
-        <label htmlFor="password">Password</label>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-      </div>
-      <div>
-        <button>Sign up</button>
-      </div>
-    </form>
+    </>
   );
 }
