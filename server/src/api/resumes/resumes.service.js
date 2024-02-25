@@ -15,10 +15,10 @@ dotenv.config();
 
 import PDFDocument from "pdfkit";
 import * as fs from "fs";
-import pdf2json from "pdf2json";
+import PDFparser from "pdf2json";
 import { fileURLToPath } from "url";
 import path, { dirname } from "path";
-import { decode } from "punycode";
+
 // import path from "path";
 // import pdf from "pdf-parse";
 
@@ -28,7 +28,8 @@ const resumeSchema = z.object({
     school: z.string(),
     degree: z.string(),
     fieldOfStudy: z.string(),
-    grade: z.string(),
+    gpa: z.string(),
+    scale: z.string(),
     activities: z.string(),
     from: z.string(),
     to: z.string(),
@@ -45,16 +46,20 @@ const resumeSchema = z.object({
       description: z.array(z.string()),
     })
   ),
-  skills: z.object({
-    category: z.array(z.string()),
-  }),
-  projects: z.object({
-    title: z.string(),
-    description: z.array(z.string()),
-    link: z.string(),
-    from: z.string(),
-    to: z.string(),
-  }),
+  skills: z.array(
+    z.object({
+      category: z.string(),
+      values: z.array(z.string()),
+    })
+  ),
+  projects: z.array(
+    z.object({
+      title: z.string(),
+      description: z.array(z.string()),
+      link: z.string(),
+      from: z.string(),
+      to: z.string(),
+    })),
   certifications: z.array(z.string()),
   awards: z.array(z.string()),
   publications: z.array(
@@ -203,31 +208,33 @@ function extractSection(text, regex) {
 const parsePDF = async (resumepdf, id, callback) => {
   try {
     const dataBuffer = fs.readFileSync(resumepdf);
-    const pdfParser = new pdf2json();
+    const pdfParser = new PDFparser(this, 1);
     let resumeText = "";
 
     pdfParser.on("pdfParser_dataError", (errData) => {
-      console.error(errData.parserError);
-      // callback(errData.parserError, null, null, null);
-      // return;
+      // console.error(errData.parserError);
+      callback(errData.parserError, null, null, null);
+      return;
     });
     pdfParser.on("pdfParser_dataReady", (pdfData) => {
       const extractedText = pdfData.Pages.flatMap((page) =>
         page.Texts.map((text) => text.R[0].T)
       );
       resumeText = extractedText.join(" ");
+
       let normalizedText = decodeURIComponent(resumeText);
-      // normalizedText = normalizedText.replace(/\s+/g, " ");
+      normalizedText = normalizedText.replace(/\s+/g, " ");
       const cleanedText = normalizedText.replace(/\s+/g, ' ');
-      // console.log("Resume Text:", cleanedText);
+
+      const rawText = pdfParser.getRawTextContent();
+      console.log("Resume Text:", cleanedText, rawText);
       callback(null, resumepdf, cleanedText, id);
       return;
     });
 
     pdfParser.parseBuffer(dataBuffer);
   } catch (error) {
-    // throw new UnexpectedError("Error parsing PDF");
-    throw error;
+    throw new UnexpectedError(error);
   }
   return;
 };
@@ -288,7 +295,7 @@ const createResumeFromPDF = async (resume, id) => {
   const __dirname = dirname(__filename);
 
   const resumeFilePath = path.join(__dirname, resume);
-  console.log("Resume File Path:", resumeFilePath);
+  // console.log("Resume File Path:", resumeFilePath);
   await parsePDF(resumeFilePath, id, resumeCallback);
 };
 
@@ -309,7 +316,7 @@ async function resumeCallback(err, resume, extractedText, id) {
 
   // Check that the user exists
 
-  // console.log("Resume Callback:", resume, extractedText, id);
+  console.log("Resume Callback:", resume, extractedText, id);
 
   // Add the resume to the database
   // const resumeCollection = await resumes();
