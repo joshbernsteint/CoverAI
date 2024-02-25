@@ -1,19 +1,15 @@
-import { useSignUp } from "@clerk/clerk-react";
-import { useState } from "react";
-import {
-  SignOutButton,
-  SignInButton,
-  SignedIn,
-  SignedOut,
-  UserProfile,
-} from "@clerk/clerk-react";
 import Navbar from "../components/Navbar";
+import Home from "../components/Home";
+import Services from "../components/Services";
+import MyFooter from "../components/MyFooter";
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <div className="home-container">
-      hello in home
+    <>
       <Navbar />
-    </div>
+      <Home />
+      <Services />
+      <MyFooter />
+    </>
   );
 }
