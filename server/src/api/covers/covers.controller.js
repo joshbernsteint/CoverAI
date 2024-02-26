@@ -1,7 +1,7 @@
 import Router from "express";
 const router = Router();
 import { ClerkExpressRequireAuth } from "@clerk/clerk-sdk-node";
-import { genCoverLetter } from "./covers.service.js";
+import { genCoverLetter, genBasicLetter } from "./covers.service.js";
 
 router
   .route("/genCoverLetter")
@@ -10,4 +10,9 @@ router
     return res.status(200).json({ message: "Cover letter generated" });
   });
 
+router.route("/genBasicLetter").post(async (req, res) => {
+  const description = req.body.description;
+  const response = await genBasicLetter(description);
+  return res.status(200).json(response);
+});
 export default router;

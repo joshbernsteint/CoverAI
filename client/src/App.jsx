@@ -4,25 +4,16 @@ import {
   SignedIn,
   SignedOut,
 } from "@clerk/clerk-react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import SignUp from "./pages/SignUp";
 
 function App() {
   return (
-    <div>
-      <SignedOut>
-        <SignInButton />
-        <p>
-          This content is public. Only signed out users can see the SignInButton
-          above this text.
-        </p>
-      </SignedOut>
-      <SignedIn>
-        <SignOutButton afterSignOutUrl="/" />
-        <p>
-          This content is private. Only signed in users can see the
-          SignOutButton above this text.
-        </p>
-      </SignedIn>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/sign-up" element={<SignUp />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
