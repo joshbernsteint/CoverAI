@@ -180,15 +180,39 @@ import { UnexpectedError } from "../../utils/errors.js";
  *                  example: Internal Server Error
  */
 
-router.post("/", ClerkExpressRequireAuth(), async (req, res, next) => {
+router.post("/", async (req, res) => {
   try {
     const { file } = req.body;
     if (!file) {
       throw new UnexpectedError("Invalid request");
     }
     const id = "id";
-    await resumeService.createResumeFromPDF(file, id);
-    res.status(200).json({ id });
+    const data = await resumeService.createResumeFromPDF(file, id);
+    return res.status(200).json(data);
+  } catch (error) {
+    throw new UnexpectedError();
+  }
+});
+
+// ! add swagger
+// gets a resume by id
+router.get("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = await resumeService.getResumeById(id);
+    return res.status(200).json(data);
+  } catch (error) {
+    throw new UnexpectedError();
+  }
+});
+
+// ! add swagger
+// gets all resumes by user id
+router.get("/user/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = await resumeService.getAllResumesById(id);
+    return res.status(200).json(data);
   } catch (error) {
     throw new UnexpectedError();
   }

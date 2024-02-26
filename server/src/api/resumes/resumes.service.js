@@ -316,14 +316,52 @@ async function resumeCallback(err, resume, extractedText, id) {
 
   // Check that the user exists
 
-  console.log("Resume Callback:", resume, extractedText, id);
+  // console.log("Resume Callback:", resume, extractedText, id);
 
   // Add the resume to the database
-  // const resumeCollection = await resumes();
-  // if (!resumeCollection) {
-  //   throw new UnexpectedError("Error getting resume collection");
-  // }
+  const resumeCollection = await resumes();
+  if (!resumeCollection) {
+    throw new UnexpectedError("Error getting resume collection");
+  }
+
+  const resumeData = {
+    userId: id,
+    resumeType: "pdf",
+    resume,
+    extractedText,
+  };
+
+  const insertInfo = await resumeCollection.insertOne(resumeData);
+  if (insertInfo.insertedCount === 0) {
+    throw new UnexpectedError("Error inserting resume");
+  }
+
+  return resumeData;
+}
+
+async function getAllResumesById(userId) {
+  const resumeCollection = await resumes();
+  if (!resumeCollection) {
+    throw new UnexpectedError("Error getting resume collection");
+  }
+
+  const allResumes = await resumeCollection.find({ userId: userId }).toArray();
+
+  return allResumes;
+}
+
+async function getResumeById(id) {
+  const resumeCollection = await resumes();
+  if (!resumeCollection) {
+    throw new UnexpectedError("Error getting resume collection");
+  }
+
+  const resume = await resumeCollection.findOne({ _id: id });
+  if (!resume) {
+    throw new NotFoundError("Resume not found");
+  }
+
   return resume;
 }
 
-export { createResumeFromJSON, createResumeFromPDF };
+export { createResumeFromJSON, createResumeFromPDF, getAllResumesById, getResumeById };
