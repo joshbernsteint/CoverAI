@@ -23,19 +23,34 @@ app.get("/", async function (req, res) {
 // Swagger Configuration
 const swaggerOptions = {
   definition: {
-    openapi: "3.1.0",
+    openapi: "3.0.0", // Ensure this is "3.0.0" for compatibility with Swagger UI's security definitions
     info: {
       title: "CoverAI API",
       version: "1.0.0",
       description: "CoverAI API Documentation",
     },
-  },
-  servers: [
-    {
-      url: "http://localhost:3000",
+    servers: [
+      {
+        url: "http://localhost:3000",
+      },
+    ],
+    components: {
+      securitySchemes: {
+        BearerAuth: {
+          // Name of the security scheme
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT", // Optional, only if you want to specify the format
+        },
+      },
     },
-  ],
-  apis: ["./src/api/users/users.controller.js"],
+    security: [
+      {
+        BearerAuth: [], // Apply globally, if you want it applied to specific routes, this has to be adjusted
+      },
+    ],
+  },
+  apis: ["./src/api/users/users.controller.js"], // Ensure this path is correct
 };
 
 const specs = swaggerJSDoc(swaggerOptions);
