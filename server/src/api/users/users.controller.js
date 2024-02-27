@@ -24,15 +24,10 @@ import { UnexpectedError } from "../../utils/errors.js";
  *         lastName:
  *           type: string
  *           description: Last name of the user.
- *         email:
- *           type: string
- *           format: email
- *           description: Email address of the user.
  *       example:
  *         id: user_2bSO2FvIlVSIAXMUOGr5v1fCGIG
  *         firstName: John
  *         lastName: Doe
- *         email: john.doe@example.com
  */
 
 /**
