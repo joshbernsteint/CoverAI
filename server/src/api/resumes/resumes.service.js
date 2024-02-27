@@ -16,11 +16,6 @@ dotenv.config();
 import PDFDocument from "pdfkit";
 import * as fs from "fs";
 import PDFparser from "pdf2json";
-import { fileURLToPath } from "url";
-import path, { dirname } from "path";
-
-// import path from "path";
-// import pdf from "pdf-parse";
 
 const resumeSchema = z.object({
   _id: z.string(),
@@ -206,17 +201,18 @@ function extractSection(text, regex) {
 }
 
 const parsePDF = async (resumepdf, id, callback) => {
-  try {
-    const dataBuffer = fs.readFileSync(resumepdf);
+  let res = await new Promise((resolve, reject) => {
+    const dataBuffer = resumepdf.buffer;
+
     const pdfParser = new PDFparser(this, 1);
     let resumeText = "";
 
-    pdfParser.on("pdfParser_dataError", (errData) => {
-      // console.error(errData.parserError);
-      callback(errData.parserError, null, null, null);
-      return;
+    pdfParser.on("pdfParser_dataError", async (errData) => {
+      const data = await callback(errData.parserError, null, null, null);
+
+      reject(errData.parserError);
     });
-    pdfParser.on("pdfParser_dataReady", (pdfData) => {
+    pdfParser.on("pdfParser_dataReady", async (pdfData) => {
       const extractedText = pdfData.Pages.flatMap((page) =>
         page.Texts.map((text) => text.R[0].T)
       );
@@ -227,16 +223,14 @@ const parsePDF = async (resumepdf, id, callback) => {
       const cleanedText = normalizedText.replace(/\s+/g, ' ');
 
       const rawText = pdfParser.getRawTextContent();
-      console.log("Resume Text:", cleanedText, rawText);
-      callback(null, resumepdf, cleanedText, id);
-      return;
+      const data = await callback(null, resumepdf, cleanedText, id);
+
+      resolve(data);
     });
 
     pdfParser.parseBuffer(dataBuffer);
-  } catch (error) {
-    throw new UnexpectedError(error);
-  }
-  return;
+  });
+  return res;
 };
 
 const createResumeFromJSON = async (resume, id) => {
@@ -290,17 +284,11 @@ const createResumeFromJSON = async (resume, id) => {
 };
 
 const createResumeFromPDF = async (resume, id) => {
-  // Parse the resume
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = dirname(__filename);
-
-  const resumeFilePath = path.join(__dirname, resume);
-  // console.log("Resume File Path:", resumeFilePath);
-  await parsePDF(resumeFilePath, id, resumeCallback);
+  const data = await parsePDF(resume, id, resumeCallback);
+  return data;
 };
 
 async function resumeCallback(err, resume, extractedText, id) {
-  // Add your logic here
   if (err) {
     throw new UnexpectedError("Error parsing PDF");
   }
@@ -314,7 +302,7 @@ async function resumeCallback(err, resume, extractedText, id) {
     throw new BadRequestError("Extracted text is required");
   }
 
-  // Check that the user exists
+  // ! Check that the user exists
 
   // console.log("Resume Callback:", resume, extractedText, id);
 
@@ -335,6 +323,8 @@ async function resumeCallback(err, resume, extractedText, id) {
   if (insertInfo.insertedCount === 0) {
     throw new UnexpectedError("Error inserting resume");
   }
+
+  resumeData._id = insertInfo.insertedId.toString();
 
   return resumeData;
 }
