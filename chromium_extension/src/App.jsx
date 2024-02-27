@@ -4,9 +4,9 @@ import {
 } from 'react-chrome-extension-router';
 import './App.css';
 import { IoFileTrayFullOutline, IoHome, IoSettingsSharp } from "react-icons/io5";
-import Home from './components/home';
-import Resumes from './components/resumes';
-import Settings from './components/settings';
+import Home from './components/home.jsx';
+import Resumes from './components/resumes.jsx';
+import Settings from './components/settings.jsx';
 import { defaultUserSettings, darkModeStylesheet, lightModeStylesheet } from './defaults.js';
 import { useEffect, useRef, useState } from 'react';
 
