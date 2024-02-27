@@ -75,7 +75,7 @@ router.route("/signup").post(
       res.status(200).json(response);
     } catch (error) {
       console.error(error);
-      throw new UnexpectedError();
+      res.status(500).send(error);
     }
   }
 );
