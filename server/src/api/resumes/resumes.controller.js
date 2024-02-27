@@ -197,7 +197,7 @@ router.post("/manual", async (req, res) => {
     const data = await resumeService.createResumeFromJSON(resumeData, id);
     return res.status(200).json(data);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 });
 
@@ -265,7 +265,7 @@ router.post("/", upload.single('file'), async (req, res) => {
     const data = await resumeService.createResumeFromPDF(file, id);
     return res.status(200).json(data);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 });
 
@@ -277,7 +277,7 @@ router.get("/:id", async (req, res) => {
     const data = await resumeService.getResumeById(id);
     return res.status(200).json(data);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 });
 
@@ -289,7 +289,7 @@ router.get("/user/:id", async (req, res) => {
     const data = await resumeService.getAllResumesById(id);
     return res.status(200).json(data);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 });
 
