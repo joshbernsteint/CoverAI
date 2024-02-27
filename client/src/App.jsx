@@ -19,6 +19,8 @@ import CLContext from './CLContext';
 function App() {
 
   const [activeCL, setActiveCL] = useState(JSON.parse(localStorage.getItem('activeCL') || `{"ops": [{"insert": "Place your cover letter here!"}]}`));
+  const [t, setT] = useState(`${Date.now()}`);
+  console.log(t);
 
   return (
     <>

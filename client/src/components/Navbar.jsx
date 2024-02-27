@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import logo from "../assets/iconblack.png";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenu] = useState(false);
@@ -41,13 +42,7 @@ const Navbar = () => {
           </a>
           <ul className="md:flex items-center space-x-12 hidden">
             {navItems.map(({ name, href }) => (
-              <a
-                key={name}
-                href={href}
-                className="block text-base text-secondary hover:text-greyishPurple"
-              >
-                {name}
-              </a>
+              <Link to={href} className="block text-base text-secondary hover:text-greyishPurple" key={name}>{name}</Link>
             ))}
           </ul>
 
