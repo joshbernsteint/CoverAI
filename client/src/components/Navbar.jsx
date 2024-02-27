@@ -31,7 +31,7 @@ const Navbar = () => {
     { key: "5", name: "Settings", href: "/settings" },
   ];
   return (
-    <header className="w-full bg-white md:bg-transparent fixed top-0 left-0 right-0">
+    <header className="w-full bg-white fixed top-0 left-0 right-0">
       <nav className={`py-4 lg:px-14 px-4`}>
         <div className="flex justify-between items-center gap-8 text-base">
           <a className="flex items-center text-primary">

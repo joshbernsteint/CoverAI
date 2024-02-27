@@ -57,10 +57,10 @@ const CLCards = () => {
   ];
   return (
     <div className="md:px-14 px-4 py-16 max-w-screen-2xl mx-auto text-center mt-11">
-      <h1 className="font-bold text-3xl"> Your Cover Letters </h1>
+      <h1 className="font-bold text-3xl"> Your Past Cover Letters </h1>
       <div className="mt-4">
-        {coverLetters.map((cover) => (
-          <Card href={`cover-letters/${cover.id}`} className="max-w px-4 mt-4">
+        {coverLetters.map((cover,i) => (
+          <Card href={`cover-letters/${cover.id}`} className="max-w px-4 mt-4" key={i}>
             <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
               {cover.title}
             </h5>

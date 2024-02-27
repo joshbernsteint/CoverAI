@@ -85,7 +85,7 @@ router.route("/signup").post(
       res.status(200).send("User signed up successfully");
     } catch (error) {
       console.error(error);
-      throw new UnexpectedError();
+      res.status(500).send(error);
     }
   }
 );
