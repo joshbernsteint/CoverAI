@@ -1,19 +1,22 @@
-import {
-  SignOutButton,
-  SignInButton,
-  SignedIn,
-  SignedOut,
-} from "@clerk/clerk-react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import SignUp from "./pages/SignUp";
+import {BrowserRouter, Routes, Route} from 'react-router-dom';
+import Home from "./pages/Home";
+import EditProfile from "./pages/EditProfile";
+import NoPage from "./pages/NoPage";
+import CoverLetters from './pages/CoverLetters';
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/sign-up" element={<SignUp />} />
-      </Routes>
-    </BrowserRouter>
+    <>
+      <BrowserRouter>
+        <Routes>
+          <Route index element={<Home />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/edit-profile" element={<EditProfile />} />
+          <Route path="/cover-letters" element={<CoverLetters />} />
+          <Route path="*" element={<NoPage />} />
+        </Routes>
+      </BrowserRouter>
+    </>
   );
 }
 
