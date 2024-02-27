@@ -27,8 +27,9 @@ const Navbar = () => {
     { key: "1", name: "Home", href: "/home" },
     { key: "2", name: "Profile", href: "/edit-profile" },
     { key: "3", name: "Cover Letters", href: "/cover-letters" },
-    { key: "4", name: "About", href: "/about" },
-    { key: "5", name: "Settings", href: "/settings" },
+    { key: "4", name: "Cover Letter Editor", href: "/text-editor/1" },
+    { key: "5", name: "About", href: "/about" },
+    { key: "6", name: "Settings", href: "/settings" },
   ];
   return (
     <header className="w-full bg-white fixed top-0 left-0 right-0">

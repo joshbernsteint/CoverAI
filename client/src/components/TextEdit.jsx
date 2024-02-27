@@ -22,18 +22,19 @@ export default function TextEdit(props) {
   ];
 
   const handleSave = async  () => {
-    const editorContent = quillRef.current.editor.editor.delta;
+    const editorContent = quillRef.current.getEditor().editor.getDelta();
     const newOps = [];
     for (const item of editorContent.ops) {
-      newOps.push({insert: item.insert.replaceAll("\t", "    ")});
+      newOps.push({...item, insert: item.insert.replaceAll("\t", "    ")});
     }
     editorContent.ops = newOps;
+    localStorage.setItem('activeCL', JSON.stringify(editorContent));
     const pdfAsBlob = await pdfExporter.generatePdf(editorContent); // converts to PDF
     saveAs(pdfAsBlob, 'NEW_CL.pdf'); // downloads from the browser
     
     // TODO: Save editorContent to database or process further
   };
-//   quillRef.current.getEditor().root.innerHTML = props.id;
+
   return (
     <>
     <div>
