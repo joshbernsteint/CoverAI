@@ -3,11 +3,18 @@ import Home from "./pages/Home";
 import EditProfile from "./pages/EditProfile";
 import NoPage from "./pages/NoPage";
 import CoverLetters from './pages/CoverLetters';
+import React, { useState } from 'react';
 import TextEditor from './pages/TextEditor';
+import CLContext from './CLContext';
+
 
 function App() {
+
+  const [activeCL, setActiveCL] = useState(JSON.parse(localStorage.getItem('activeCL') || `{"ops": [{"insert": "Place your cover letter here!"}]}`));
+
   return (
     <>
+      <CLContext.Provider value={{activeCL, setActiveCL}}>
       <BrowserRouter>
         <Routes>
           <Route index element={<Home />} />
@@ -18,6 +25,7 @@ function App() {
           <Route path="*" element={<NoPage />} />
         </Routes>
       </BrowserRouter>
+      </CLContext.Provider>
     </>
   );
 }

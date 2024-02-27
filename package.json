@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/joshbernsteint/CoverAI/issues"
   },
-  "homepage": "https://github.com/joshbernsteint/CoverAI#readme"
+  "homepage": "https://github.com/joshbernsteint/CoverAI#readme",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
 }

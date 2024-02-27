@@ -1,10 +1,17 @@
 import { useState } from 'react'
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';  // Import styles
-import { useRef } from 'react';
+import { useRef, useContext } from 'react';
+import { pdfExporter } from 'quill-to-pdf';
+import CLContext from "../CLContext";
+
+import { saveAs } from 'file-saver';
 
 export default function TextEdit(props) {
-  const [editorContent, setEditorContent] = useState('');
+
+
+  const {activeCL, setActiveCL} = useContext(CLContext);
+  const [editorContent, setEditorContent] = useState(activeCL);
   const quillRef = useRef(null);
 
   const toolbarOptions = [
@@ -14,11 +21,17 @@ export default function TextEdit(props) {
     ['link', 'image']
   ];
 
-  const handleSave = () => {
-    const editorContent = quillRef.current.getEditor().root.innerHTML; //getEditor().getContents();
-    console.log(editorContent);
+  const handleSave = async  () => {
+    const editorContent = quillRef.current.editor.editor.delta;
+    const newOps = [];
+    for (const item of editorContent.ops) {
+      newOps.push({insert: item.insert.replaceAll("\t", "    ")});
+    }
+    editorContent.ops = newOps;
+    const pdfAsBlob = await pdfExporter.generatePdf(editorContent); // converts to PDF
+    saveAs(pdfAsBlob, 'NEW_CL.pdf'); // downloads from the browser
     
-    // Save editorContent to database or process further
+    // TODO: Save editorContent to database or process further
   };
 //   quillRef.current.getEditor().root.innerHTML = props.id;
   return (
