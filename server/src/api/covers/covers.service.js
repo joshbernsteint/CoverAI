@@ -4,8 +4,6 @@ import clerkClient from "@clerk/clerk-sdk-node";
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 const genCoverLetter = async (employer_name, job_title) => {
-  const userlist = await clerkClient.users.getUserList();
-  console.log(userlist);
   const completion = await openai.chat.completions.create({
     messages: [
       {
@@ -21,7 +19,7 @@ const genCoverLetter = async (employer_name, job_title) => {
     model: "gpt-3.5-turbo",
   });
   const response = JSON.parse(completion.choices[0].message.content);
-  console.log(response);
+  return response;
 };
 
 const genBasicLetter = async (description) => {

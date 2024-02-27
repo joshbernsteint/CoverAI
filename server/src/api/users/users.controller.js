@@ -8,7 +8,7 @@ import { UnexpectedError } from "../../utils/errors.js";
  * @swagger
  * components:
  *   schemas:
- *     User:
+ *     Users:
  *       type: object
  *       required:
  *         - firstName
@@ -36,26 +36,15 @@ import { UnexpectedError } from "../../utils/errors.js";
  *   post:
  *     summary: User Signup
  *     description: Allows users to sign up.
- *     tags: [User]
+ *     tags: [Users]
+ *     security:
+ *       - BearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - firstName
- *               - lastName
- *             properties:
- *               firstName:
- *                 type: string
- *                 description: First name of the user.
- *               lastName:
- *                 type: string
- *                 description: Last name of the user.
- *           example:
- *             firstName: John
- *             lastName: Doe
+ *             $ref: '#/components/schemas/Users'
  *     responses:
  *       200:
  *         description: User signed up successfully.
@@ -65,24 +54,25 @@ import { UnexpectedError } from "../../utils/errors.js";
  *               type: string
  *               example: User signed up successfully
  *       401:
- *         description: Unauthorized - Invalid or missing authentication session.
+ *         description: Unauthorized. User is not authenticated.
  *       500:
  *         description: Internal Server Error
  */
 
 router.route("/signup").post(
   ClerkExpressRequireAuth({
-    authorizedParties: [process.env.CLIENT_IP],
+    authorizedParties: [process.env.CLIENT_URL],
   }),
   async (req, res) => {
+    console.log(req.headers);
     try {
       const { firstName, lastName } = req.body;
-      await userService.signUp({
+      const response = await userService.signUp({
         uuid: req.auth.sessionClaims.sub,
         firstName,
         lastName,
       });
-      res.status(200).send("User signed up successfully");
+      res.status(200).json(response);
     } catch (error) {
       console.error(error);
       res.status(500).send(error);

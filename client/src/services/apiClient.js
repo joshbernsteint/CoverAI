@@ -3,13 +3,18 @@ import axios from "axios";
 class ApiClient {
   constructor(remoteHostUrl) {
     this.remoteHostUrl = remoteHostUrl;
+    this.authToken = null; // Add a field to store the auth token
+  }
+
+  setAuthToken(token) {
+    this.authToken = token; // Method to update the auth token
   }
 
   async request({ endpoint, method = `GET`, data = {} }) {
     const url = `${this.remoteHostUrl}/${endpoint}`;
-
     const headers = {
       "Content-Type": "application/json",
+      ...(this.authToken ? { Authorization: `Bearer ${this.authToken}` } : {}),
     };
 
     try {
@@ -21,10 +26,6 @@ class ApiClient {
       const message = error?.response?.data?.error?.message;
       return { data: null, error: message || String(error) };
     }
-  }
-
-  async getUserFromSession() {
-    return await this.request({ endpoint: `users/me`, method: `GET` });
   }
 
   async signUpUser(credentials) {
