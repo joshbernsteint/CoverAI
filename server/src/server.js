@@ -23,7 +23,7 @@ app.get("/", async function (req, res) {
 // Swagger Configuration
 const swaggerOptions = {
   definition: {
-    openapi: "3.0.0", // Ensure this is "3.0.0" for compatibility with Swagger UI's security definitions
+    openapi: "3.0.0", // More streamlined
     info: {
       title: "CoverAI API",
       version: "1.0.0",
@@ -37,20 +37,17 @@ const swaggerOptions = {
     components: {
       securitySchemes: {
         BearerAuth: {
-          // Name of the security scheme
           type: "http",
           scheme: "bearer",
-          bearerFormat: "JWT", // Optional, only if you want to specify the format
+          bearerFormat: "JWT", // Format
         },
       },
     },
-    security: [
-      {
-        BearerAuth: [], // Apply globally, if you want it applied to specific routes, this has to be adjusted
-      },
-    ],
   },
-  apis: ["./src/api/users/users.controller.js"], // Ensure this path is correct
+  apis: [
+    "./src/api/users/users.controller.js",
+    "./src/api/covers/covers.controller.js",
+  ], // Ensure paths are correct
 };
 
 const specs = swaggerJSDoc(swaggerOptions);
@@ -61,7 +58,9 @@ configRoutes(app);
 app.use((err, req, res, next) => {
   // --> This handles auth errors
   // --> Maybe move this to a middleware file with function below
+  console.log(req.headers);
   if (err.message === "Unauthenticated") throw new UnauthorizedError();
+  next();
 });
 
 app.use(function (err, req, res, next) {
