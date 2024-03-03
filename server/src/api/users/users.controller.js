@@ -64,7 +64,6 @@ router.route("/signup").post(
     authorizedParties: [process.env.CLIENT_URL],
   }),
   async (req, res) => {
-    console.log(req.headers);
     try {
       const { firstName, lastName } = req.body;
       const response = await userService.signUp({

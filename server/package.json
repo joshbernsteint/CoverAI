@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "node src/server.js",
+    "start": "nodemon src/server.js",
     "dev": "nodemon src/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -14,16 +14,18 @@
   "license": "ISC",
   "dependencies": {
     "@clerk/clerk-sdk-node": "^4.13.7",
+    "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "dotenv": "^16.3.2",
     "express": "^4.18.2",
     "mongodb": "^6.3.0",
     "multer": "^1.4.5-lts.1",
     "nodemon": "^3.0.3",
+    "openai": "^4.26.0",
     "pdf-parse": "^1.1.1",
     "pdf2json": "^3.0.5",
     "pdfkit": "^0.14.0",
-    "openai": "^4.26.0",
+    "svix": "^1.20.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",
     "zod": "^3.22.4"

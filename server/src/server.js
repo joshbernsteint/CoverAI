@@ -7,6 +7,7 @@ import configRoutes from "./api/index.js";
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUI from "swagger-ui-express";
 
+
 dotenv.config();
 
 const app = express();
@@ -58,7 +59,6 @@ configRoutes(app);
 app.use((err, req, res, next) => {
   // --> This handles auth errors
   // --> Maybe move this to a middleware file with function below
-  console.log(req.headers);
   if (err.message === "Unauthenticated") throw new UnauthorizedError();
   next();
 });
