@@ -28,6 +28,6 @@ dist-ssr
 *.lock
 .env
 
-serviceAccountKey.json
+.vite/*
 
 config/settings.js
