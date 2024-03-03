@@ -16,7 +16,6 @@ class ApiClient {
       "Content-Type": "application/json",
       ...(this.authToken ? { Authorization: `Bearer ${this.authToken}` } : {}),
     };
-
     try {
       const res = await axios({ url, method, data, headers });
       return { data: res.data, error: null };

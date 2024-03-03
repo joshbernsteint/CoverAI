@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import clerkClient from "@clerk/clerk-sdk-node";
+import { covers } from "../../config/mongoCollections.js";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -9,7 +9,7 @@ const genCoverLetter = async (employer_name, job_title) => {
       {
         role: "system",
         content:
-          "Respond in JSON format with first_name, last_name, email, date, employer_name, greeting, first_paragraph, second_paragraph, third_paragraph, closing_statement, signature",
+          "Respond in JSON format with first_name, last_name, email, date, employer_name, greeting, a paragraph array with at least 3 paragraphs, closing_statement, signature",
       },
       {
         role: "user",
@@ -23,8 +23,6 @@ const genCoverLetter = async (employer_name, job_title) => {
 };
 
 const genBasicLetter = async (description) => {
-  const userlist = await clerkClient.users.getUserList();
-  console.log(userlist);
   const completion = await openai.chat.completions.create({
     messages: [
       {
@@ -41,6 +39,16 @@ const genBasicLetter = async (description) => {
   });
   const response = JSON.parse(completion.choices[0].message.content);
   return response;
+};
+
+const addLetterToDB = async (uuid, json) => {
+  const coverCollection = await covers();
+  const insertInfo = await coverCollection.insertOne({
+    user_id: uuid,
+    ...json,
+  });
+  if (insertInfo.insertedCount === 0) throw new UnexpectedError();
+  return "Cover letter added to database successfully";
 };
 
 export { genCoverLetter, genBasicLetter };

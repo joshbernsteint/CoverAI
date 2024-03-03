@@ -63,22 +63,29 @@ import { genCoverLetter, genBasicLetter } from "./covers.service.js";
  *         description: Internal Server Error. An error occurred during the process.
  */
 
-router.route("/genCoverLetter").post(
-  ClerkExpressRequireAuth({
-    authorizedParties: [process.env.CLIENT_URL],
-  }),
-  async (req, res) => {
-    console.log(req.headers);
-    const employer_name = req.body.employer_name;
-    const job_title = req.body.job_title;
-    const response = await genCoverLetter(employer_name, job_title);
-    return res.status(200).json(response);
-  }
-);
+router.route("/genCoverLetter").post(async (req, res) => {
+  const employer_name = req.body.employer_name;
+  const job_title = req.body.job_title;
+  const response = await genCoverLetter(employer_name, job_title);
+  return res.status(200).json(response);
+});
 
 router.route("/genBasicLetter").post(async (req, res) => {
   const description = req.body.description;
   const response = await genBasicLetter(description);
   return res.status(200).json(response);
 });
+
+router
+  .route("/addLetterToDB")
+  .post(
+    ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
+    async (req, res) => {
+      const uuid = req.auth.sessionClaims.sub;
+      const json = req.body.json;
+      const response = await addLetterToDB(uuid, json);
+      return res.status(200).json(response);
+    }
+  );
+
 export default router;

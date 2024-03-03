@@ -2,10 +2,6 @@ import { useRef } from 'react';
 import { useEffect } from 'react';
 import {Button, ButtonGroup, Dropdown} from 'react-bootstrap';
 import DocumentManager from '../documentManager';
-import { saveAs } from 'file-saver';
-import axios from 'axios';
-import PDFDocument from 'pdfkit'
-import blobStream from 'blob-stream';
 
 
 export default function Home({styleSheet, userSettings, ...props}){
@@ -38,17 +34,6 @@ export default function Home({styleSheet, userSettings, ...props}){
           // const docData = new DocumentManager(data);
           // console.log(doc);
           // const pdfAsBlob = await pdfExporter.generatePdf(doc); // converts to PDF
-          const doc = new PDFDocument();
-          doc.text("testing testing");
-
-          const stream = doc.pipe(blobStream());
-          doc.end();
-
-          stream.on('finish', () => {
-            const blob = stream.toBlob('application/pdf');
-            saveAs(blob, 'NEW_CL.pdf'); // downloads from the browser
-          })
-
           toggleVisibility(false);
       }
       else{
