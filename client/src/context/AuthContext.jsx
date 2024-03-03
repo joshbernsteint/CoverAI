@@ -9,7 +9,6 @@ export const AuthProvider = ({ children }) => {
   const { isSignedIn, user } = useUser();
   const { getToken } = useAuth();
   const [authToken, setAuthToken] = useState(null);
-
   useEffect(() => {
     const fetchToken = async () => {
       const token = await getToken();
@@ -30,7 +29,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     fetchToken();
-  }, [isSignedIn]);
+  }, [isSignedIn, user]);
 
   return (
     <AuthContext.Provider value={{ authToken }}>
