@@ -16,6 +16,7 @@ dotenv.config();
 import PDFDocument from "pdfkit";
 import * as fs from "fs";
 import PDFparser from "pdf2json";
+import * as PDFJS from "pdfjs-dist";
 
 const resumeSchema = z.object({
   _id: z.string(),
@@ -54,7 +55,8 @@ const resumeSchema = z.object({
       link: z.string(),
       from: z.string(),
       to: z.string(),
-    })),
+    })
+  ),
   certifications: z.array(z.string()),
   awards: z.array(z.string()),
   publications: z.array(
@@ -194,45 +196,6 @@ const createPDF = async (resume, pdfname) => {
   doc.end();
 };
 
-// Function to extract a section based on a regular expression
-function extractSection(text, regex) {
-  const match = text.match(regex);
-  return match ? match[0] : "Section not found.";
-}
-
-const parsePDF = async (resumepdf, id, callback) => {
-  let res = await new Promise((resolve, reject) => {
-    const dataBuffer = resumepdf.buffer;
-
-    const pdfParser = new PDFparser(this, 1);
-    let resumeText = "";
-
-    pdfParser.on("pdfParser_dataError", async (errData) => {
-      const data = await callback(errData.parserError, null, null, null);
-
-      reject(errData.parserError);
-    });
-    pdfParser.on("pdfParser_dataReady", async (pdfData) => {
-      const extractedText = pdfData.Pages.flatMap((page) =>
-        page.Texts.map((text) => text.R[0].T)
-      );
-      resumeText = extractedText.join(" ");
-
-      let normalizedText = decodeURIComponent(resumeText);
-      normalizedText = normalizedText.replace(/\s+/g, " ");
-      const cleanedText = normalizedText.replace(/\s+/g, ' ');
-
-      const rawText = pdfParser.getRawTextContent();
-      const data = await callback(null, resumepdf, cleanedText, id);
-
-      resolve(data);
-    });
-
-    pdfParser.parseBuffer(dataBuffer);
-  });
-  return res;
-};
-
 const createResumeFromJSON = async (resume, id) => {
   const validatedData = resumeSchema.parse(resume);
   const {
@@ -283,9 +246,51 @@ const createResumeFromJSON = async (resume, id) => {
   return resumeData;
 };
 
-const createResumeFromPDF = async (resume, id) => {
-  const data = await parsePDF(resume, id, resumeCallback);
-  return data;
+// Function to extract a section based on a regular expression
+function extractSection(text, regex) {
+  const match = text.match(regex);
+  return match ? match[0] : "Section not found.";
+}
+
+const createResumeFromPDF = async (resumepdf, id) => {
+  const dataBuffer = resumepdf.buffer;
+
+  let pages = await PDFJS.getDocument({ data: new Uint8Array(dataBuffer) })
+    .promise.then(async (pdf) => {
+      let allPages = [];
+      for (let i = 1; i <= pdf.numPages; i++) {
+        await pdf.getPage(i).then(async (page) => {
+          await page.getTextContent().then(async (textContent) => {
+            const text = textContent.items.map((item) => item.str).join(" ");
+            allPages.push({ page: i, text });
+          });
+        });
+      }
+      return { data: allPages };
+    })
+    .catch((err) => {
+      console.log(err);
+      return { error: err };
+    });
+
+  if (pages.error) {
+    // return await callback(pages.error, null, null, id);
+    return pages.error;
+  } else {
+    // return await callback(null, resumepdf, pages.data, id);
+    pages = pages.data;
+  }
+
+  let resumeData = {
+    name: extractSection(pages[0].text, /([a-zA-Z]+[a-zA-Z\s]+)/),
+    email: extractSection(
+      pages[0].text,
+      /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/
+    ),
+    phone: extractSection(pages[0].text, /\(?\d{3}\)?[\s-]?\d{3}[\s-]\d{4}/),
+    content: pages[0].text,
+  };
+  console.log(resumeData);
 };
 
 async function resumeCallback(err, resume, extractedText, id) {
@@ -354,4 +359,9 @@ async function getResumeById(id) {
   return resume;
 }
 
-export { createResumeFromJSON, createResumeFromPDF, getAllResumesById, getResumeById };
+export {
+  createResumeFromJSON,
+  createResumeFromPDF,
+  getAllResumesById,
+  getResumeById,
+};

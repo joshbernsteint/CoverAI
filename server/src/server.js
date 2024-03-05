@@ -7,7 +7,6 @@ import configRoutes from "./api/index.js";
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUI from "swagger-ui-express";
 
-
 dotenv.config();
 
 const app = express();
@@ -48,6 +47,7 @@ const swaggerOptions = {
   apis: [
     "./src/api/users/users.controller.js",
     "./src/api/covers/covers.controller.js",
+    // "./src/api/resumes/resumes.controller.js",
   ], // Ensure paths are correct
 };
 

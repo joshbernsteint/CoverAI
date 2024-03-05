@@ -10,136 +10,10 @@ var upload = multer({ storage: storage });
 
 /**
  * @swagger
- * components:
- *    schemas:  
- *      ResumeManual:
- *        type: object
- *        properties:
- *          id:
- *            type: string
- *            format: uuid
- *            description: The unique identifier for the resume.
- *          education:
- *            type: object
- *            properties:
- *              school:  
- *                type: string
- *                description: School name
- *              degree:
- *                type: string
- *                description: Degree pursued
- *              fieldOfStudy:
- *                type: string
- *                description: Field of Study
- *              grade:
- *                type: string
- *                description: GPA
- *              scale:
- *                type: string
- *                description: GPA scale
- *              activities:
- *                type: string 
- *                description: Activities
- *              from:
- *                type: string
- *                description: Start date 
- *              to:
- *                type: string
- *                description: End date
- *              courses:
- *                type: array
- *                items:
- *                  type: string
- *                  description: Course taken
- *                description: Courses taken
- *            description: Education details
- *          experience:
- *            type: array
- *            items:
- *              type: object
- *              properties:
- *              title:
- *                type: string
- *                description: Job title
- *              company:
- *                type: string
- *                description: Company name
- *              location:
- *                type: string
- *                description: Location
- *              from:
- *                type: string
- *                description: Start date
- *              to:
- *                type: string
- *                description: End date
- *            description: Experience details
- *          skills:
- *            type: array
- *              items:
- *                type: object
- *                properties:
- *                  category:
- *                    type: string
- *                    description: Skill category
- *                  values:
- *                    type: array
- *                    items:
- *                      type: string
- *                      description: Skill
- *                    description: Skill category
- *            description: Skills details
- *          projects:
- *            type: array
- *            items:
- *              type: object
- *              properties:
- *                title:
- *                  type: string
- *                  description: Project title
- *                description:
- *                  type: array
- *                  items:
- *                    type: string
- *                    description: Project title
- *                  description: Project description
- *                link:
- *                  type: string
- *                  description: Project link
- *                from:
- *                  type: string
- *                  description: Start date
- *                to:
- *                  type: string
- *                  description: End date
- *            description: Projects details
- *          certifications:
- *            type: array
- *            items:
- *              type: string
- *              description: Certification
- *            description: Certifications details
- *          awards:
- *            type: array
- *            items:
- *              type: string
- *              description: Award
- *            description: Awards details
- *      ResumePDF:
- *        type: object
- *        properties:
- *          id:
- *          type: string
- *          format: uuid
- *          description: The unique identifier for the resume.
- **/
-
-/**
- * @swagger
  * /resumes/manual:
  *  post:
- *    summary: Create a resume
- *    description: Create a resume from a PDF file
+ *    summary: Create a resume from a PDF.
+ *    description: Create a resume from a PDF file.
  *    tags: [Resumes]
  *    requestBody:
  *      required: true
@@ -166,18 +40,18 @@ var upload = multer({ storage: storage });
  *                  type: string
  *                  format: uuid
  *                  description: The unique identifier for the resume.
- *              example: resume_2bSO2FvIlVSIAXMUOGr5v1fCGIG
+ *                  example: "resume_2bSO2FvIlVSIAXMUOGr5v1fCGIG"
  *      400:
  *        description: Invalid request
  *        content:
  *          application/json:
  *            schema:
  *              type: object
- *                properties:
- *                  message:
- *                  type: string
- *                  description: Error message
- *                  example: Invalid request
+ *              properties:
+ *                message:
+ *                type: string
+ *                description: Error message
+ *                example: "Invalid request"
  *     500:
  *        description: Internal Server Error
  *        content:
@@ -255,7 +129,7 @@ router.post("/manual", async (req, res) => {
  *                              description: Error message
  *                              example: Internal Server Error
  */
-router.post("/", upload.single('file'), async (req, res) => {
+router.post("/", upload.single("file"), async (req, res) => {
   try {
     const file = req.file;
     if (!file) {
