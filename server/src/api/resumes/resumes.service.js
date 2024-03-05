@@ -15,7 +15,6 @@ dotenv.config();
 
 import PDFDocument from "pdfkit";
 import * as fs from "fs";
-import PDFparser from "pdf2json";
 import * as PDFJS from "pdfjs-dist";
 
 const resumeSchema = z.object({
@@ -252,6 +251,83 @@ function extractSection(text, regex) {
   return match ? match[0] : "Section not found.";
 }
 
+function extractAllSections(text) {
+  const sectionStartPatterns = [
+    {
+      name: 'Education',
+      pattern: /^education/i,
+    },
+    {
+      name: 'Experience',
+      pattern: /^experience|history/i,
+    },
+    {
+      name: 'Projects',
+      pattern: /^projects/i,
+    },
+    {
+      name: 'Skills or Extracurriculars',
+      pattern: /^skills|extracurriculars/i,
+    },
+    // {
+    //   name: 'Contact Information',
+    //   pattern: /^([A-Z]\s?)+[,.]?(\|)?[A-Z].*$/i,
+    // },
+    {
+      name: 'Summary or Objective',
+      pattern: /^summary|objective/i,
+    },
+    {
+      name: 'Certifications',
+      pattern: /^certifications/i,
+    },
+    {
+      name: 'Awards or Honors',
+      pattern: /^awards|honors/i,
+    },
+    {
+      name: 'Publications',
+      pattern: /^publications/i,
+    },
+    // {
+    //   name: 'Languages',
+    //   pattern: /^languages/i,
+    // },
+    // {
+    //   name: 'Hobbies or Interests',
+    //   pattern: /^hobbies/i,
+    // },
+  ];
+
+  const sections = [];
+
+  text.split('\n').forEach((line) => {
+    const sectionStartPattern = sectionStartPatterns.find((pattern) =>
+      line.toLowerCase().match(pattern.pattern)
+    );
+    if (sectionStartPattern) {
+      sections.push({
+        name: sectionStartPattern.name,
+        content: line,
+      });
+    }
+  });
+
+  // get all the content between the sections
+  for (let i = 0; i < sections.length; i++) {
+    const section = sections[i];
+    const nextSection = sections[i + 1];
+    const startIndex = text.indexOf(section.content) + section.content.length;
+    const endIndex = nextSection
+      ? text.indexOf(nextSection.content)
+      : text.length;
+    const content = text.slice(startIndex, endIndex).trim();
+    sections[i].extracted = content;
+  }
+
+  return sections;
+}
+
 const createResumeFromPDF = async (resumepdf, id) => {
   const dataBuffer = resumepdf.buffer;
 
@@ -274,23 +350,27 @@ const createResumeFromPDF = async (resumepdf, id) => {
     });
 
   if (pages.error) {
-    // return await callback(pages.error, null, null, id);
-    return pages.error;
+    return await resumeCallback(pages.error, null, null, id);
   } else {
-    // return await callback(null, resumepdf, pages.data, id);
+    // return await resumeCallback(null, resumepdf, pages.data, id);
     pages = pages.data;
   }
 
+  const modifiedText = pages[0].text.replace(/ {2}(?! )/g, '\n');
+
   let resumeData = {
-    name: extractSection(pages[0].text, /([a-zA-Z]+[a-zA-Z\s]+)/),
+    name: extractSection(modifiedText, /([a-zA-Z]+[a-zA-Z\s]+)/).split('\n')[0],
     email: extractSection(
-      pages[0].text,
+      modifiedText,
       /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/
     ),
-    phone: extractSection(pages[0].text, /\(?\d{3}\)?[\s-]?\d{3}[\s-]\d{4}/),
-    content: pages[0].text,
+    phone: extractSection(modifiedText, /\(?\d{3}\)?[\s-]?\d{3}[\s-]\d{4}/),
+    content: modifiedText,
   };
-  console.log(resumeData);
+
+  // console.log(resumeData);
+  // console.log(resumeData);
+  console.log(extractAllSections(modifiedText));
 };
 
 async function resumeCallback(err, resume, extractedText, id) {
