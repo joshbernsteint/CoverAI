@@ -164,143 +164,73 @@ export default function EditProfile() {
   return (
     <>
       <Navbar />
-      <div className="mt-20 flex-row justify-center items-center container mx-auto">
-        <div className="flex w-full items-center justify-center">
-          <Label
-            htmlFor="dropzone-file"
-            className="dark:hover:bg-bray-800 flex h-64 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:border-gray-500 dark:hover:bg-gray-600"
-          >
-            <div className="flex flex-col items-center justify-center pb-6 pt-5">
-              <svg
-                className="mb-4 h-8 w-8 text-gray-500 dark:text-gray-400"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 20 16"
-              >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLineJoin="round"
-                  strokeWidth="2"
-                  d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
-                />
-              </svg>
-              <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                <span className="font-semibold">Click to upload</span> or drag
-                and drop
-              </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                PDF, DOCX, DOC, TXT
-              </p>
-            </div>
-            <FileInput
-              id="dropzone-file"
-              accept=".pdf,.docs,.doc"
-              className="hidden"
-            />
-          </Label>
-        </div>
-
-        <form
-          onSubmit={handleSubmit}
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "10px",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <label>
-            Title:
-            <input type="text" id="title" required />
-          </label>
-
-          <FloatingLabel
-            variant="standard"
-            label="First Name"
-            id="firstName"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-          />
-
-          <FloatingLabel
-            variant="standard"
-            label="Last Name"
-            id="lastName"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-          />
-
-          <FloatingLabel
-            variant="standard"
-            label="Email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-
-          <FloatingLabel
-            variant="standard"
-            label="Phone Number"
-            id="phoneNumber"
-            value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
-          />
-
-          <FloatingLabel
-            variant="standard"
-            label="School Name"
-            id="schoolName"
-            value={schoolName}
-            onChange={(e) => setSchoolName(e.target.value)}
-          />
-
-          <FloatingLabel
-            variant="standard"
-            label="Major"
-            id="major"
-            value={major}
-            onChange={(e) => setMajor(e.target.value)}
-          />
-
-          <label>
-            Expected Graduation Date:
-            <Datepicker
-              placeholder="Select date"
-              minDate={new Date(2020, 1, 1)}
-              maxDate={new Date(2050, 1, 1)}
-              id="gradDate"
-            />
-          </label>
-
-          <label>
-            Select your skills:
-            <Select
-              options={skillsOptions}
-              isMulti={true}
-              placeholder="Select your skills"
-              id="skills"
-            />
-          </label>
-
-          <div>
-            <div className="mb-2 block">
-              <Label htmlFor="large" value="Tell us more about you!" />
-            </div>
-            <TextInput
-              type="text"
-              sizing="lg"
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
+      <div className="flex justify-center">
+        <div className="border-4 p-12 w-full">
+          <div className="flex justify-center text-3xl font-semibold mb-4">
+            Get started by filling out your profile
           </div>
+          <div className="flex justify-center items-center">
+            <div
+              id="left-resume"
+              className="w-2/4 flex justify-center items-center border-r-2"
+            >
+              <div className="text-center">
+                <div className="flex w-full items-center justify-center">
+                  <Label
+                    htmlFor="dropzone-file"
+                    className="dark:hover:bg-bray-800 flex h-64 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+                  >
+                    <div className="flex flex-col items-center justify-center pb-6 pt-5 px-4">
+                      <svg
+                        className="mb-4 h-8 w-8 text-gray-500 dark:text-gray-400"
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 20 16"
+                      >
+                        <path
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLineJoin="round"
+                          strokeWidth="2"
+                          d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                        />
+                      </svg>
+                      <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                        <span className="font-semibold">Click to upload</span>{" "}
+                        or drag and drop
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        PDF, DOCX, DOC, TXT
+                      </p>
+                    </div>
+                    <FileInput
+                      id="dropzone-file"
+                      accept=".pdf,.docs,.doc"
+                      className="hidden"
+                    />
+                  </Label>
+                </div>
+              </div>
+            </div>
 
-          <input type="submit" value="Submit" id="submit" />
-        </form>
+            <div
+              id="right-form"
+              className="w-2/4 flex justify-center items-center"
+            >
+              <div className="flex flex-col items-center text-center gap-2">
+                <div className="text-2xl">Fill out this form</div>
+                <div>
+                  <button className="px-7 py-2 bg-coverLetterBlue text-white rounded hover:bg-secondary">
+                    Take me there
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+
       <MyFooter />
     </>
   );
