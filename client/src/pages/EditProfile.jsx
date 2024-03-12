@@ -10,15 +10,77 @@ import React from "react";
 
 import Select from "react-select";
 
+import { useState } from "react";
+
 export default function EditProfile() {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [schoolName, setSchoolName] = useState("");
+  const [major, setMajor] = useState("");
+  const [graduationDate, setGraduationDate] = useState("");
+  const [skills, setSkills] = useState([]);
+  const [description, setDescription] = useState("");
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    const title = e.target.title.value;
-    const description = e.target.description.value;
-    const due = e.target.due.value;
-    const file = e.target.file.files[0];
+    //set grad date and skills
+    const gradDate = document.getElementById("gradDate").value;
+    console.log("grad date:", gradDate);
+    setGraduationDate(gradDate);
+    const selectedSkills = document.getElementById("skills").value;
+    console.log("selected skills:", selectedSkills);
+    setSkills(selectedSkills);
 
-    console.log(title, description, due, file);
+    if (firstName === "") {
+      alert("First name is required");
+      return;
+    }
+    if (lastName === "") {
+      alert("Last name is required");
+      return;
+    }
+    if (email === "") {
+      alert("Email is required");
+      return;
+    }
+    if (phoneNumber === "") {
+      alert("Phone number is required");
+      return;
+    }
+    if (schoolName === "") {
+      alert("School name is required");
+      return;
+    }
+    if (major === "") {
+      alert("Major is required");
+      return;
+    }
+    if (gradDate === "") {
+      alert("Graduation date is required");
+      return;
+    }
+    if (skills.length === 0) {
+      alert("Skills are required");
+      return;
+    }
+    if (description === "") {
+      alert("Description is required");
+      return;
+    }
+
+    console.log(
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+      schoolName,
+      major,
+      graduationDate,
+      skills,
+      description
+    );
   };
 
   const skillsOptions = [
@@ -97,6 +159,8 @@ export default function EditProfile() {
     { value: "protocol-buffers", label: "Protocol Buffers" },
   ];
 
+  const today = new Date();
+
   return (
     <>
       <Navbar />
@@ -139,7 +203,6 @@ export default function EditProfile() {
         </div>
 
         <form
-          action=""
           onSubmit={handleSubmit}
           style={{
             display: "flex",
@@ -149,32 +212,76 @@ export default function EditProfile() {
             justifyContent: "center",
           }}
         >
-          <FloatingLabel variant="standard" label="First Name" />
+          <label>
+            Title:
+            <input type="text" id="title" required />
+          </label>
 
-          <FloatingLabel variant="standard" label="Last Name" />
+          <FloatingLabel
+            variant="standard"
+            label="First Name"
+            id="firstName"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+          />
 
-          <FloatingLabel variant="standard" label="Email" />
+          <FloatingLabel
+            variant="standard"
+            label="Last Name"
+            id="lastName"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+          />
 
-          <FloatingLabel variant="standard" label="Phone Number" />
+          <FloatingLabel
+            variant="standard"
+            label="Email"
+            id="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
-          <FloatingLabel variant="standard" label="School Name" />
+          <FloatingLabel
+            variant="standard"
+            label="Phone Number"
+            id="phoneNumber"
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value)}
+          />
 
-          <FloatingLabel variant="standard" label="Major" />
+          <FloatingLabel
+            variant="standard"
+            label="School Name"
+            id="schoolName"
+            value={schoolName}
+            onChange={(e) => setSchoolName(e.target.value)}
+          />
+
+          <FloatingLabel
+            variant="standard"
+            label="Major"
+            id="major"
+            value={major}
+            onChange={(e) => setMajor(e.target.value)}
+          />
 
           <label>
             Expected Graduation Date:
             <Datepicker
-              minDate={new Date(2023, 0, 1)}
-              maxDate={new Date(2023, 3, 30)}
+              placeholder="Select date"
+              minDate={new Date(2020, 1, 1)}
+              maxDate={new Date(2050, 1, 1)}
+              id="gradDate"
             />
           </label>
 
-          <label htmlFor="">
+          <label>
             Select your skills:
             <Select
               options={skillsOptions}
               isMulti={true}
               placeholder="Select your skills"
+              id="skills"
             />
           </label>
 
@@ -182,10 +289,16 @@ export default function EditProfile() {
             <div className="mb-2 block">
               <Label htmlFor="large" value="Tell us more about you!" />
             </div>
-            <TextInput id="large" type="text" sizing="lg" />
+            <TextInput
+              type="text"
+              sizing="lg"
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
           </div>
 
-          <input type="submit" value="Submit" />
+          <input type="submit" value="Submit" id="submit" />
         </form>
       </div>
       <MyFooter />
