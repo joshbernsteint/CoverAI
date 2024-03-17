@@ -17,8 +17,10 @@ const signUp = async (user) => {
   if (!userExists) {
     const newUser = {
       _id: uuid,
-      firstName,
-      lastName,
+      firstName, //Maybe we dont need
+      lastName, //Maybe we dont need
+      email: clerkClient.users.getUser(uuid).emailAddresses[0].emailAddress, //Maybe we dont need
+      covers: [],
       // Settings would go somewhere here
     };
     const insertInfo = await usersCollection.insertOne(newUser);
