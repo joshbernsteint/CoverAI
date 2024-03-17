@@ -69,6 +69,14 @@ const genBasicLetter = async (description) => {
   return response;
 };
 
+const getCoverLetterById = async (cover_id) => {
+  const coversCollection = await covers();
+  const coverLetter = await coversCollection.findOne({
+    _id: ObjectId(cover_id),
+  });
+  return coverLetter;
+};
+
 const updateCoverLetter = async (cover_id, paragraphs) => {
   const coverCollection = await covers();
   const updateResult = await coverCollection.updateOne(
@@ -77,7 +85,22 @@ const updateCoverLetter = async (cover_id, paragraphs) => {
   );
   if (updateResult.modifiedCount === 0)
     throw new Error("Failed to update cover letter.");
-  return description;
+  const coverLetter = await coverCollection.findOne({
+    _id: ObjectId(cover_id),
+  });
+  return coverLetter;
 };
 
-export { genCoverLetter, genBasicLetter, updateCoverLetter };
+const getAllCoverLettersFromUser = async (user_id) => {
+  const coversCollection = await covers();
+  const coverLetters = await coversCollection.find({ user_id }).toArray();
+  return coverLetters;
+};
+
+export {
+  genCoverLetter,
+  genBasicLetter,
+  updateCoverLetter,
+  getCoverLetterById,
+  getAllCoverLettersFromUser,
+};
