@@ -10,32 +10,27 @@ var upload = multer({ storage: storage });
 
 /**
  * @swagger
- * /manual:
+ * 
+ * /resumes/manual:
  *   post:
  *     summary: Create Resume from JSON
+ *     tags: [Resumes]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       description: JSON data for resume
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               resumeData:
- *                 type: string
- *                 description: JSON data for the resume
- *             required:
- *               - resumeData
+ *             $ref: '#/components/schemas/ResumeData'
  *     responses:
  *       '200':
  *         description: Successfully created resume
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 // Define the properties of the response object here
- *                 // Example: id, createdAt, updatedAt, etc.
+ *               $ref: '#/components/schemas/ResumeData'
  *       '500':
  *         description: Internal Server Error
  *         content:
@@ -47,106 +42,163 @@ var upload = multer({ storage: storage });
  *                   type: string
  *                   description: Error message
  */
-router.post("/manual", async (req, res) => {
+router.post("/manual", ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }), async (req, res) => {
   try {
     const { resumeData } = req.body;
-    const id = "id";
+    const id = req.auth.sessionClaims.sub;
     const data = await resumeService.createResumeFromJSON(resumeData, id);
     return res.status(200).json(data);
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    return res.status(error.status || 500).json({ message: error.message });
   }
 });
 
 /**
  * @swagger
+ * 
  * /resumes:
- * post:
- *    summary: Create a resume
- *    description: Create a resume from a PDF file
- *    tags: [Resumes]
- *    requestBody:
- *      required: true
- *      content:
- *        multipart/form-data:
- *          schema:
- *            type: object
- *            properties:
- *              file:
- *                type: string
- *                format: binary
- *                description: PDF file
- *                responses:
- *                  200:
- *                  description: Resume created
- *                  content:
- *                    application/json:
- *                      schema:
- *                        type: object
- *                        properties:
- *                          id:
- *                          type: string
- *                          format: uuid
- *                          description: The unique identifier for the resume.
- *                          example: resume_2bSO2FvIlVSIAXMUOGr5v1fCGIG
- *                  400:
- *                    description: Invalid request
- *                    content:
- *                      application/json:
- *                        schema:
- *                          type: object
- *                          properties:
- *                            message:
- *                              type: string
- *                              description: Error message
- *                              example: Invalid request
- *                  500:
- *                    description: Internal Server Error
- *                    content:
- *                      application/json:
- *                        schema:
- *                          type: object
- *                          properties:
- *                            message:
- *                              type: string
- *                              description: Error message
- *                              example: Internal Server Error
+ *   post:
+ *     summary: Upload PDF to create resume
+ *     tags: [Resumes]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *                 description: PDF file to upload
+ *     responses:
+ *       '200':
+ *         description: Successfully created resume
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ResumeData'
+ *       '400':
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message
+ *       '500':
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message
  */
-router.post("/", upload.single("file"), async (req, res) => {
+router.post("/", upload.single("file"), ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }), async (req, res) => {
   try {
     const file = req.file;
+    const id = req.auth.sessionClaims.sub;
     if (!file) {
       throw new UnexpectedError("Invalid request");
     }
-    const id = "id";
     const data = await resumeService.createResumeFromPDF(file, id);
     return res.status(200).json(data);
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    console.log(error);
+    return res.status(error.status || 500).json({ message: error.message });
   }
 });
 
-// ! add swagger
-// gets a resume by id
-router.get("/:id", async (req, res) => {
+/**
+ * @swagger
+ * 
+ * /resumes:
+ *   get:
+ *     summary: Get Resume by ID
+ *     tags: [Resumes]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: Retrieved resume
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ResumeData'
+ *       '404':
+ *         description: Resume not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message
+ *       '500':
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message
+ */
+router.get("/", ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }), async (req, res) => {
   try {
-    const { id } = req.params;
+    const id = req.auth.sessionClaims.sub;
     const data = await resumeService.getResumeById(id);
     return res.status(200).json(data);
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    return res.status(error.status || 500).json({ message: error.message });
   }
 });
 
-// ! add swagger
-// gets all resumes by user id
-router.get("/user/:id", async (req, res) => {
+/**
+ * @swagger
+ * 
+ * /resumes/user:
+ *   get:
+ *     summary: Get all resumes by user ID
+ *     tags: [Resumes]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: A list of resumes belonging to the user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/ResumeData'
+ *       '500':
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message
+ */
+router.get("/user", ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }), async (req, res) => {
   try {
-    const { id } = req.params;
+    const id = req.auth.sessionClaims.sub;
     const data = await resumeService.getAllResumesById(id);
     return res.status(200).json(data);
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    return res.status(error.status || 500).json({ message: error.message });
   }
 });
 

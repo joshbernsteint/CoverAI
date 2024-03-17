@@ -42,12 +42,28 @@ const swaggerOptions = {
           bearerFormat: "JWT", // Format
         },
       },
+      schemas: {
+        ResumeData: {
+          type: 'object',
+          properties: {
+            userId: { type: 'string', description: 'The ID of the user' },
+            resumeType: { type: 'string', description: 'The type of the resume (e.g., "pdf")' },
+            resumePdf: { type: 'string', description: 'The PDF content of the resume' },
+            name: { type: 'string', description: 'The name of the user' },
+            email: { type: 'string', format: 'email', description: 'The email address of the user' },
+            phone: { type: 'string', description: 'The phone number of the user' },
+            extractedText: { type: 'string', description: 'The extracted text from the resume' },
+            extractedSections: { type: 'array', items: { type: 'string' }, description: 'Array of extracted sections from the resume' },
+            pdfJSON: { type: 'object', description: 'Additional JSON data related to the PDF' },
+          },
+        },
+      },
     },
   },
   apis: [
     "./src/api/users/users.controller.js",
     "./src/api/covers/covers.controller.js",
-    // "./src/api/resumes/resumes.controller.js",
+    "./src/api/resumes/resumes.controller.js",
   ], // Ensure paths are correct
 };
 

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ObjectId } from "mongodb";
 import { users, resumes } from "../../config/mongoCollections.js";
 import dotenv from "dotenv";
 import {
@@ -29,7 +30,7 @@ const resumeSchema = z.object({
     from: z.string(),
     to: z.string(),
     description: z.string(),
-    courses: z.array(z.string()),
+    courses: z.string(),
   }),
   experience: z.array(
     z.object({
@@ -245,12 +246,27 @@ const createResumeFromJSON = async (resume, id) => {
   return resumeData;
 };
 
-// Function to extract a section based on a regular expression
+/**
+ * Extracts a section from a string of text using a regular expression.
+ * @param {string} text - The text to extract the section from.
+ * @param {RegExp} regex - The regular expression to use to extract the section.
+ * @returns {string} - The extracted section.
+ * @throws {Error} - If the section is not found.
+ * @example extractSection("Hello, World!", /Hello/); // "Hello"
+ * @example extractSection("Hello, World!", /Goodbye/); // Error: Section not found.
+ */
 function extractSection(text, regex) {
   const match = text.match(regex);
   return match ? match[0] : "Section not found.";
 }
 
+/**
+ * Extracts all the sections from a string of text.
+ * @param {string} text - The text to extract the sections from.
+ * @returns {Array} - An array of objects containing the name of the section and the content of the section.
+ * @example extractAllSections("Hello, World!"); // [{ name: "Hello", content: "Hello, World!" }]
+ * @example extractAllSections("Hello, World!"); // [{ name: "Hello", content: "Hello, World!" }]
+ */
 function extractAllSections(text) {
   const sectionStartPatterns = [
     {
@@ -328,7 +344,94 @@ function extractAllSections(text) {
   return sections;
 }
 
+function parseEducation(extracted) {
+  // Define regex patterns for various fields
+  const universityPattern = /(.+)\s*?(\n|$)/;
+  const locationPattern = /\n(.+?)\n/;
+  const degreePattern = /(?:Bachelor|Master)\s+(?:in|of)\s+(.*?)(?:\n)/;
+  const graduationPattern = /(?:Expected|Graduated)\s*(.*?)\s*?(\n|$)/;
+  const gpaPattern = /Cumulative GPA: ([\d.]+)\/([\d.]+);\s*(.*?)\s*?(\n|$)/;
+  const courseworkPattern = /Relevant Coursework\s*:\s*([\s\S]*)/;
+
+  // Extract details using regex
+  const universityMatch = extracted.match(universityPattern);
+  const locationMatch = extracted.match(locationPattern);
+  let degreeMatch = extracted.match(degreePattern);
+  if (!degreeMatch) {
+    degreePattern = /(?:BS|BA|MS|MBA|MA|Phd)\s+(.*?)(?:\n|$)/;
+    degreeMatch = extracted.match(degreePattern);
+  }
+  const graduationMatch = extracted.match(graduationPattern);
+  const gpaMatch = extracted.match(gpaPattern);
+  const courseworkMatch = extracted.match(courseworkPattern);
+
+  let major = '';
+  if (degreeMatch) {
+    if (degreeMatch[1].includes(',')) {
+      major = degreeMatch[1].split(',')[1].trim();
+      degreeMatch[0] = degreeMatch[0].split(',')[0].trim();
+    } else if (degreeMatch[1].includes(' in ')) {
+      major = degreeMatch[1].split(' in ')[1].trim();
+      degreeMatch[0] = degreeMatch[0].split(' in ')[0].trim();
+    } else if (degreeMatch[1].includes(':')) {
+      major = degreeMatch[1].split(':')[1].trim();
+      degreeMatch[0] = degreeMatch[0].split(':')[0].trim();
+    }
+  }
+
+  // Create JSON object
+  const educationJSON = {
+    university: universityMatch ? universityMatch[1].trim() : '',
+    location: locationMatch ? locationMatch[1].trim() : '',
+    degree: degreeMatch ? degreeMatch[0].trim() : '',
+    major: major,
+    graduationDate: graduationMatch ? graduationMatch[1].trim() : '',
+    gpa: gpaMatch ? gpaMatch[1].trim() : '',
+    scale: gpaMatch ? !isNaN(gpaMatch[2].trim()) ? gpaMatch[2].trim() : '' : '',
+    awards: gpaMatch ? gpaMatch[3].trim() : '',
+    relevantCoursework: courseworkMatch ? courseworkMatch[1].trim() : ''
+  };
+
+  return educationJSON;
+}
+
+function parseExperiance(extracted) {
+  // Split the extracted information by job entries
+  const jobEntries = extracted.split(/\n(?=[A-Z])/);
+  // console.log(jobEntries);
+
+  // Parse each job entry into a JSON object
+  // const experienceJSON = jobEntries.map(entry => {
+  //   const lines = entry.trim().split('\n');
+  //   const company = lines.shift().trim();
+  //   const details = lines.shift().trim();
+  //   const [position, period] = details.split(/\s*(?:-\s*|\s)\s*/);
+  //   const locationIndex = lines.findIndex(line => line.includes(','));
+  //   const location = locationIndex !== -1 ? lines.splice(locationIndex, 1)[0].trim() : '';
+  //   const responsibilities = lines.map(line => line.trim());
+
+  //   return {
+  //     company: company,
+  //     location: location,
+  //     position: position,
+  //     period: period,
+  //     responsibilities: responsibilities
+  //   };
+  // });
+  // console.log(experienceJSON);
+  return {};
+}
+
 const createResumeFromPDF = async (resumepdf, id) => {
+  //|| !ObjectId.isValid(id.trim())
+  if (!id) {
+    throw new BadRequestError("User id is required");
+  }
+  if (!resumepdf) {
+    throw new BadRequestError("Resume is required");
+  }
+  id = id.trim();
+
   const dataBuffer = resumepdf.buffer;
 
   let pages = await PDFJS.getDocument({ data: new Uint8Array(dataBuffer) })
@@ -350,59 +453,43 @@ const createResumeFromPDF = async (resumepdf, id) => {
     });
 
   if (pages.error) {
-    return await resumeCallback(pages.error, null, null, id);
+    throw new UnexpectedError("Error parsing PDF");
   } else {
-    // return await resumeCallback(null, resumepdf, pages.data, id);
     pages = pages.data;
+  }
+
+  const resumeCollection = await resumes();
+  if (!resumeCollection) {
+    throw new UnexpectedError("Error getting resume collection");
   }
 
   const modifiedText = pages[0].text.replace(/ {2}(?! )/g, '\n');
 
   let resumeData = {
+    userId: id,
+    resumeType: "pdf",
+    // resumePdf: resumepdf,
     name: extractSection(modifiedText, /([a-zA-Z]+[a-zA-Z\s]+)/).split('\n')[0],
     email: extractSection(
       modifiedText,
       /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/
     ),
     phone: extractSection(modifiedText, /\(?\d{3}\)?[\s-]?\d{3}[\s-]\d{4}/),
-    content: modifiedText,
+    extractedText: pages[0].text,
+    extractedSections: extractAllSections(modifiedText),
+    pdfJSON: {}
   };
 
-  // console.log(resumeData);
-  // console.log(resumeData);
-  console.log(extractAllSections(modifiedText));
-};
 
-async function resumeCallback(err, resume, extractedText, id) {
-  if (err) {
-    throw new UnexpectedError("Error parsing PDF");
-  }
-  if (!id) {
-    throw new BadRequestError("User id is required");
-  }
-  if (!resume) {
-    throw new BadRequestError("Resume is required");
-  }
-  if (!extractedText) {
-    throw new BadRequestError("Extracted text is required");
+  for (const section of resumeData.extractedSections) {
+    if (section.name.toLowerCase().includes('education')) {
+      resumeData.pdfJSON.education = parseEducation(section.extracted);
+    } else if (section.name.toLowerCase().includes('experience')) {
+      resumeData.pdfJSON.experience = parseExperiance(section.extracted);
+    }
   }
 
-  // ! Check that the user exists
-
-  // console.log("Resume Callback:", resume, extractedText, id);
-
-  // Add the resume to the database
-  const resumeCollection = await resumes();
-  if (!resumeCollection) {
-    throw new UnexpectedError("Error getting resume collection");
-  }
-
-  const resumeData = {
-    userId: id,
-    resumeType: "pdf",
-    resume,
-    extractedText,
-  };
+  console.log(resumeData);
 
   const insertInfo = await resumeCollection.insertOne(resumeData);
   if (insertInfo.insertedCount === 0) {
@@ -412,7 +499,7 @@ async function resumeCallback(err, resume, extractedText, id) {
   resumeData._id = insertInfo.insertedId.toString();
 
   return resumeData;
-}
+};
 
 async function getAllResumesById(userId) {
   const resumeCollection = await resumes();
@@ -425,13 +512,25 @@ async function getAllResumesById(userId) {
   return allResumes;
 }
 
+/**
+ * Get a resume by its ID.
+ * @param {*} id - The ID of the resume to get.
+ * @returns - The resume with the given ID.
+ * @throws {NotFoundError} - If the resume is not found.
+ * @throws {UnexpectedError} - If an unexpected error occurs.
+ * @example getResumeById("60f2c4d9b8b3f6e1d8b1e1f3");
+ */
 async function getResumeById(id) {
+  if (!id) {
+    throw new BadRequestError("Resume ID is required");
+  }
+
   const resumeCollection = await resumes();
   if (!resumeCollection) {
     throw new UnexpectedError("Error getting resume collection");
   }
 
-  const resume = await resumeCollection.findOne({ _id: id });
+  const resume = await resumeCollection.findOne({ _id: new ObjectId(id) });
   if (!resume) {
     throw new NotFoundError("Resume not found");
   }
