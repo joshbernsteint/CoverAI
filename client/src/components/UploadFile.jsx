@@ -5,7 +5,7 @@ import { useState } from "react";
 
 import axios from "axios";
 
-export default function UploadFile() {
+export default function UploadFile({ onUploadSuccess }) {
   const [extractedText, setExtractedText] = useState(null);
 
   const handleFileUpload = async (event) => {
@@ -13,6 +13,9 @@ export default function UploadFile() {
 
     const formData = new FormData();
     formData.append("file", file); 
+
+    const fileURL = URL.createObjectURL(file);
+    onUploadSuccess(fileURL);
 
     try {
       const response = await axios.post(

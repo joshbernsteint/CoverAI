@@ -18,6 +18,7 @@ import { motion as m } from "framer-motion";
 
 export default function EditProfile() {
   const [showForm, setShowForm] = useState(false);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
 
   //will be used for dropdown menu later
   const skillsOptions = [
@@ -96,17 +97,38 @@ export default function EditProfile() {
     { value: "protocol-buffers", label: "Protocol Buffers" },
   ];
 
+  const [resumeFile, setResumeFile] = useState(null);
+
+  // Function to handle successful file upload
+  const handleUploadSuccess = (file) => {
+    setResumeFile(file);
+    setUploadSuccess(true);
+  };
+
   return (
     <>
       <Navbar />
       <div className="flex justify-center">
         <div className="p-12 w-full">
           <div className="flex justify-center text-3xl font-semibold mb-4">
-            Get started by filling out your profile
+            {uploadSuccess
+              ? "Your resume has been successfully uploaded!"
+              : "Get started by filling out your profile"}
           </div>
+
           <div className="flex justify-center items-center">
-            <UploadFile />
-            <UserForm />
+            {!uploadSuccess && (
+              <UploadFile onUploadSuccess={handleUploadSuccess} />
+            )}
+            {!uploadSuccess && <UserForm />}
+            {uploadSuccess && resumeFile && (
+              <embed
+                src={resumeFile}
+                type="application/pdf"
+                width="400"
+                height="600"
+              />
+            )}
           </div>
         </div>
       </div>
