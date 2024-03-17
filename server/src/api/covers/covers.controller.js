@@ -64,9 +64,10 @@ import { genCoverLetter, genBasicLetter } from "./covers.service.js";
  */
 
 router.route("/genCoverLetter").post(async (req, res) => {
+  const user_id = "user_2dC6mNNpMcxT5kubchWOsfUs2TB";
   const employer_name = req.body.employer_name;
   const job_title = req.body.job_title;
-  const response = await genCoverLetter(employer_name, job_title);
+  const response = await genCoverLetter(user_id, employer_name, job_title);
   return res.status(200).json(response);
 });
 
