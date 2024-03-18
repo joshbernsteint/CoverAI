@@ -9,25 +9,15 @@ const userSchema = z.object({
   lastName: z.string().min(1, "Last name is required"),
 });
 
-const signUp = async (user) => {
-  const validatedData = userSchema.parse(user);
-  const { uuid, firstName, lastName } = validatedData;
-  const usersCollection = await users();
-  const userExists = await usersCollection.findOne({ _id: uuid });
-  if (!userExists) {
-    const newUser = {
-      _id: uuid,
-      firstName, //Maybe we dont need
-      lastName, //Maybe we dont need
-      email: clerkClient.users.getUser(uuid).emailAddresses[0].emailAddress, //Maybe we dont need
-      covers: [],
-      // Settings would go somewhere here
-    };
-    const insertInfo = await usersCollection.insertOne(newUser);
-    if (insertInfo.insertedCount === 0) throw new UnexpectedError();
-    return "User signed up successfully";
-  }
-  return "User already exists";
+const addSkills = async (user_id, skills) => {
+  const userCollection = await users();
+  const updateResult = await userCollection.updateOne(
+    { _id: user_id },
+    { $set: { skills } }
+  );
+  if (updateResult.modifiedCount === 0)
+    throw new UnexpectedError("Failed to add skills to user.");
+  return "Skills added successfully.";
 };
 
-export { signUp };
+export { addSkills };
