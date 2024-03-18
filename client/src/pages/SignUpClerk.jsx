@@ -1,6 +1,6 @@
 import {
-  SignInButton,
   SignOutButton,
+  SignUpButton,
   SignedIn,
   SignedOut,
   useAuth,
@@ -8,6 +8,7 @@ import {
 } from "@clerk/clerk-react";
 import apiClient from "../services/apiClient";
 import { useEffect } from "react";
+import SignUp from './SignUp.jsx'
 
 const SignUpClerk = () => {
 
@@ -39,7 +40,7 @@ const SignUpClerk = () => {
       </SignedIn>
       <SignedOut>
         <p>You are not signed in.</p>
-        <SignInButton />
+        <SignUpButton />
       </SignedOut>
     </div>
   );

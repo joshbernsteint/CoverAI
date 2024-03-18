@@ -47,14 +47,12 @@ const Navbar = () => {
           </ul>
 
           <div className="space-x-12 hidden lg:flex items-center">
-            <a
-              href="/"
-              className="hidden lg:flex items-center text-primary hover:text-greyishPurple text-base"
-            >
-              Login
-            </a>
+            <button className="hidden lg:flex items-center text-primary hover:text-greyishPurple text-base">
+              <Link to='/login'>Login</Link>
+            </button>
+            {/* <Link to="/sign-up" className="bg-primary text-white py-2 px-4 transition-all duration-300 rounded text-base hover:bg-greyishPurple"/> */}
             <button className="bg-primary text-white py-2 px-4 transition-all duration-300 rounded text-base hover:bg-greyishPurple">
-              Sign up
+              <Link to="/sign-up">Sign Up</Link>
             </button>
           </div>
         </div>
