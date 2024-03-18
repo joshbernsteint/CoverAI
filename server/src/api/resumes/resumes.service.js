@@ -19,46 +19,65 @@ import * as fs from "fs";
 import * as PDFJS from "pdfjs-dist";
 
 const resumeSchema = z.object({
-  _id: z.string(),
+  // _id: z.string(),
   education: z.object({
     school: z.string(),
     degree: z.string(),
     fieldOfStudy: z.string(),
     gpa: z.string(),
     scale: z.string(),
-    activities: z.string(),
-    from: z.string(),
-    to: z.string(),
-    description: z.string(),
-    courses: z.string(),
-  }),
+    awards: z.string().optional(),
+    activities: z.string().optional(),
+    from: z.object({
+      month: z.string(),
+      year: z.string(),
+    }).optional(),
+    to: z.object({
+      month: z.string(),
+      year: z.string(),
+    }),
+    description: z.string().optional(),
+    courses: z.string().optional(),
+  }).optional(),
   experience: z.array(
     z.object({
       title: z.string(),
       company: z.string(),
       location: z.string(),
-      from: z.string(),
-      to: z.string(),
-      description: z.array(z.string()),
-    })
+      from: z.object({
+        month: z.string(),
+        year: z.string(),
+      }),
+      to: z.object({
+        month: z.string(),
+        year: z.string(),
+      }).or(z.string()),
+      description: z.string(),
+    }).optional()
   ),
   skills: z.array(
     z.object({
       category: z.string(),
       values: z.array(z.string()),
-    })
+    }).or(z.array(z.string())).optional()
   ),
   projects: z.array(
     z.object({
       title: z.string(),
-      description: z.array(z.string()),
-      link: z.string(),
-      from: z.string(),
-      to: z.string(),
+      description: z.string(),
+      link: z.string().optional(),
+      from: z.object({
+        month: z.string(),
+        year: z.string(),
+      }).optional(),
+      to: z.object({
+        month: z.string(),
+        year: z.string(),
+      }).or(z.string()).optional(),
     })
   ),
-  certifications: z.array(z.string()),
-  awards: z.array(z.string()),
+  certifications: z.array(z.string()).optional(),
+  awards: z.array(z.string()).optional(),
   publications: z.array(
     z.object({
       title: z.string(),
@@ -66,13 +85,13 @@ const resumeSchema = z.object({
       date: z.string(),
       description: z.string(),
     })
-  ),
+  ).optional(),
   languages: z.array(
     z.object({
       language: z.string(),
-      level: z.string(),
+      level: z.string().optional(),
     })
-  ),
+  ).optional(),
 });
 
 const createPDF = async (resume, pdfname) => {
@@ -196,8 +215,27 @@ const createPDF = async (resume, pdfname) => {
   doc.end();
 };
 
+/**
+ * Create a resume from a JSON object.
+ * @param {Object} resume - The resume data.
+ * @param {string} id - The ID of the user to create the resume for.
+ * @returns - The resume data.
+ * @throws {UnprocessableEntityError} - If the resume data is invalid.
+ * @throws {BadRequestError} - If the user ID is not provided.
+ * @throws {UnexpectedError} - If an unexpected error occurs.
+ * @example createResumeFromJSON(resume, "60f2c4d9b8b3f6e1d8b1e1f3");
+ */
 const createResumeFromJSON = async (resume, id) => {
-  const validatedData = resumeSchema.parse(resume);
+  if (!id) {
+    throw new BadRequestError("User id is required");
+  }
+  let validatedData;
+  try {
+    validatedData = resumeSchema.parse(resume);
+  } catch (error) {
+    throw new UnprocessableEntityError(error.errors);
+  }
+
   const {
     education,
     experience,
@@ -209,29 +247,22 @@ const createResumeFromJSON = async (resume, id) => {
     languages,
   } = validatedData;
 
-  // Add your logic here
-  if (id) {
-    const user = await users().findOne({ _id: id });
-    if (!user) {
-      throw new NotFoundError("User not found");
-    }
-  } else {
-    throw new BadRequestError("User id is required");
-  }
-
-  const resumeData = {
-    _id: id,
-    education,
-    experience,
-    skills,
-    projects,
-    certifications,
-    awards,
-    publications,
-    languages,
+  let resumeData = {
+    userId: id,
+    resumeType: "json",
+    pdfJSON: {
+      education: education || {},
+      experience: experience || {},
+      skills: skills || [],
+      projects: projects || [],
+      certifications: certifications || [],
+      awards: awards || [],
+      publications: publications || [],
+      languages: languages || [],
+    },
   };
 
-  createPDF(resumeData, "resume.pdf");
+  // createPDF(resumeData, "resume.pdf"); // Create PDF from resume data
 
   const resumeCollection = await resumes();
   if (!resumeCollection) {
@@ -242,6 +273,8 @@ const createResumeFromJSON = async (resume, id) => {
   if (insertInfo.insertedCount === 0) {
     throw new UnexpectedError("Error inserting resume");
   }
+
+  resumeData._id = insertInfo.insertedId.toString();
 
   return resumeData;
 };
@@ -381,15 +414,22 @@ function parseEducation(extracted) {
 
   // Create JSON object
   const educationJSON = {
-    university: universityMatch ? universityMatch[1].trim() : '',
+    school: universityMatch ? universityMatch[1].trim() : '',
     location: locationMatch ? locationMatch[1].trim() : '',
     degree: degreeMatch ? degreeMatch[0].trim() : '',
-    major: major,
-    graduationDate: graduationMatch ? graduationMatch[1].trim() : '',
+    fieldOfStudy: major,
+    to: graduationMatch ? graduationMatch[1].trim() : '',
     gpa: gpaMatch ? gpaMatch[1].trim() : '',
     scale: gpaMatch ? !isNaN(gpaMatch[2].trim()) ? gpaMatch[2].trim() : '' : '',
     awards: gpaMatch ? gpaMatch[3].trim() : '',
-    relevantCoursework: courseworkMatch ? courseworkMatch[1].trim() : ''
+    courses: courseworkMatch ? courseworkMatch[1].trim() : ''
+  };
+
+  let splitTo = educationJSON.to.split(' ');
+
+  educationJSON.to = {
+    month: splitTo[0].trim(),
+    year: splitTo[1].trim()
   };
 
   return educationJSON;
@@ -397,33 +437,23 @@ function parseEducation(extracted) {
 
 function parseExperiance(extracted) {
   // Split the extracted information by job entries
-  const jobEntries = extracted.split(/\n(?=[A-Z])/);
-  // console.log(jobEntries);
+  const jobEntries = extracted.split("\n");
 
-  // Parse each job entry into a JSON object
-  // const experienceJSON = jobEntries.map(entry => {
-  //   const lines = entry.trim().split('\n');
-  //   const company = lines.shift().trim();
-  //   const details = lines.shift().trim();
-  //   const [position, period] = details.split(/\s*(?:-\s*|\s)\s*/);
-  //   const locationIndex = lines.findIndex(line => line.includes(','));
-  //   const location = locationIndex !== -1 ? lines.splice(locationIndex, 1)[0].trim() : '';
-  //   const responsibilities = lines.map(line => line.trim());
+  console.log(jobEntries);
 
-  //   return {
-  //     company: company,
-  //     location: location,
-  //     position: position,
-  //     period: period,
-  //     responsibilities: responsibilities
-  //   };
-  // });
-  // console.log(experienceJSON);
   return {};
 }
 
+/**
+ * Create a resume from a PDF.
+ * @param {Buffer} resumepdf - The resume in PDF format.
+ * @param {string} id - The ID of the user to create the resume for.
+ * @returns - The resume data.
+ * @throws {BadRequestError} - If the user ID is not provided.
+ * @throws {UnexpectedError} - If an unexpected error occurs.
+ * @example createResumeFromPDF(resumepdf, "60f2c4d9b8b3f6e1d8b1e1f3");
+ */
 const createResumeFromPDF = async (resumepdf, id) => {
-  //|| !ObjectId.isValid(id.trim())
   if (!id) {
     throw new BadRequestError("User id is required");
   }
@@ -468,16 +498,16 @@ const createResumeFromPDF = async (resumepdf, id) => {
   let resumeData = {
     userId: id,
     resumeType: "pdf",
-    // resumePdf: resumepdf,
-    name: extractSection(modifiedText, /([a-zA-Z]+[a-zA-Z\s]+)/).split('\n')[0],
-    email: extractSection(
-      modifiedText,
-      /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/
-    ),
-    phone: extractSection(modifiedText, /\(?\d{3}\)?[\s-]?\d{3}[\s-]\d{4}/),
     extractedText: pages[0].text,
     extractedSections: extractAllSections(modifiedText),
-    pdfJSON: {}
+    pdfJSON: {
+      name: extractSection(modifiedText, /([a-zA-Z]+[a-zA-Z\s]+)/).split('\n')[0],
+      email: extractSection(
+        modifiedText,
+        /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/
+      ),
+      phone: extractSection(modifiedText, /\(?\d{3}\)?[\s-]?\d{3}[\s-]\d{4}/),
+    }
   };
 
 
@@ -489,8 +519,6 @@ const createResumeFromPDF = async (resumepdf, id) => {
     }
   }
 
-  console.log(resumeData);
-
   const insertInfo = await resumeCollection.insertOne(resumeData);
   if (insertInfo.insertedCount === 0) {
     throw new UnexpectedError("Error inserting resume");
@@ -501,12 +529,18 @@ const createResumeFromPDF = async (resumepdf, id) => {
   return resumeData;
 };
 
+/**
+ * Get all resumes by user ID.
+ * @param {string} userId - The ID of the user to get resumes for.
+ * @returns {Array} - An array of resumes for the user.
+ * @throws {UnexpectedError} - If an unexpected error occurs.
+ * @example getAllResumesById("60f2c4d9b8b3f6e1d8b1e1f3");
+ */
 async function getAllResumesById(userId) {
   const resumeCollection = await resumes();
   if (!resumeCollection) {
     throw new UnexpectedError("Error getting resume collection");
   }
-
   const allResumes = await resumeCollection.find({ userId: userId }).toArray();
 
   return allResumes;

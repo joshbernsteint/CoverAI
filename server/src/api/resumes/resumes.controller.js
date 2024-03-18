@@ -42,16 +42,19 @@ var upload = multer({ storage: storage });
  *                   type: string
  *                   description: Error message
  */
-router.post("/manual", ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }), async (req, res) => {
-  try {
-    const { resumeData } = req.body;
-    const id = req.auth.sessionClaims.sub;
-    const data = await resumeService.createResumeFromJSON(resumeData, id);
-    return res.status(200).json(data);
-  } catch (error) {
-    return res.status(error.status || 500).json({ message: error.message });
-  }
-});
+router.post("/manual",
+  // ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }), 
+  async (req, res) => {
+    try {
+      const resumeData = req.body;
+      //const id = req.auth.sessionClaims.sub;
+      const id = "65f74a1ef1a8f10d860bb03f";
+      const data = await resumeService.createResumeFromJSON(resumeData, id);
+      return res.status(200).json(data);
+    } catch (error) {
+      return res.status(error.status || 500).json({ message: error.message });
+    }
+  });
 
 /**
  * @swagger
@@ -101,27 +104,80 @@ router.post("/manual", ClerkExpressRequireAuth({ authorizedParties: [process.env
  *                   type: string
  *                   description: Error message
  */
-router.post("/", upload.single("file"), ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }), async (req, res) => {
-  try {
-    const file = req.file;
-    const id = req.auth.sessionClaims.sub;
-    if (!file) {
-      throw new UnexpectedError("Invalid request");
+router.post("/", upload.single("file"),
+  // ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }), 
+  async (req, res) => {
+    try {
+      const file = req.file;
+      //const id = req.auth.sessionClaims.sub;
+      const id = "65f74a1ef1a8f10d860bb03f";
+      if (!file) {
+        throw new UnexpectedError("Invalid request");
+      }
+      const data = await resumeService.createResumeFromPDF(file, id);
+      return res.status(200).json(data);
+    } catch (error) {
+      console.log(error);
+      return res.status(error.status || 500).json({ message: error.message });
     }
-    const data = await resumeService.createResumeFromPDF(file, id);
-    return res.status(200).json(data);
-  } catch (error) {
-    console.log(error);
-    return res.status(error.status || 500).json({ message: error.message });
-  }
-});
+  });
+
 
 /**
  * @swagger
  * 
- * /resumes:
+ * /resumes/all:
+ *   get:
+ *     summary: Get all resumes by user ID
+ *     tags: [Resumes]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: A list of resumes belonging to the user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/ResumeData'
+ *       '500':
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message
+ */
+router.get("/all",
+  // ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }), 
+  async (req, res) => {
+    try {
+      //const id = req.auth.sessionClaims.sub;
+      const id = "65f74a1ef1a8f10d860bb03f";
+      const data = await resumeService.getAllResumesById(id);
+      return res.status(200).json(data);
+    } catch (error) {
+      return res.status(error.status || 500).json({ message: error.message });
+    }
+  });
+
+/**
+ * @swagger
+ * 
+ * /resumes/{id}:
  *   get:
  *     summary: Get Resume by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User ID
  *     tags: [Resumes]
  *     security:
  *       - bearerAuth: []
@@ -153,53 +209,16 @@ router.post("/", upload.single("file"), ClerkExpressRequireAuth({ authorizedPart
  *                   type: string
  *                   description: Error message
  */
-router.get("/", ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }), async (req, res) => {
-  try {
-    const id = req.auth.sessionClaims.sub;
-    const data = await resumeService.getResumeById(id);
-    return res.status(200).json(data);
-  } catch (error) {
-    return res.status(error.status || 500).json({ message: error.message });
-  }
-});
-
-/**
- * @swagger
- * 
- * /resumes/user:
- *   get:
- *     summary: Get all resumes by user ID
- *     tags: [Resumes]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       '200':
- *         description: A list of resumes belonging to the user
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/ResumeData'
- *       '500':
- *         description: Internal Server Error
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   description: Error message
- */
-router.get("/user", ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }), async (req, res) => {
-  try {
-    const id = req.auth.sessionClaims.sub;
-    const data = await resumeService.getAllResumesById(id);
-    return res.status(200).json(data);
-  } catch (error) {
-    return res.status(error.status || 500).json({ message: error.message });
-  }
-});
+router.get("/:id",
+  // ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }), 
+  async (req, res) => {
+    try {
+      const id = req.params.id;
+      const data = await resumeService.getResumeById(id);
+      return res.status(200).json(data);
+    } catch (error) {
+      return res.status(error.status || 500).json({ message: error.message });
+    }
+  });
 
 export default router;
