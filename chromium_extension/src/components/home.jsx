@@ -1,18 +1,14 @@
-import { useRef } from 'react';
-import { useEffect } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import {Button, ButtonGroup, Dropdown} from 'react-bootstrap';
 import DocumentManager from '../documentManager';
-import { saveAs } from 'file-saver';
-import axios from 'axios';
-import PDFDocument from 'pdfkit'
-import blobStream from 'blob-stream';
-
+import DescriptionInput from './DescriptionInput.jsx'
 
 export default function Home({styleSheet, userSettings, ...props}){
 
     const settings = userSettings.current;
     const buttonRef = useRef(null);
     const formRef = useRef(null);
+    const [value, setValue] = useState("");
 
     async function handleOpenPreview(){
         console.log("Handling opening preview");
@@ -38,17 +34,6 @@ export default function Home({styleSheet, userSettings, ...props}){
           // const docData = new DocumentManager(data);
           // console.log(doc);
           // const pdfAsBlob = await pdfExporter.generatePdf(doc); // converts to PDF
-          const doc = new PDFDocument();
-          doc.text("testing testing");
-
-          const stream = doc.pipe(blobStream());
-          doc.end();
-
-          stream.on('finish', () => {
-            const blob = stream.toBlob('application/pdf');
-            saveAs(blob, 'NEW_CL.pdf'); // downloads from the browser
-          })
-
           toggleVisibility(false);
       }
       else{
@@ -60,18 +45,19 @@ export default function Home({styleSheet, userSettings, ...props}){
     return (
     <div className='App-header'>
       <h1>CoverAI Menu</h1>
-        <Button onClick={toggleVisibility} ref={buttonRef}>Generate</Button>
-        <form ref={formRef} onSubmit={handleSubmit} hidden>
-                <label>
+        <Button onClick={toggleVisibility} ref={buttonRef}>Generate</Button> 
+            <form ref={formRef} onSubmit={handleSubmit} hidden>
+              <DescriptionInput toggleVisibility={toggleVisibility} value={value} setValue={setValue}/>
+                {/* <label>
                     <h2>Input your prompt below:</h2>
                     <textarea style={{width: "60%", height: "100px", fontFamily: "sans-serif"}} id="basic-input"/>
                 </label><br/>
                 <button onClick={() => toggleVisibility(false)}>
                     Cancel
-                </button>
-                <button type="submit">
-                    Submit
-                </button>
+                </button> */}
+              <button type="submit">
+                  Submit
+              </button>
             </form>
         <Dropdown as={ButtonGroup}>
       <Button onClick={handleOpenPreview}>Open Preview</Button>

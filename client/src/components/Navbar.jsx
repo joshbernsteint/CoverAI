@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import logo from "../assets/iconblack.png";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenu] = useState(false);
@@ -27,8 +28,9 @@ const Navbar = () => {
     { key: "1", name: "Home", href: "/home" },
     { key: "2", name: "Profile", href: "/edit-profile" },
     { key: "3", name: "Cover Letters", href: "/cover-letters" },
-    { key: "4", name: "About", href: "/about" },
-    { key: "5", name: "Settings", href: "/settings" },
+    { key: "4", name: "Cover Letter Editor", href: "/text-editor/1" },
+    { key: "5", name: "About", href: "/about" },
+    { key: "6", name: "Settings", href: "/settings" },
   ];
   return (
     <header className="w-full bg-white fixed top-0 left-0 right-0">
@@ -40,13 +42,7 @@ const Navbar = () => {
           </a>
           <ul className="md:flex items-center space-x-12 hidden">
             {navItems.map(({ name, href }) => (
-              <a
-                key={name}
-                href={href}
-                className="block text-base text-secondary hover:text-greyishPurple"
-              >
-                {name}
-              </a>
+              <Link to={href} className="block text-base text-secondary hover:text-greyishPurple" key={name}>{name}</Link>
             ))}
           </ul>
 

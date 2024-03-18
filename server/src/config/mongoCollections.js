@@ -14,4 +14,5 @@ const getCollectionFn = (collection) => {
 };
 
 export const users = getCollectionFn("users");
+export const resumes = getCollectionFn("resumes");
 export const covers = getCollectionFn("covers");
