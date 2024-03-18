@@ -12,6 +12,8 @@ const NavbarComp = () => {
     { key: "4", name: "Cover Letter Editor", href: "/text-editor/1" },
     { key: "5", name: "About", href: "/about" },
     { key: "6", name: "Settings", href: "/settings" },
+    { key: "7", name: "Login", href: "/login" },
+    { key: "8", name: "Sign Up", href: "/sign-up" }, 
   ];
 
   return (
