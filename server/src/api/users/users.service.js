@@ -20,4 +20,4 @@ const addSkills = async (user_id, skills) => {
   return "Skills added successfully.";
 };
 
-export { signUp };
+export { addSkills };

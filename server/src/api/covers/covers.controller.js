@@ -99,22 +99,17 @@ import {
  *           description: Internal server error.
  */
 
-router.route("/genCoverLetter").post(
-  ClerkExpressRequireAuth({
-    authorizedParties: [process.env.CLIENT_URL],
-  }),
-  async (req, res, next) => {
-    try {
-      const user_id = req.auth.sessionClaims.sub;
-      const employer_name = req.body.employer_name;
-      const job_title = req.body.job_title;
-      const response = await genCoverLetter(user_id, employer_name, job_title);
-      return res.status(200).json(response);
-    } catch (err) {
-      next(err);
-    }
+router.route("/genCoverLetter").post(async (req, res, next) => {
+  try {
+    const user_id = "user_2dC6mNNpMcxT5kubchWOsfUs2TB";
+    const employer_name = req.body.employer_name;
+    const job_title = req.body.job_title;
+    const response = await genCoverLetter(user_id, employer_name, job_title);
+    return res.status(200).json(response);
+  } catch (err) {
+    next(err);
   }
-);
+});
 
 router.route("/genBasicLetter").post(async (req, res) => {
   const description = req.body.description;
