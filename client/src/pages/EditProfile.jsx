@@ -14,7 +14,7 @@ import Select from "react-select";
 
 import { useState } from "react";
 
-import { motion as m } from "framer-motion";
+// import { motion as m } from "framer-motion";
 
 export default function EditProfile() {
   const [showForm, setShowForm] = useState(false);
