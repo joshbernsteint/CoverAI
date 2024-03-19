@@ -1,0 +1,21 @@
+{
+  "name": "CoverAI",
+  "description": "AI Assisted Cover letter and resume generation",
+  "version": "1.0",
+  "manifest_version": 3,
+  "action": {
+      "default_popup": "index.html",
+      "default_title": "Cover AI"
+  },
+  "permissions": [
+      "scripting",
+      "tabs",
+      "notifications"
+      ] ,
+  "host_permissions": ["<all_urls>"],
+  "icons": {
+      "16": "iconwhite.png",
+      "48": "iconwhite.png",
+      "128": "iconwhite.png"
+  }
+}
