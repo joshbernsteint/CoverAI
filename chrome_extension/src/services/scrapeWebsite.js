@@ -134,7 +134,6 @@ async function scrapeWebsite(){
           res();
         }));
         const output = await window.chrome.scripting.executeScript({func: scrape, target: {tabId: tab.id}});
-        console.log(output[0].result);
         return output[0].result;
     } catch (error) {
         return {status: "Error", error: error.toString()};

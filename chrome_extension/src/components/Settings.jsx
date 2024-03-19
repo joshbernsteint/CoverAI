@@ -6,7 +6,7 @@ function Settings(props){
         <div>
             <SignedIn>
                 <div>
-                    You are signed in!!! Show the settings here!!
+                    You are signed in! <br/>
                     <SignOutButton>
                             sign me out!
                     </SignOutButton>

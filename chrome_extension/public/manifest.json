@@ -10,7 +10,8 @@
   "permissions": [
       "scripting",
       "tabs",
-      "notifications"
+      "notifications",
+      "downloads"
       ] ,
   "host_permissions": ["<all_urls>"],
   "icons": {
