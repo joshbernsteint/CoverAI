@@ -240,6 +240,9 @@ const createResumeFromJSON = async (resume, id) => {
   }
 
   const {
+    name,
+    email,
+    phone,
     education,
     experience,
     skills,
@@ -256,6 +259,9 @@ const createResumeFromJSON = async (resume, id) => {
     extractedText: "",
     extractedSections: [],
     pdfJSON: {
+      name: name || "",
+      email: email || "",
+      phone: phone || "",
       education: education || {},
       experience: experience || {},
       skills: skills || [],
@@ -301,18 +307,15 @@ const createResumeFromJSON = async (resume, id) => {
     return text;
   };
 
-  let getText = () => {
+  let getText = (resumeData) => {
     let text = "";
-    text += resumeData.pdfJSON.name ? `Name: ${resumeData.pdfJSON.name}\n` : "";
-    text += resumeData.pdfJSON.email ? `Email: ${resumeData.pdfJSON.email}\n` : "";
-    text += resumeData.pdfJSON.phone ? `Phone: ${resumeData.pdfJSON.phone}\n` : "";
 
     text += extractText(resumeData.pdfJSON);
 
     return text;
   };
 
-  resumeData.extractedText = getText();
+  resumeData.extractedText = getText(resumeData);
 
   // Get all the sections from the text
   resumeData.extractedSections = extractAllSections(resumeData.extractedText);

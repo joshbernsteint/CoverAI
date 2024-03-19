@@ -99,22 +99,17 @@ import {
  *           description: Internal server error.
  */
 
-router.route("/genCoverLetter").post(
-  ClerkExpressRequireAuth({
-    authorizedParties: [process.env.CLIENT_URL],
-  }),
-  async (req, res, next) => {
-    try {
-      const user_id = req.auth.sessionClaims.sub;
-      const employer_name = req.body.employer_name;
-      const job_title = req.body.job_title;
-      const response = await genCoverLetter(user_id, employer_name, job_title);
-      return res.status(200).json(response);
-    } catch (err) {
-      next(err);
-    }
+router.route("/genCoverLetter").post(async (req, res, next) => {
+  try {
+    const user_id = "user_2dC6mNNpMcxT5kubchWOsfUs2TB";
+    const employer_name = req.body.employer_name;
+    const job_title = req.body.job_title;
+    const response = await genCoverLetter(user_id, employer_name, job_title);
+    return res.status(200).json(response);
+  } catch (err) {
+    next(err);
   }
-);
+});
 
 router.route("/genBasicLetter").post(async (req, res) => {
   const description = req.body.description;
@@ -321,17 +316,17 @@ router.route("/getAllCoverLetters").get(async (req, res) => {
 /**
  * @swagger
  * paths:
- *   /covers/getCoverLetterById:
+ *   /getCoverLetterById/{id}:
  *     get:
  *       summary: Retrieves a specific cover letter by ID
  *       description: >
- *         This endpoint fetches a specific cover letter using its unique identifier.
+ *         This endpoint fetches a specific cover letter using its unique identifier provided as a path parameter.
  *       operationId: getCoverLetterById
  *       tags:
  *         - Cover Letters
  *       parameters:
- *         - in: query
- *           name: cover_id
+ *         - in: path
+ *           name: id
  *           required: true
  *           schema:
  *             type: string
@@ -345,7 +340,7 @@ router.route("/getAllCoverLetters").get(async (req, res) => {
  *                 type: object
  *                 properties:
  *                   _id:
- *                     type: ObjectId
+ *                     type: string
  *                     description: The unique identifier for the cover letter.
  *                   user_id:
  *                     type: string
@@ -372,9 +367,9 @@ router.route("/getAllCoverLetters").get(async (req, res) => {
  *                     type: array
  *                     items:
  *                       type: string
- *                     description: An array containing the paragraphs of the cover letter, including a greeting, at least three body paragraphs, a closing statement, and a signature.
+ *                     description: The paragraphs of the cover letter, including a greeting, at least three body paragraphs, a closing statement, and a signature.
  *                 example:
- *                   _id: ObjectID('623d6e9d9e2b6f001f2f5c7d')
+ *                   _id: "623d6e9d9e2b6f001f2f5c7d"
  *                   user_id: "user_2dC6mNNpMcxT5kubchWOsfUs2TB"
  *                   date: "2024-03-04"
  *                   first_name: "John"
@@ -396,8 +391,8 @@ router.route("/getAllCoverLetters").get(async (req, res) => {
  *           description: Internal server error.
  */
 
-router.route("/getCoverLetterById").get(async (req, res) => {
-  const cover_id = req.cover_id;
+router.route("/getCoverLetterById/:id").get(async (req, res) => {
+  const cover_id = req.params.id;
   const response = await getCoverLetterById(cover_id);
   return res.status(200).json(response);
 });

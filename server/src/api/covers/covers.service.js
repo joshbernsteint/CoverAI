@@ -11,20 +11,45 @@ const genCoverLetter = async (user_id, employer_name, job_title) => {
   const firstName = user.firstName;
   const lastName = user.lastName;
   const email = user.emailAddresses[0].emailAddress;
+
+  const coversCollection = await covers();
+  const lastThreeCoverLetters = await coversCollection
+    .find({ user_id: user_id })
+    .sort({ date: -1 })
+    .limit(3)
+    .toArray();
+
+  let previousParagraphs = lastThreeCoverLetters
+    .reduce((acc, coverLetter) => {
+      if (coverLetter.paragraphs && coverLetter.paragraphs.length) {
+        const paragraphs = coverLetter.paragraphs.slice(-3);
+        acc.push(...paragraphs);
+      }
+      return acc;
+    }, [])
+    .join(" ");
+
+  // If previousParagraphs is too long, you might need to trim it or use only the most recent set to keep the prompt within character limits for the API
+  previousParagraphs = previousParagraphs.substring(0, 4000); // Example trim if necessary
+  console.log(previousParagraphs);
+
+  const promptContent = `Generate a cover letter for the position of ${job_title} at ${employer_name}, reflecting the tone and style of the applicant's previous letters. Previous content for reference: "${previousParagraphs}". The applicant's name is ${firstName} ${lastName}.`;
+
   const completion = await openai.chat.completions.create({
     messages: [
       {
         role: "system",
         content:
-          "Respond in JSON format with a paragraphs array that contains a greeting, least 3 body paragraphs, and a closing_statement. And lastly I want a signature. It should follow this format: paragraph: [greeting, first_paragraph, second_paragraph, third_paragraph, closing_statement, signature]",
+          "Respond in JSON format filling in this template: paragraphs: [greeting, first_paragraph, second_paragraph, third_paragraph, closing_statement, signature] where paragraphs is an array of strings. Ensure the new cover letter matches the tone of the previous cover letters if they are provided provided. Also make sure to incorporate any information from the users resume or previous cover letters.",
       },
       {
         role: "user",
-        content: `I need a cover letter for ${job_title}. My employer's name is ${employer_name}. My name is ${firstName} ${lastName}`,
+        content: promptContent,
       },
     ],
     model: "gpt-3.5-turbo",
   });
+
   const response = JSON.parse(completion.choices[0].message.content);
   const date = new Date().toISOString().split("T")[0];
   response.date = date;
@@ -32,21 +57,13 @@ const genCoverLetter = async (user_id, employer_name, job_title) => {
   response.last_name = lastName;
   response.email = email;
   response.employer_name = employer_name;
-  const coversCollection = await covers();
+
   const insertInfo = await coversCollection.insertOne({
     user_id,
     ...response,
   });
   if (insertInfo.insertedCount === 0) throw new UnexpectedError();
-  const cover_id = insertInfo.insertedId.toString();
-  const userCollection = await users();
-  const updateResult = await userCollection.updateOne(
-    { _id: user_id },
-    { $push: { covers: cover_id } }
-  );
 
-  if (updateResult.modifiedCount === 0)
-    throw new Error("Failed to update user with cover letter ID.");
   return response;
 };
 

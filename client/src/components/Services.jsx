@@ -11,6 +11,7 @@ const Services = () => {
       description:
         "Don't want to fill out forms? No problem! Just upload your resume and we'll do the rest.",
       image: <AiOutlineFolderView/>,
+      link: "/edit-profile",
     },
     {
       id: 2,
@@ -18,6 +19,7 @@ const Services = () => {
       description:
         "We'll generate a cover letter for you based on your resume and the job description.",
       image: <AiOutlineCopy/>,
+      link: "/cover-letters",
     },
     {
       id: 3,
@@ -25,6 +27,7 @@ const Services = () => {
       description:
         "Tired of writing the same essay questions over and over? We'll help you automate that too.",
       image: <AiOutlineEdit/>,
+      link: "/coming-soon"
     },
   ];
   return (
@@ -41,6 +44,7 @@ const Services = () => {
           <div
             key={service.id}
             className="px-4 py-8 text-center md:w-[300px] mx-auto md:h-80 rounded-md shadow cursor-pointer hover:-translate-y-5 hover:border-b-4 transition-all duration-300 flex items-center justify-center h-full "
+            onClick={() => window.location.replace(service.link)}
           >
             <div>
               <div className="flex justify-center items-center h-20 w-20 bg-primary text-white rounded-full mx-auto">

@@ -5,6 +5,8 @@ import Home from "./pages/Home";
 import EditProfile from "./pages/EditProfile";
 import NoPage from "./pages/NoPage";
 import CoverLetters from "./pages/CoverLetters";
+import Login from "./pages/Login.jsx";
+import LoginClerk from "./pages/LoginClerk.jsx";
 import React, { useState } from "react";
 import TextEditor from "./pages/TextEditor";
 import CLContext from "./CLContext";
@@ -31,6 +33,7 @@ function App() {
             <Route path="/text-editor/:id" element={<TextEditor />} />
             <Route path="*" element={<NoPage />} />
             <Route path="/sign-up" element={<SignUpClerk />} />
+            <Route path="/login" element={<LoginClerk />}/>
           </Routes>
         </BrowserRouter>
       </CLContext.Provider>

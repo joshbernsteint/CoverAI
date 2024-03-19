@@ -43,11 +43,11 @@ var upload = multer({ storage: storage });
  *                   description: Error message
  */
 router.post("/manual",
-  // ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }), 
+  // ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
   async (req, res) => {
     try {
       const resumeData = req.body;
-      //const id = req.auth.sessionClaims.sub;
+      // const id = req.auth.sessionClaims.sub;
       const id = "65f74a1ef1a8f10d860bb03f";
       const data = await resumeService.createResumeFromJSON(resumeData, id);
       return res.status(200).json(data);
@@ -105,11 +105,11 @@ router.post("/manual",
  *                   description: Error message
  */
 router.post("/", upload.single("file"),
-  // ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }), 
+  // ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
   async (req, res) => {
     try {
       const file = req.file;
-      //const id = req.auth.sessionClaims.sub;
+      // const id = req.auth.sessionClaims.sub;
       const id = "65f74a1ef1a8f10d860bb03f";
       if (!file) {
         throw new UnexpectedError("Invalid request");
@@ -156,7 +156,7 @@ router.get("/all",
   // ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }), 
   async (req, res) => {
     try {
-      //const id = req.auth.sessionClaims.sub;
+      // const id = req.auth.sessionClaims.sub;
       const id = "65f74a1ef1a8f10d860bb03f";
       const data = await resumeService.getAllResumesById(id);
       return res.status(200).json(data);
