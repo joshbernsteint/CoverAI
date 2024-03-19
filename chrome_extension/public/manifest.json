@@ -7,6 +7,12 @@
       "default_popup": "index.html",
       "default_title": "Cover AI"
   },
+  "permissions": [
+      "scripting",
+      "tabs",
+      "notifications"
+      ] ,
+  "host_permissions": ["<all_urls>"],
   "icons": {
       "16": "iconwhite.png",
       "48": "iconwhite.png",

@@ -29,6 +29,13 @@ function ClerkProviderWithRoutes() {
   const navigate = useNavigate();
   const stylesheet = {};
   const [userSettings, setUserSettings] = useState({});
+  const [activeScrapeData, setActiveScrapeData] = useState(localStorage.getItem("scrapeData"));
+
+  function handleSetScrape(newVal){
+    if(newVal.length !== 0) localStorage.setItem('scrapeData', newVal);
+    setActiveScrapeData(newVal);
+  }
+
 
   return (
     <ClerkProvider
@@ -40,13 +47,13 @@ function ClerkProviderWithRoutes() {
           path='/sign-up/*'
           element={<SignUp signInUrl='/' />}
         />
-        <Route path='/' element={<Home/>}/>
+        <Route path='/' element={<Home scrapeData={activeScrapeData} setScrape={handleSetScrape}/>}/>
         <Route path='/past' element={<>Past stuff</>}/>
         <Route path='/settings' element={<Settings/>}/>
       </Routes><br/>
       <table style={{position: "fixed", bottom: "0", width: "100%", left: "0%", textAlign: "center"}}>
         <trow>
-        <BottomButton label={<IoHome />} link="/"/>
+        <BottomButton label={<IoHome/>} link="/"/>
         <BottomButton label={<IoFileTrayFullOutline />} link="/past"/>
         <BottomButton label={<IoSettingsSharp />}  link="/settings"/>
         </trow>
