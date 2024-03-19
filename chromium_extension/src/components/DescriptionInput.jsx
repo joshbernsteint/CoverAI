@@ -12,7 +12,7 @@ function DescriptionInput({toggleVisibility, value, setValue}) {
     const [tab] = await window.chrome.tabs.query({active: true, lastFocusedWindow: true});
     const {status, content} = await window.chrome.tabs.sendMessage(tab.id, {action: "scrape"});
     if (status === "Not Found") {
-      //setScrapeError(false);
+      setScrapeError(false);
     } else {
       setValue(content.trim());
     }
@@ -47,7 +47,7 @@ function DescriptionInput({toggleVisibility, value, setValue}) {
       />
       <Button onClick={scrapeJobPosting}>scan webpage</Button>
       <Button onClick={() => toggleVisibility(false)}>cancel</Button>
-      <p hidden={scrapeError}>Error: could not find job description</p>
+      <p hidden={scrapeError}>Sorry, the job posting couldn't be scraped</p>
     </div>
   );
 }

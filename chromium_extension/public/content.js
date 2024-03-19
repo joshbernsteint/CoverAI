@@ -12,7 +12,7 @@ function getTextWithNewlines(elem) {
 }
 
 // scrapes any html that could contain either of these words/phrases
-const textsToFind = ['responsibilities', 'role', 'qualifications', 'skills', 'description', 'duties', 'expect', "what you'll do"];
+const textsToFind = ['responsibilities', 'role', 'qualifications', 'skills', 'description', 'duties', 'expect', "what you'll do", "what you can expect"];
 function findDivsWithText(texts) {
     const htmlTags = 'h1, h2, h3, h4, h5, h6, strong, b, em, i, span, blockquote, pre, figcaption';
     const textElements = document.querySelectorAll(htmlTags);
