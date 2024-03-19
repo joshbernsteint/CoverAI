@@ -27,9 +27,9 @@ const NavbarComp = () => {
       <Navbar.Toggle />
       <Navbar.Collapse>
         {navItems.map(({ name, href }) => (
-          <Navbar.Link key={name} href={href}>
+          <Link key={name} to={href}>
             {name}
-          </Navbar.Link>
+          </Link>
         ))}
       </Navbar.Collapse>
     </Navbar>
