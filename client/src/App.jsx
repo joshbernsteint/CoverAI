@@ -10,6 +10,7 @@ import LoginClerk from "./pages/LoginClerk.jsx";
 import React, { useState } from "react";
 import TextEditor from "./pages/TextEditor";
 import CLContext from "./CLContext";
+import SettingsPage from "./pages/SettingsPage"
 
 function App() {
   const [activeCL, setActiveCL] = useState(
@@ -31,6 +32,7 @@ function App() {
             <Route path="/edit-profile" element={<EditProfile />} />
             <Route path="/cover-letters" element={<CoverLetters />} />
             <Route path="/text-editor/:id" element={<TextEditor />} />
+            <Route path="/settings" element={<SettingsPage/>} />
             <Route path="*" element={<NoPage />} />
             <Route path="/sign-up" element={<SignUpClerk />} />
             <Route path="/login" element={<LoginClerk />}/>
