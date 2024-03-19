@@ -2,7 +2,7 @@ import Router from "express";
 const router = Router();
 import { ClerkExpressRequireAuth } from "@clerk/clerk-sdk-node";
 import {
-  genCoverLetter,
+  genLetter,
   genBasicLetter,
   getCoverLetterById,
   updateCoverLetter,
@@ -11,44 +11,58 @@ import {
 
 /**
  * @swagger
- * paths:
- *   /covers/genCoverLetter:
- *     post:
- *       summary: Generates a custom cover letter
- *       description: >
- *         This endpoint takes employer name and job title from the request body to generate a personalized cover letter for the user.
- *       operationId: genCoverLetter
- *       tags:
- *         - Cover Letters
- *       requestBody:
- *         required: true
+ * /covers/genCoverLetter:
+ *   post:
+ *     summary: Generates a personalized cover letter for a user
+ *     description: >-
+ *       This endpoint accepts details about a job application and, optionally, the user's resume and scraped job data,
+ *       to generate a personalized cover letter. The cover letter is tailored based on the user's previous cover letters,
+ *       educational background, experiences, and the specifics of the job being applied for.
+ *     tags:
+ *       - Cover Letters
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               employer_name:
+ *                 type: string
+ *                 description: The name of the employer.
+ *                 example: 'Acme Corp'
+ *               job_title:
+ *                 type: string
+ *                 description: The title of the job position.
+ *                 example: 'Software Engineer'
+ *               useResume:
+ *                 type: boolean
+ *                 description: Flag indicating whether to use the user's resume data.
+ *                 example: false
+ *               resumeData:
+ *                 type: object
+ *                 description: >-
+ *                   An object containing the user's resume data, including extracted sections and PDF JSON data.
+ *                   This parameter is optional and only used if useResume is true.
+ *               useScraper:
+ *                 type: boolean
+ *                 description: Flag indicating whether to use scraped job data.
+ *                 example: true
+ *               scrapedData:
+ *                 type: string
+ *                 description: >-
+ *                   A string containing scraped data about the job. This parameter is optional and only used if useScraper is true.
+ *                 example: 'Details about the job responsibilities and requirements.'
+ *     responses:
+ *       200:
+ *         description: Cover letter generated successfully.
  *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               required:
- *                 - employer_name
- *                 - job_title
- *               properties:
- *                 employer_name:
- *                   type: string
- *                   description: The name of the employer or the company to which the cover letter is addressed.
- *                 job_title:
- *                   type: string
- *                   description: The title of the job position for which the cover letter is being generated.
- *             example:
- *               employer_name: "Acme Corp"
- *               job_title: "Software Engineer"
- *       responses:
- *         '200':
- *           description: Successfully generated cover letter
- *           content:
  *             application/json:
  *               schema:
  *                 type: object
  *                 properties:
  *                   _id:
- *                     type: ObjectId
+ *                     type: string
  *                     description: The unique identifier for the cover letter.
  *                   user_id:
  *                     type: string
@@ -75,9 +89,9 @@ import {
  *                     type: array
  *                     items:
  *                       type: string
- *                     description: An array containing the paragraphs of the cover letter, including a greeting, at least three body paragraphs, a closing statement, and a signature.
+ *                     description: The updated paragraphs of the cover letter.
  *                 example:
- *                   _id: ObjectID('623d6e9d9e2b6f001f2f5c7d')
+ *                   _id: "623d6e9d9e2b6f001f2f5c7d"
  *                   user_id: "user_2dC6mNNpMcxT5kubchWOsfUs2TB"
  *                   date: "2024-03-04"
  *                   first_name: "John"
@@ -91,20 +105,39 @@ import {
  *                     - "I believe my skills make me a perfect fit for this role..."
  *                     - "Thank you for considering my application."
  *                     - "Sincerely, John Doe"
- *         '400':
- *           description: Bad request. Invalid input or missing fields.
- *         '401':
- *           description: Unauthorized. User is not authenticated.
- *         '500':
- *           description: Internal server error.
+ *       400:
+ *         description: Bad request. Invalid input or missing fields.
+ *       401:
+ *         description: Unauthorized. User is not authenticated.
+ *       404:
+ *         description: Not found. Cover letter with the given ID does not exist.
+ *       500:
+ *         description: Internal server error.
  */
 
 router.route("/genCoverLetter").post(async (req, res, next) => {
   try {
+    // const user_id = req.auth.sessionClaims.sub;
     const user_id = "user_2dC6mNNpMcxT5kubchWOsfUs2TB";
-    const employer_name = req.body.employer_name;
-    const job_title = req.body.job_title;
-    const response = await genCoverLetter(user_id, employer_name, job_title);
+    const {
+      employer_name,
+      job_title,
+      useResume,
+      resumeData,
+      useScraper,
+      scrapedData,
+    } = req.body;
+
+    const response = await genLetter(
+      user_id,
+      employer_name,
+      job_title,
+      useResume,
+      resumeData,
+      useScraper,
+      scrapedData
+    );
+
     return res.status(200).json(response);
   } catch (err) {
     next(err);
@@ -232,7 +265,7 @@ router
 /**
  * @swagger
  * paths:
- *   /getAllCoverLetters:
+ *   /covers/getAllCoverLetters:
  *     get:
  *       summary: Retrieves all cover letters from a user
  *       description: >
@@ -316,7 +349,7 @@ router.route("/getAllCoverLetters").get(async (req, res) => {
 /**
  * @swagger
  * paths:
- *   /getCoverLetterById/{id}:
+ *   /covers/getCoverLetterById/{id}:
  *     get:
  *       summary: Retrieves a specific cover letter by ID
  *       description: >

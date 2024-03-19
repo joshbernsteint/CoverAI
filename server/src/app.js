@@ -6,6 +6,10 @@ import { UnauthorizedError } from "./utils/errors.js";
 import configRoutes from "./api/index.js";
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUI from "swagger-ui-express";
+import * as fs from "node:fs";
+import path from "path";
+import { fileURLToPath } from "url"; // Import fileURLToPath
+const __dirname = path.dirname(fileURLToPath(import.meta.url)); // Define __dirname for ES Modules
 
 dotenv.config();
 
@@ -49,9 +53,16 @@ const swaggerOptions = {
     "./src/api/covers/covers.controller.js",
   ], // Ensure paths are correct
 };
+const css = fs.readFileSync(
+  path.resolve(__dirname, "../node_modules/swagger-ui-dist/swagger-ui.css"),
+  "utf8"
+);
+const options = {
+  customCss: css,
+};
 
 const specs = swaggerJSDoc(swaggerOptions);
-app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
+app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs, options));
 
 configRoutes(app);
 
