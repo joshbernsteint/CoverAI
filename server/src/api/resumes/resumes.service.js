@@ -20,6 +20,9 @@ import * as PDFJS from "pdfjs-dist";
 
 const resumeSchema = z.object({
   // _id: z.string(),
+  name: z.string().optional(),
+  email: z.string().optional(),
+  phone: z.string().optional(),
   education: z.object({
     school: z.string(),
     degree: z.string(),
@@ -250,6 +253,8 @@ const createResumeFromJSON = async (resume, id) => {
   let resumeData = {
     userId: id,
     resumeType: "json",
+    extractedText: "",
+    extractedSections: [],
     pdfJSON: {
       education: education || {},
       experience: experience || {},
@@ -263,6 +268,54 @@ const createResumeFromJSON = async (resume, id) => {
   };
 
   // createPDF(resumeData, "resume.pdf"); // Create PDF from resume data
+
+  let extractText = (pdfJson) => {
+    let text = "";
+    if (Array.isArray(pdfJson)) {
+      pdfJson.forEach((item, index) => {
+        if (typeof item === 'string') {
+          text += item + ', ';
+          if (index === pdfJson.length - 1) {
+            text = text.slice(0, -2) + '\n';
+          }
+        } else {
+          text += extractText(item);
+          if (index === pdfJson.length - 1) {
+            text = text.slice(0, -2) + '\n';
+          }
+        }
+      });
+    } else if (typeof pdfJson === 'object') {
+      for (const [key, value] of Object.entries(pdfJson)) {
+        if (Array.isArray(value)) {
+          text += key + '\n';
+          text += extractText(value);
+        } else if (typeof value === 'object') {
+          text += key + '\n';
+          text += extractText(value);
+        } else {
+          text += value + ', ';
+        }
+      }
+    }
+    return text;
+  };
+
+  let getText = () => {
+    let text = "";
+    text += resumeData.pdfJSON.name ? `Name: ${resumeData.pdfJSON.name}\n` : "";
+    text += resumeData.pdfJSON.email ? `Email: ${resumeData.pdfJSON.email}\n` : "";
+    text += resumeData.pdfJSON.phone ? `Phone: ${resumeData.pdfJSON.phone}\n` : "";
+
+    text += extractText(resumeData.pdfJSON);
+
+    return text;
+  };
+
+  resumeData.extractedText = getText();
+
+  // Get all the sections from the text
+  resumeData.extractedSections = extractAllSections(resumeData.extractedText);
 
   const resumeCollection = await resumes();
   if (!resumeCollection) {
@@ -381,7 +434,7 @@ function parseEducation(extracted) {
   // Define regex patterns for various fields
   const universityPattern = /(.+)\s*?(\n|$)/;
   const locationPattern = /\n(.+?)\n/;
-  const degreePattern = /(?:Bachelor|Master)\s+(?:in|of)\s+(.*?)(?:\n)/;
+  let degreePattern = /(?:Bachelor|Master)\s+(?:in|of)\s+(.*?)(?:\n)/;
   const graduationPattern = /(?:Expected|Graduated)\s*(.*?)\s*?(\n|$)/;
   const gpaPattern = /Cumulative GPA: ([\d.]+)\/([\d.]+);\s*(.*?)\s*?(\n|$)/;
   const courseworkPattern = /Relevant Coursework\s*:\s*([\s\S]*)/;
@@ -493,7 +546,10 @@ const createResumeFromPDF = async (resumepdf, id) => {
     throw new UnexpectedError("Error getting resume collection");
   }
 
-  const modifiedText = pages[0].text.replace(/ {2}(?! )/g, '\n');
+  let modifiedText = pages[0].text.replace(/ {2}(?! )/g, '\n');
+
+  // remove null character from text
+  modifiedText = modifiedText.replace(/\0/g, '');
 
   let resumeData = {
     userId: id,
