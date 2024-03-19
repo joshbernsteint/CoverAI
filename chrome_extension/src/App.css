@@ -3,6 +3,8 @@
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
 
 .logo {
@@ -118,6 +120,7 @@
   border-radius: 10px;
   margin: .5rem 0;
   cursor: pointer;
+  font-size: 14pt;
 }
 
 .past_cl:hover{

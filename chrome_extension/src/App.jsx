@@ -15,7 +15,7 @@ import PastLetters from './components/PastLetters';
 function BottomButton({link, label, ...props}){
   const style = props.styleSheet || {};
   return (
-    <td style={{width: "90px", textAlign: "center", fontSize: "larger", ...style}}>
+    <td style={{width: "120px", textAlign: "center", fontSize: "24pt", ...style}}>
         <Link to={link} props={{...props}}>
           {label || "Lorem Ipsum"}
         </Link>

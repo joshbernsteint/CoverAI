@@ -13,8 +13,8 @@ function PastLetters(props){
     function Letter({id, date, employer}){
         return (
             <div className='past_cl' onClick={() => downloadById(id)}>
-                <p>Employer: {employer}</p>
-                <p>Date: {date}</p>
+                <span>{employer}</span><br/>
+                <span>{date}</span>
             </div>
         );
     }

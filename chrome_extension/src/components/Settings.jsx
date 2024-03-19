@@ -8,7 +8,7 @@ function Settings(props){
                 <div>
                     You are signed in! <br/>
                     <SignOutButton>
-                            sign me out!
+                      <span style={{fontSize: "14pt"}}>Log out</span>
                     </SignOutButton>
                 </div>
               </SignedIn>

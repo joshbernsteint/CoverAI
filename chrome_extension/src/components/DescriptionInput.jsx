@@ -3,9 +3,18 @@ import { FormControl, Button, Spinner } from 'react-bootstrap';
 import axios from 'axios';
 
 function DescriptionInput({ value, setValue, hideThis, setCL,...props}) {
+  function getFromStorage(key, defaultValue, transformFn=JSON.parse){
+    const item = localStorage.getItem(key);
+    if(item)
+      return transformFn(item);
+    else 
+      return defaultValue;
+  }
+
+
   // State to store the textarea height
   const [scrapeError, setScrapeError] = useState(value.raw.length === 0);
-  const [textData, setTextData] = useState(value.raw.length === 0 ? JSON.parse(localStorage.getItem('scrapeData')) : value );
+  const [textData, setTextData] = useState(value.raw.length === 0 ? getFromStorage("scrapeData", {raw: "", employer: "", jobName: ""}) : value );
   const [loadingAPI, setLoading] = useState(false);
 
 
@@ -22,9 +31,11 @@ function DescriptionInput({ value, setValue, hideThis, setCL,...props}) {
       useScraper: true,
       scrapedData: textData.raw,
     });
-    await chrome.downloads.download({method: "GET", url: "http://localhost:3000/covers/makeFileFromLast", saveAs: true});
-    setCL(data);
-    setValue(textData); // Needs to be the last thing, will cause a complete re-render
+    await chrome.downloads.download({method: "GET", url: "http://localhost:3000/covers/makeFileFromLast", saveAs: true}, () => {
+      setCL(data);
+      setValue(textData); // Needs to be the last thing, will cause a complete re-render
+    });
+
   }
 
   const labelStyle = {marginRight: ".5rem", fontSize: "12pt", minWidth: "120px", display: "inline-block"};
@@ -41,13 +52,13 @@ function DescriptionInput({ value, setValue, hideThis, setCL,...props}) {
 
   return (<div>
     {
-      scrapeError ? (
+      scrapeError && (getFromStorage("scrapeData", {raw: ""}).raw.length !== 0) ? (
         <div>
             <h3 className='error'>No job data can be found.</h3>
             <button onClick={() => setScrapeError(false)} style={{fontSize: "14pt", marginRight: ".5rem"}}>Use previous data</button><button style={{fontSize: "14pt"}} onClick={handleCloseError}>Custom Input</button>
         </div>
       ) : (
-        <div>
+        <div style={{margin: "0"}}>
           <label>
             <span style={labelStyle}>Employer name:</span>
           <FormControl
