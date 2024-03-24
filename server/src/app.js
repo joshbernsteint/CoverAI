@@ -6,6 +6,7 @@ import { UnauthorizedError } from "./utils/errors.js";
 import configRoutes from "./api/index.js";
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUI from "swagger-ui-express";
+import yaml from "js-yaml";
 import * as fs from "node:fs";
 import path from "path";
 import { fileURLToPath } from "url"; // Import fileURLToPath
@@ -24,6 +25,9 @@ app.get("/", async function (req, res) {
   });
 });
 
+const swaggerDocument = yaml.load(
+  fs.readFileSync(path.join(__dirname, "./swagger.yaml"), "utf8")
+);
 // Swagger Configuration
 const swaggerOptions = {
   definition: {
@@ -35,7 +39,7 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: "https://cover-ai-server.vercel.app/",
+        url: "https://cover-ai-server-three.vercel.app/",
       },
     ],
     components: {
@@ -48,21 +52,38 @@ const swaggerOptions = {
       },
       schemas: {
         ResumeData: {
-          type: 'object',
+          type: "object",
           properties: {
-            userId: { type: 'string', description: 'The ID of the user' },
-            resumeType: { type: 'string', description: 'The type of the resume (e.g., "pdf")' },
-            extractedText: { type: 'string', description: 'The extracted text from the resume' },
-            extractedSections: { type: 'array', items: { type: 'string' }, description: 'Array of extracted sections from the resume' },
+            userId: { type: "string", description: "The ID of the user" },
+            resumeType: {
+              type: "string",
+              description: 'The type of the resume (e.g., "pdf")',
+            },
+            extractedText: {
+              type: "string",
+              description: "The extracted text from the resume",
+            },
+            extractedSections: {
+              type: "array",
+              items: { type: "string" },
+              description: "Array of extracted sections from the resume",
+            },
             pdfJSON: {
-              type: 'object',
+              type: "object",
               properties: {
-                name: { type: 'string', description: 'The name of the user' },
-                email: { type: 'string', format: 'email', description: 'The email address of the user' },
-                phone: { type: 'string', description: 'The phone number of the user' },
+                name: { type: "string", description: "The name of the user" },
+                email: {
+                  type: "string",
+                  format: "email",
+                  description: "The email address of the user",
+                },
+                phone: {
+                  type: "string",
+                  description: "The phone number of the user",
+                },
               },
               additionalProperties: true, // Allow dynamic values
-              description: 'Additional JSON data related to the PDF',
+              description: "Additional JSON data related to the PDF",
             },
           },
         },
@@ -84,7 +105,11 @@ const options = {
 };
 
 const specs = swaggerJSDoc(swaggerOptions);
-app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs, options));
+app.use(
+  "/api-docs",
+  swaggerUI.serve,
+  swaggerUI.setup(swaggerDocument, options)
+);
 
 configRoutes(app);
 
