@@ -34,13 +34,13 @@ router
           status: 400,
         });
       }
-      console.log("After svix");
+
       // Initiate Svix
       const wh = new Webhook(WEBHOOK_SECRET);
-
+      console.log("Webhook: ", wh);
       let evt;
 
-      // Attempt to verify the incoming webhook
+      // Attempt to verify the incoming webhooks
       // If successful, the payload will be available from 'evt'
       // If the verification fails, error out and  return error code
       try {
@@ -62,11 +62,12 @@ router
       const { id } = evt.data;
       const eventType = evt.type;
 
-      //   console.log(`Webhook with an ID of ${id} and type of ${eventType}`);
-      //   // Console log the full payload to view
-      //   console.log("Webhook body:", evt.data);
+      console.log(`Webhook with an ID of ${id} and type of ${eventType}`);
+      // Console log the full payload to view
+      console.log("Webhook body:", evt.data);
 
       if (eventType === "user.created") {
+        console.log("Trying to add user to database");
         const userCollection = await users();
         const insertInfo = await userCollection.insertOne({
           _id: id,
