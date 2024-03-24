@@ -25,7 +25,7 @@ export default function SettingForm(props) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/settings', {
+        const response = await axios.get('http://localhost:3000/users/settings', {
           headers: {
             Authorization: `Bearer ${authToken}` // Include authToken in the request headers
           }
@@ -55,13 +55,13 @@ export default function SettingForm(props) {
     console.log(formData);
     try {
       //await axios.post('http://localhost:3000/settings', formData);
-      await axios.post('http://localhost:3000/settings', formData, {
+      await axios.post('http://localhost:3000/users/settings', formData, {
         headers: {
           Authorization: `Bearer ${authToken}` // Include authToken in the request headers
         }
       });
       // refetch data to make sure updated 
-      const response = await axios.get('http://localhost:3000/settings', {
+      const response = await axios.get('http://localhost:3000/users/settings', {
         headers: {
           Authorization: `Bearer ${authToken}` // Include authToken in the request headers
         }
