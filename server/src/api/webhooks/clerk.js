@@ -66,8 +66,9 @@ router
       try {
         if (eventType === "user.created") {
           console.log("Trying to add user to database");
-
           const userCollection = await users();
+          console.log("Got user collection");
+          console.log("evt", evt.data);
           const insertInfo = await userCollection.insertOne({
             _id: id,
             first_name: evt.data.first_name,
@@ -81,6 +82,7 @@ router
               save_cl: false,
             },
           });
+          console.log("Inserted User");
           if (insertInfo.insertedCount === 0)
             return res.status(500).json({
               success: false,
