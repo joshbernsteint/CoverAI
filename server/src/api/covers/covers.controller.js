@@ -9,8 +9,8 @@ import {
   getAllCoverLettersFromUser,
 } from "./covers.service.js";
 
-router.route("test").get((req, res) => {
-  res.send("Hello World");
+router.route("/test").get((req, res) => {
+  res.json({ message: "Hello, world!" });
 });
 
 /**
