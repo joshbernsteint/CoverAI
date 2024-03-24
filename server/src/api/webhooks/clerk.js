@@ -66,6 +66,7 @@ router
       try {
         if (eventType === "user.created") {
           console.log("Trying to add user to database");
+          console.log("mongo ip", process.env.DATABASE_URL);
           const userCollection = await users();
           console.log("Got user collection");
           console.log("evt", evt.data);
