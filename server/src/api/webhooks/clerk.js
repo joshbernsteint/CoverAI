@@ -10,7 +10,6 @@ router
   .post(
     bodyParser.raw({ type: "application/json" }),
     async function (req, res) {
-      console.log("In webhook");
       // Check if the 'Signing Secret' from the Clerk Dashboard was correctly provided
       const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET;
       if (!WEBHOOK_SECRET) {
@@ -37,7 +36,6 @@ router
 
       // Initiate Svix
       const wh = new Webhook(WEBHOOK_SECRET);
-      console.log("Webhook: ", wh);
       let evt;
 
       // Attempt to verify the incoming webhooks
@@ -62,50 +60,58 @@ router
       const { id } = evt.data;
       const eventType = evt.type;
 
-      console.log(`Webhook with an ID of ${id} and type of ${eventType}`);
-      // Console log the full payload to view
-      console.log("Webhook body:", evt.data);
+      // console.log(`Webhook with an ID of ${id} and type of ${eventType}`);
+      // // Console log the full payload to view
+      // console.log("Webhook body:", evt.data);
+      try {
+        if (eventType === "user.created") {
+          console.log("Trying to add user to database");
 
-      if (eventType === "user.created") {
-        console.log("Trying to add user to database");
-        const userCollection = await users();
-        const insertInfo = await userCollection.insertOne({
-          _id: id,
-          first_name: evt.data.first_name,
-          last_name: evt.data.last_name,
-          skills: [],
-          settings: {
-            dark_mode: false,
-            suggest_cl: false,
-            auto_download_cl: false,
-            save_resumes: false,
-            save_cl: false,
-          },
-        });
-        if (insertInfo.insertedCount === 0)
-          return res.status(500).json({
-            success: false,
-            message: "User not added to database",
+          const userCollection = await users();
+          const insertInfo = await userCollection.insertOne({
+            _id: id,
+            first_name: evt.data.first_name,
+            last_name: evt.data.last_name,
+            skills: [],
+            settings: {
+              dark_mode: false,
+              suggest_cl: false,
+              auto_download_cl: false,
+              save_resumes: false,
+              save_cl: false,
+            },
           });
-        return res.status(200).json({
-          success: true,
-          message: "User added to database successfully",
-        });
-      }
+          if (insertInfo.insertedCount === 0)
+            return res.status(500).json({
+              success: false,
+              message: "User not added to database",
+            });
+          return res.status(200).json({
+            success: true,
+            message: "User added to database successfully",
+          });
+        }
 
-      if (eventType === "user.deleted") {
-        const userCollection = await users();
-        const deleteInfo = await userCollection.deleteOne({
-          _id: id,
-        });
-        if (deleteInfo.deletedCount === 0)
-          return res.status(404).json({
-            success: false,
-            message: "User not found in database",
+        if (eventType === "user.deleted") {
+          const userCollection = await users();
+          const deleteInfo = await userCollection.deleteOne({
+            _id: id,
           });
-        return res.status(200).json({
-          success: true,
-          message: "User deleted from database successfully",
+          if (deleteInfo.deletedCount === 0)
+            return res.status(404).json({
+              success: false,
+              message: "User not found in database",
+            });
+          return res.status(200).json({
+            success: true,
+            message: "User deleted from database successfully",
+          });
+        }
+      } catch (err) {
+        console.log("Error: ", err);
+        return res.status(500).json({
+          success: false,
+          message: "Internal server error",
         });
       }
 
