@@ -107,7 +107,6 @@ export default function EditProfile() {
 
   return (
     <>
-      <Navbar />
       <div className="flex justify-center">
         <div className="p-12 w-full">
           <div className="flex justify-center text-3xl font-semibold mb-4">
