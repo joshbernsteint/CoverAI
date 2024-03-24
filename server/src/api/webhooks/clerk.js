@@ -70,7 +70,13 @@ router
           first_name: evt.data.first_name,
           last_name: evt.data.last_name,
           skills: [],
-          // Settings
+          settings: {
+            dark_mode: false,
+            suggest_cl: false,
+            auto_download_cl: false,
+            save_resumes: false,
+            save_cl: false,
+          },
         });
         if (insertInfo.insertedCount === 0)
           return res.status(500).json({

@@ -92,7 +92,7 @@ app.use((err, req, res, next) => {
   // --> This handles auth errors
   // --> Maybe move this to a middleware file with function below
   if (err.message === "Unauthenticated") throw new UnauthorizedError();
-  next();
+  next(err);
 });
 
 app.use(function (err, req, res, next) {
