@@ -9,6 +9,10 @@ import {
   getAllCoverLettersFromUser,
 } from "./covers.service.js";
 
+router.route("test").get((req, res) => {
+  res.send("Hello World");
+});
+
 /**
  * @swagger
  * components:
