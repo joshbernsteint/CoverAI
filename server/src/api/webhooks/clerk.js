@@ -65,6 +65,7 @@ router
       // console.log("Webhook body:", evt.data);
       try {
         if (eventType === "user.created") {
+          const userCollection = await users();
           const insertInfo = await userCollection.insertOne({
             _id: id,
             first_name: evt.data.first_name,
