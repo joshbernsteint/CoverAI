@@ -1,15 +1,12 @@
 import { z } from "zod";
 import { ObjectId } from "mongodb";
-import { users, resumes } from "../../config/mongoCollections.js";
+import OpenAI from "openai";
+import { resumes } from "../../config/mongoCollections.js";
 import dotenv from "dotenv";
 import {
-  ExpressError,
   BadRequestError,
-  UnauthorizedError,
-  ForbiddenError,
   NotFoundError,
   UnprocessableEntityError,
-  InvalidTokenError,
   UnexpectedError,
 } from "../../utils/errors.js";
 dotenv.config();
@@ -17,6 +14,8 @@ dotenv.config();
 import PDFDocument from "pdfkit";
 import * as fs from "fs";
 import * as PDFJS from "pdfjs-dist";
+
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 const resumeSchema = z.object({
   // _id: z.string(),
@@ -487,6 +486,11 @@ function parseEducation(extracted) {
     } else if (degreeMatch[1].includes(":")) {
       major = degreeMatch[1].split(":")[1].trim();
       degreeMatch[0] = degreeMatch[0].split(":")[0].trim();
+    } else if (degreeMatch[1].includes(" of ")) {
+      major = degreeMatch[1].split(" of ")[1].trim();
+      degreeMatch[0] = degreeMatch[0].split(" of ")[0].trim();
+    } else {
+      major = degreeMatch[1].trim();
     }
   }
 
@@ -501,8 +505,8 @@ function parseEducation(extracted) {
     scale: gpaMatch
       ? !isNaN(gpaMatch[2].trim())
         ? gpaMatch[2].trim()
-        : ""
-      : "",
+        : "4.0"
+      : "4.0",
     awards: gpaMatch ? gpaMatch[3].trim() : "",
     courses: courseworkMatch ? courseworkMatch[1].trim() : "",
   };
@@ -518,12 +522,9 @@ function parseEducation(extracted) {
 }
 
 function parseExperiance(extracted) {
-  // Split the extracted information by job entries
-  const jobEntries = extracted.split("\n");
+  const experiences = [];
 
-  // console.log(jobEntries);
-
-  return {};
+  return experiences;
 }
 
 /**
