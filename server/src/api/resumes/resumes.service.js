@@ -571,11 +571,6 @@ const createResumeFromPDF = async (resumepdf, id) => {
     pages = pages.data;
   }
 
-  const resumeCollection = await resumes();
-  if (!resumeCollection) {
-    throw new UnexpectedError("Error getting resume collection");
-  }
-
   let modifiedText = pages[0].text.replace(/ {2}(?! )/g, "\n");
 
   // remove null character from text
@@ -606,12 +601,17 @@ const createResumeFromPDF = async (resumepdf, id) => {
     }
   }
 
-  // const insertInfo = await resumeCollection.insertOne(resumeData);
-  // if (insertInfo.insertedCount === 0) {
-  //   throw new UnexpectedError("Error inserting resume");
-  // }
+  const resumeCollection = await resumes();
+  if (!resumeCollection) {
+    throw new UnexpectedError("Error getting resume collection");
+  }
 
-  // resumeData._id = insertInfo.insertedId.toString();
+  const insertInfo = await resumeCollection.insertOne(resumeData);
+  if (insertInfo.insertedCount === 0) {
+    throw new UnexpectedError("Error inserting resume");
+  }
+
+  resumeData._id = insertInfo.insertedId.toString();
 
   return resumeData;
 };

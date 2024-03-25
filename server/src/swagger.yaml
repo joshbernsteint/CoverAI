@@ -27,7 +27,17 @@ components:
         extractedSections:
           type: array
           items:
-            type: string
+            type: object
+            properties:
+              name:
+                type: string
+                description: The name of the section
+              content:
+                type: string
+                description: The extracted name from the resume
+              extracted:
+                type: string
+                description: The extracted text from the section
           description: Array of extracted sections from the resume
         pdfJSON:
           type: object
