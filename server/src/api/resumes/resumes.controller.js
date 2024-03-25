@@ -63,7 +63,7 @@ router.get(
 router
   .route("/:id")
   .get(
-    // ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
+    ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
     async (req, res) => {
       try {
         const id = req.params.id;
@@ -74,29 +74,31 @@ router
       }
     }
   )
-  .put(upload.single("file"), async (req, res) => {
-    try {
-      const id = req.params.id;
-      const file = req.file;
-      const resumeData = req.body;
-      if (file) {
-        const data = await resumeService.updateResumeById(id, file, "pdf");
+  .put(
+    ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }), upload.single("file"), async (req, res) => {
+      try {
+        const id = req.params.id;
+        const file = req.file;
+        const resumeData = req.body;
+        if (file) {
+          const data = await resumeService.updateResumeById(id, file, "pdf");
+          return res.status(200).json(data);
+        }
+        const data = await resumeService.updateResumeById(id, resumeData, "json");
         return res.status(200).json(data);
+      } catch (error) {
+        return res.status(error.status || 500).json({ message: error.message });
       }
-      const data = await resumeService.updateResumeById(id, resumeData, "json");
-      return res.status(200).json(data);
-    } catch (error) {
-      return res.status(error.status || 500).json({ message: error.message });
-    }
-  })
-  .delete(async (req, res) => {
-    try {
-      const id = req.params.id;
-      const data = await resumeService.deleteResumeById(id);
-      return res.status(200).json(data);
-    } catch (error) {
-      return res.status(error.status || 500).json({ message: error.message });
-    }
-  });
+    })
+  .delete(
+    ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }), async (req, res) => {
+      try {
+        const id = req.params.id;
+        const data = await resumeService.deleteResumeById(id);
+        return res.status(200).json(data);
+      } catch (error) {
+        return res.status(error.status || 500).json({ message: error.message });
+      }
+    });
 
 export default router;
