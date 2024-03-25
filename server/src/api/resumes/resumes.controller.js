@@ -60,44 +60,43 @@ router.get(
   }
 );
 
-router.get(
-  "/:id",
-  // ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
-  async (req, res) => {
+router
+  .route("/:id")
+  .get(
+    // ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
+    async (req, res) => {
+      try {
+        const id = req.params.id;
+        const data = await resumeService.getResumeById(id);
+        return res.status(200).json(data);
+      } catch (error) {
+        return res.status(error.status || 500).json({ message: error.message });
+      }
+    }
+  )
+  .put(upload.single("file"), async (req, res) => {
     try {
       const id = req.params.id;
-      const data = await resumeService.getResumeById(id);
+      const file = req.file;
+      const resumeData = req.body;
+      if (file) {
+        const data = await resumeService.updateResumeById(id, file, "pdf");
+        return res.status(200).json(data);
+      }
+      const data = await resumeService.updateResumeById(id, resumeData, "json");
       return res.status(200).json(data);
     } catch (error) {
       return res.status(error.status || 500).json({ message: error.message });
     }
-  }
-);
-
-router.put("/:id", upload.single("file"), async (req, res) => {
-  try {
-    const id = req.params.id;
-    const file = req.file;
-    const resumeData = req.body;
-    if (file) {
-      const data = await resumeService.updateResumeById(id, file, "pdf");
+  })
+  .delete(async (req, res) => {
+    try {
+      const id = req.params.id;
+      const data = await resumeService.deleteResumeById(id);
       return res.status(200).json(data);
+    } catch (error) {
+      return res.status(error.status || 500).json({ message: error.message });
     }
-    const data = await resumeService.updateResumeById(id, resumeData, "json");
-    return res.status(200).json(data);
-  } catch (error) {
-    return res.status(error.status || 500).json({ message: error.message });
-  }
-});
-
-router.delete("/:id", async (req, res) => {
-  try {
-    const id = req.params.id;
-    const data = await resumeService.deleteResumeById(id);
-    return res.status(200).json(data);
-  } catch (error) {
-    return res.status(error.status || 500).json({ message: error.message });
-  }
-});
+  });
 
 export default router;
