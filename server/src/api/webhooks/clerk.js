@@ -65,11 +65,6 @@ router
       // console.log("Webhook body:", evt.data);
       try {
         if (eventType === "user.created") {
-          console.log("Trying to add user to database");
-          console.log("mongo ip", process.env.DATABASE_URL);
-          const userCollection = await users();
-          console.log("Got user collection");
-          console.log("evt", evt.data);
           const insertInfo = await userCollection.insertOne({
             _id: id,
             first_name: evt.data.first_name,
@@ -83,7 +78,6 @@ router
               save_cl: false,
             },
           });
-          console.log("Inserted User");
           if (insertInfo.insertedCount === 0)
             return res.status(500).json({
               success: false,
@@ -96,6 +90,7 @@ router
         }
 
         if (eventType === "user.deleted") {
+          console.warn("Trying to delete user from database");
           const userCollection = await users();
           const deleteInfo = await userCollection.deleteOne({
             _id: id,

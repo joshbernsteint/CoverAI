@@ -1,4 +1,4 @@
 export const mongoConfig = {
-  serverUrl: process.env.DATABASE_URL,
+  serverUrl: process.env.MONGODB_URI,
   database: "CoverAI",
 };
