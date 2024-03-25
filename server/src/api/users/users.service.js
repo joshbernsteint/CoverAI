@@ -48,8 +48,6 @@ const resetSettings = async (user_id) => {
           dark_mode: false,
           suggest_cl: false,
           auto_download_cl: false,
-          save_resumes: false,
-          save_cl: false,
         },
       },
     }
