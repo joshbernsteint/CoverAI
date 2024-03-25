@@ -694,7 +694,14 @@ paths:
                 $ref: "#/components/schemas/ResumeData"
         "400":
           description: Bad request
-          content: applic
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message
     delete:
       summary: Delete a resume by ID
       parameters:
