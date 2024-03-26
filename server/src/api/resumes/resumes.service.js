@@ -1,15 +1,12 @@
 import { z } from "zod";
 import { ObjectId } from "mongodb";
-import { users, resumes } from "../../config/mongoCollections.js";
+import OpenAI from "openai";
+import { resumes } from "../../config/mongoCollections.js";
 import dotenv from "dotenv";
 import {
-  ExpressError,
   BadRequestError,
-  UnauthorizedError,
-  ForbiddenError,
   NotFoundError,
   UnprocessableEntityError,
-  InvalidTokenError,
   UnexpectedError,
 } from "../../utils/errors.js";
 dotenv.config();
@@ -18,83 +15,105 @@ import PDFDocument from "pdfkit";
 import * as fs from "fs";
 import * as PDFJS from "pdfjs-dist";
 
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
 const resumeSchema = z.object({
   // _id: z.string(),
   name: z.string().optional(),
   email: z.string().optional(),
   phone: z.string().optional(),
-  education: z.object({
-    school: z.string(),
-    degree: z.string(),
-    fieldOfStudy: z.string(),
-    gpa: z.string(),
-    scale: z.string(),
-    awards: z.string().optional(),
-    activities: z.string().optional(),
-    from: z.object({
-      month: z.string(),
-      year: z.string(),
-    }).optional(),
-    to: z.object({
-      month: z.string(),
-      year: z.string(),
-    }),
-    description: z.string().optional(),
-    courses: z.string().optional(),
-  }).optional(),
-  experience: z.array(
-    z.object({
-      title: z.string(),
-      company: z.string(),
-      location: z.string(),
-      from: z.object({
-        month: z.string(),
-        year: z.string(),
-      }),
+  education: z
+    .object({
+      school: z.string(),
+      degree: z.string(),
+      fieldOfStudy: z.string(),
+      gpa: z.string(),
+      scale: z.string(),
+      awards: z.string().optional(),
+      activities: z.string().optional(),
+      from: z
+        .object({
+          month: z.string(),
+          year: z.string(),
+        })
+        .optional(),
       to: z.object({
         month: z.string(),
         year: z.string(),
-      }).or(z.string()),
-      description: z.string(),
-    }).optional()
+      }),
+      description: z.string().optional(),
+      courses: z.string().optional(),
+    })
+    .optional(),
+  experience: z.array(
+    z
+      .object({
+        title: z.string(),
+        company: z.string(),
+        location: z.string(),
+        from: z.object({
+          month: z.string(),
+          year: z.string(),
+        }),
+        to: z
+          .object({
+            month: z.string(),
+            year: z.string(),
+          })
+          .or(z.string()),
+        description: z.string(),
+      })
+      .optional()
   ),
   skills: z.array(
-    z.object({
-      category: z.string(),
-      values: z.array(z.string()),
-    }).or(z.array(z.string())).optional()
+    z
+      .object({
+        category: z.string(),
+        values: z.array(z.string()),
+      })
+      .or(z.array(z.string()))
+      .optional()
   ),
   projects: z.array(
     z.object({
       title: z.string(),
       description: z.string(),
       link: z.string().optional(),
-      from: z.object({
-        month: z.string(),
-        year: z.string(),
-      }).optional(),
-      to: z.object({
-        month: z.string(),
-        year: z.string(),
-      }).or(z.string()).optional(),
+      from: z
+        .object({
+          month: z.string(),
+          year: z.string(),
+        })
+        .optional(),
+      to: z
+        .object({
+          month: z.string(),
+          year: z.string(),
+        })
+        .or(z.string())
+        .optional(),
     })
   ),
   certifications: z.array(z.string()).optional(),
   awards: z.array(z.string()).optional(),
-  publications: z.array(
-    z.object({
-      title: z.string(),
-      publisher: z.string(),
-      date: z.string(),
-      description: z.string(),
-    })
-  ).optional(),
-  languages: z.array(
-    z.object({
-      language: z.string(),
-      level: z.string().optional(),
-    })
-  ).optional(),
+  publications: z
+    .array(
+      z.object({
+        title: z.string(),
+        publisher: z.string(),
+        date: z.string(),
+        description: z.string(),
+      })
+    )
+    .optional(),
+  languages: z
+    .array(
+      z.object({
+        language: z.string(),
+        level: z.string().optional(),
+      })
+    )
+    .optional(),
 });
 
 const createPDF = async (resume, pdfname) => {
@@ -279,28 +298,28 @@ const createResumeFromJSON = async (resume, id) => {
     let text = "";
     if (Array.isArray(pdfJson)) {
       pdfJson.forEach((item, index) => {
-        if (typeof item === 'string') {
-          text += item + ', ';
+        if (typeof item === "string") {
+          text += item + ", ";
           if (index === pdfJson.length - 1) {
-            text = text.slice(0, -2) + '\n';
+            text = text.slice(0, -2) + "\n";
           }
         } else {
           text += extractText(item);
           if (index === pdfJson.length - 1) {
-            text = text.slice(0, -2) + '\n';
+            text = text.slice(0, -2) + "\n";
           }
         }
       });
-    } else if (typeof pdfJson === 'object') {
+    } else if (typeof pdfJson === "object") {
       for (const [key, value] of Object.entries(pdfJson)) {
         if (Array.isArray(value)) {
-          text += key + '\n';
+          text += key + "\n";
           text += extractText(value);
-        } else if (typeof value === 'object') {
-          text += key + '\n';
+        } else if (typeof value === "object") {
+          text += key + "\n";
           text += extractText(value);
         } else {
-          text += value + ', ';
+          text += value + ", ";
         }
       }
     }
@@ -359,19 +378,19 @@ function extractSection(text, regex) {
 function extractAllSections(text) {
   const sectionStartPatterns = [
     {
-      name: 'Education',
+      name: "Education",
       pattern: /^education/i,
     },
     {
-      name: 'Experience',
+      name: "Experience",
       pattern: /^experience|history/i,
     },
     {
-      name: 'Projects',
+      name: "Projects",
       pattern: /^projects/i,
     },
     {
-      name: 'Skills or Extracurriculars',
+      name: "Skills or Extracurriculars",
       pattern: /^skills|extracurriculars/i,
     },
     // {
@@ -379,19 +398,19 @@ function extractAllSections(text) {
     //   pattern: /^([A-Z]\s?)+[,.]?(\|)?[A-Z].*$/i,
     // },
     {
-      name: 'Summary or Objective',
+      name: "Summary or Objective",
       pattern: /^summary|objective/i,
     },
     {
-      name: 'Certifications',
+      name: "Certifications",
       pattern: /^certifications/i,
     },
     {
-      name: 'Awards or Honors',
+      name: "Awards or Honors",
       pattern: /^awards|honors/i,
     },
     {
-      name: 'Publications',
+      name: "Publications",
       pattern: /^publications/i,
     },
     // {
@@ -406,7 +425,7 @@ function extractAllSections(text) {
 
   const sections = [];
 
-  text.split('\n').forEach((line) => {
+  text.split("\n").forEach((line) => {
     const sectionStartPattern = sectionStartPatterns.find((pattern) =>
       line.toLowerCase().match(pattern.pattern)
     );
@@ -437,9 +456,11 @@ function parseEducation(extracted) {
   // Define regex patterns for various fields
   const universityPattern = /(.+)\s*?(\n|$)/;
   const locationPattern = /\n(.+?)\n/;
-  let degreePattern = /(?:Bachelor|Master)\s+(?:in|of)\s+(.*?)(?:\n)/;
+  let degreePattern =
+    /(?:Bachelor|Master|Bachelors|Masters)\s+(?:in|of)\s+(.*?)(?:\n)/;
   const graduationPattern = /(?:Expected|Graduated)\s*(.*?)\s*?(\n|$)/;
-  const gpaPattern = /Cumulative GPA: ([\d.]+)\/([\d.]+);\s*(.*?)\s*?(\n|$)/;
+  const gpaPattern =
+    /(?:Cumulative GPA|GPA): ([\d.]+)\/([\d.]+);\s*(.*?)\s*?(\n|$)/;
   const courseworkPattern = /Relevant Coursework\s*:\s*([\s\S]*)/;
 
   // Extract details using regex
@@ -454,50 +475,56 @@ function parseEducation(extracted) {
   const gpaMatch = extracted.match(gpaPattern);
   const courseworkMatch = extracted.match(courseworkPattern);
 
-  let major = '';
+  let major = "";
   if (degreeMatch) {
-    if (degreeMatch[1].includes(',')) {
-      major = degreeMatch[1].split(',')[1].trim();
-      degreeMatch[0] = degreeMatch[0].split(',')[0].trim();
-    } else if (degreeMatch[1].includes(' in ')) {
-      major = degreeMatch[1].split(' in ')[1].trim();
-      degreeMatch[0] = degreeMatch[0].split(' in ')[0].trim();
-    } else if (degreeMatch[1].includes(':')) {
-      major = degreeMatch[1].split(':')[1].trim();
-      degreeMatch[0] = degreeMatch[0].split(':')[0].trim();
+    if (degreeMatch[1].includes(",")) {
+      major = degreeMatch[1].split(",")[1].trim();
+      degreeMatch[0] = degreeMatch[0].split(",")[0].trim();
+    } else if (degreeMatch[1].includes(" in ")) {
+      major = degreeMatch[1].split(" in ")[1].trim();
+      degreeMatch[0] = degreeMatch[0].split(" in ")[0].trim();
+    } else if (degreeMatch[1].includes(":")) {
+      major = degreeMatch[1].split(":")[1].trim();
+      degreeMatch[0] = degreeMatch[0].split(":")[0].trim();
+    } else if (degreeMatch[1].includes(" of ")) {
+      major = degreeMatch[1].split(" of ")[1].trim();
+      degreeMatch[0] = degreeMatch[0].split(" of ")[0].trim();
+    } else {
+      major = degreeMatch[1].trim();
     }
   }
 
   // Create JSON object
   const educationJSON = {
-    school: universityMatch ? universityMatch[1].trim() : '',
-    location: locationMatch ? locationMatch[1].trim() : '',
-    degree: degreeMatch ? degreeMatch[0].trim() : '',
+    school: universityMatch ? universityMatch[1].trim() : "",
+    location: locationMatch ? locationMatch[1].trim() : "",
+    degree: degreeMatch ? degreeMatch[0].trim() : "",
     fieldOfStudy: major,
-    to: graduationMatch ? graduationMatch[1].trim() : '',
-    gpa: gpaMatch ? gpaMatch[1].trim() : '',
-    scale: gpaMatch ? !isNaN(gpaMatch[2].trim()) ? gpaMatch[2].trim() : '' : '',
-    awards: gpaMatch ? gpaMatch[3].trim() : '',
-    courses: courseworkMatch ? courseworkMatch[1].trim() : ''
+    to: graduationMatch ? graduationMatch[1].trim() : "",
+    gpa: gpaMatch ? gpaMatch[1].trim() : "",
+    scale: gpaMatch
+      ? !isNaN(gpaMatch[2].trim())
+        ? gpaMatch[2].trim()
+        : "4.0"
+      : "4.0",
+    awards: gpaMatch ? gpaMatch[3].trim() : "",
+    courses: courseworkMatch ? courseworkMatch[1].trim() : "",
   };
 
-  let splitTo = educationJSON.to.split(' ');
+  let splitTo = educationJSON.to.split(" ");
 
   educationJSON.to = {
     month: splitTo[0].trim(),
-    year: splitTo[1].trim()
+    year: splitTo[1].trim(),
   };
 
   return educationJSON;
 }
 
 function parseExperiance(extracted) {
-  // Split the extracted information by job entries
-  const jobEntries = extracted.split("\n");
+  const experiences = [];
 
-  console.log(jobEntries);
-
-  return {};
+  return experiences;
 }
 
 /**
@@ -544,15 +571,10 @@ const createResumeFromPDF = async (resumepdf, id) => {
     pages = pages.data;
   }
 
-  const resumeCollection = await resumes();
-  if (!resumeCollection) {
-    throw new UnexpectedError("Error getting resume collection");
-  }
-
-  let modifiedText = pages[0].text.replace(/ {2}(?! )/g, '\n');
+  let modifiedText = pages[0].text.replace(/ {2}(?! )/g, "\n");
 
   // remove null character from text
-  modifiedText = modifiedText.replace(/\0/g, '');
+  modifiedText = modifiedText.replace(/\0/g, "");
 
   let resumeData = {
     userId: id,
@@ -560,22 +582,28 @@ const createResumeFromPDF = async (resumepdf, id) => {
     extractedText: pages[0].text,
     extractedSections: extractAllSections(modifiedText),
     pdfJSON: {
-      name: extractSection(modifiedText, /([a-zA-Z]+[a-zA-Z\s]+)/).split('\n')[0],
+      name: extractSection(modifiedText, /([a-zA-Z]+[a-zA-Z\s]+)/).split(
+        "\n"
+      )[0],
       email: extractSection(
         modifiedText,
         /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/
       ),
       phone: extractSection(modifiedText, /\(?\d{3}\)?[\s-]?\d{3}[\s-]\d{4}/),
-    }
+    },
   };
 
-
   for (const section of resumeData.extractedSections) {
-    if (section.name.toLowerCase().includes('education')) {
+    if (section.name.toLowerCase().includes("education")) {
       resumeData.pdfJSON.education = parseEducation(section.extracted);
-    } else if (section.name.toLowerCase().includes('experience')) {
+    } else if (section.name.toLowerCase().includes("experience")) {
       resumeData.pdfJSON.experience = parseExperiance(section.extracted);
     }
+  }
+
+  const resumeCollection = await resumes();
+  if (!resumeCollection) {
+    throw new UnexpectedError("Error getting resume collection");
   }
 
   const insertInfo = await resumeCollection.insertOne(resumeData);
@@ -595,7 +623,7 @@ const createResumeFromPDF = async (resumepdf, id) => {
  * @throws {UnexpectedError} - If an unexpected error occurs.
  * @example getAllResumesById("60f2c4d9b8b3f6e1d8b1e1f3");
  */
-async function getAllResumesById(userId) {
+const getAllResumesById = async (userId) => {
   const resumeCollection = await resumes();
   if (!resumeCollection) {
     throw new UnexpectedError("Error getting resume collection");
@@ -603,7 +631,7 @@ async function getAllResumesById(userId) {
   const allResumes = await resumeCollection.find({ userId: userId }).toArray();
 
   return allResumes;
-}
+};
 
 /**
  * Get a resume by its ID.
@@ -613,7 +641,7 @@ async function getAllResumesById(userId) {
  * @throws {UnexpectedError} - If an unexpected error occurs.
  * @example getResumeById("60f2c4d9b8b3f6e1d8b1e1f3");
  */
-async function getResumeById(id) {
+const getResumeById = async (id) => {
   if (!id) {
     throw new BadRequestError("Resume ID is required");
   }
@@ -629,11 +657,67 @@ async function getResumeById(id) {
   }
 
   return resume;
-}
+};
+
+/**
+ * Update a resume by its ID.
+ * @param {*} id - The ID of the resume to update.
+ * @param {*} resume - The updated resume data.
+ * @param {*} type - The type of the resume (e.g., "json" or "pdf").
+ * @returns - The updated resume.
+ * @throws {BadRequestError} - If the resume ID is not provided.
+ * @throws {UnexpectedError} - If an unexpected error occurs.
+ * @example updateResumeById("60f2c4d9b8b3f6e1d8b1e1f3", updatedResume);
+ */
+const updateResumeById = async (id, resume, type) => {
+  if (!id) {
+    throw new BadRequestError("Resume ID is required");
+  }
+
+  if (type === "json") {
+    const updatedResume = await createResumeFromJSON(resume, resume.userId);
+    return updatedResume;
+  } else if (type === "pdf") {
+    const updatedResume = await createResumeFromPDF(resume, resume.userId);
+    return updatedResume;
+  } else {
+    throw new BadRequestError("Invalid resume type");
+  }
+};
+
+/**
+ * Remove a resume by its ID.
+ * @param {*} id - The ID of the resume to remove.
+ * @returns - The deleted resume.
+ * @throws {BadRequestError} - If the resume ID is not provided.
+ * @throws {UnexpectedError} - If an unexpected error occurs.
+ * @example removeResumeById("60f2c4d9b8b3f6e1d8b1e1f3");
+ */
+const deleteResumeById = async (id) => {
+  if (!id) {
+    throw new BadRequestError("Resume ID is required");
+  }
+
+  const resumeCollection = await resumes();
+  if (!resumeCollection) {
+    throw new UnexpectedError("Error getting resume collection");
+  }
+
+  const deletedResume = await resumeCollection.deleteOne({
+    _id: new ObjectId(id),
+  });
+  if (!deletedResume) {
+    throw new UnexpectedError("Error deleting resume");
+  }
+
+  return deletedResume;
+};
 
 export {
   createResumeFromJSON,
   createResumeFromPDF,
   getAllResumesById,
   getResumeById,
+  updateResumeById,
+  deleteResumeById,
 };

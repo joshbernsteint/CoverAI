@@ -6,6 +6,7 @@ import { UnauthorizedError } from "./utils/errors.js";
 import configRoutes from "./api/index.js";
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUI from "swagger-ui-express";
+import yaml from "js-yaml";
 import * as fs from "node:fs";
 import path from "path";
 import { fileURLToPath } from "url"; // Import fileURLToPath
@@ -24,6 +25,9 @@ app.get("/", async function (req, res) {
   });
 });
 
+const swaggerDocument = yaml.load(
+  fs.readFileSync(path.join(__dirname, "./swagger.yaml"), "utf8")
+);
 // Swagger Configuration
 const swaggerOptions = {
   definition: {
@@ -101,7 +105,11 @@ const options = {
 };
 
 const specs = swaggerJSDoc(swaggerOptions);
-app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs, options));
+app.use(
+  "/api-docs",
+  swaggerUI.serve,
+  swaggerUI.setup(swaggerDocument, options)
+);
 
 configRoutes(app);
 
