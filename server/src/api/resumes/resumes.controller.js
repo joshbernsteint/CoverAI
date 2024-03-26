@@ -36,7 +36,7 @@ router.post(
       if (!file) {
         throw new UnexpectedError("Invalid request");
       }
-      const data = await resumeService.createResumeFromPDF(file, id);
+      const data = await resumeService.createResumeFromPDF(file, id, file.originalname);
       return res.status(200).json(data);
     } catch (error) {
       console.log(error);

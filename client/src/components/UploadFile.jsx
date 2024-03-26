@@ -1,30 +1,42 @@
 import React from "react";
-
+import { useAuth } from '@clerk/clerk-react';
 import { FileInput, Label } from "flowbite-react";
 import { useState } from "react";
 
 import axios from "axios";
 
 export default function UploadFile({ onUploadSuccess }) {
+  const { getToken, isLoaded, isSignedIn } = useAuth();
   const [extractedText, setExtractedText] = useState(null);
 
   const handleFileUpload = async (event) => {
-    const file = event.target.files[0]; 
+    const file = event.target.files[0];
+    const token = await getToken();
 
     const formData = new FormData();
-    formData.append("file", file); 
+    formData.append("file", file);
 
     const fileURL = URL.createObjectURL(file);
     onUploadSuccess(fileURL);
 
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+
     try {
       const response = await axios.post(
         "http://localhost:3000/resumes",
-        formData
+        formData,
+        {
+          headers: {
+            ...headers,
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
 
       console.log(response.data.extractedText);
-      setExtractedText(response.data.extractedText); 
+      setExtractedText(response.data.extractedText);
     } catch (error) {
       console.error("Error occurred:", error);
     }
@@ -52,7 +64,7 @@ export default function UploadFile({ onUploadSuccess }) {
                 <path
                   stroke="currentColor"
                   strokeLinecap="round"
-                  strokeLineJoin="round"
+                  strokeLinejoin="round"
                   strokeWidth="2"
                   d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
                 />

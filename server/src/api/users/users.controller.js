@@ -8,7 +8,7 @@ router
   .route("/skills")
   .get(
     ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
-    async function (req, res) {
+    async function (req, res, next) {
       try {
         const user_id = req.auth.sessionClaims.sub;
         const skills = await userService.getSkills(user_id);
@@ -20,7 +20,7 @@ router
   )
   .post(
     ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
-    async function (req, res) {
+    async function (req, res, next) {
       try {
         const user_id = req.auth.sessionClaims.sub;
         const { skills } = req.body;
@@ -36,7 +36,7 @@ router
   .route("/settings")
   .get(
     ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
-    async function (req, res) {
+    async function (req, res, next) {
       try {
         const user_id = req.auth.sessionClaims.sub;
         const settings = await userService.getSettings(user_id);
@@ -49,7 +49,7 @@ router
   )
   .post(
     ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
-    async function (req, res) {
+    async function (req, res, next) {
       try {
         const user_id = req.auth.sessionClaims.sub;
         const { settings } = req.body;
@@ -62,7 +62,7 @@ router
   )
   .delete(
     ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
-    async function (req, res) {
+    async function (req, res, next) {
       try {
         const user_id = req.auth.sessionClaims.sub;
         const updatedUser = await userService.resetSettings(user_id);
@@ -72,5 +72,18 @@ router
       }
     }
   );
+
+router.route("/profile").put(
+  ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
+  async function (req, res, next) {
+    try {
+      const user_id = req.auth.sessionClaims.sub;
+      const { firstName, lastName } = req.body;
+      const updatedUser = await userService.setName(user_id, firstName, lastName);
+      res.json({ firstName: updatedUser.first_name, lastName: updatedUser.last_name });
+    } catch (err) {
+      next(err);
+    }
+  });
 
 export default router;

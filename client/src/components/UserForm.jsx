@@ -1,8 +1,11 @@
 import React from "react";
 import { useState } from "react";
+import axios from "axios";
+import { useAuth } from '@clerk/clerk-react';
 
 export default function UserForm() {
   const [showForm, setShowForm] = useState(false);
+  const { getToken } = useAuth();
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -29,29 +32,27 @@ export default function UserForm() {
   };
 
   const handleSubmit = async (e) => {
-    console.log("Form submitted:", formData);
     e.preventDefault();
+    // console.log("Form submitted:", formData);
+    const token = await getToken();
 
     //REAL API CALL GOES HERE THIS IS JUST A MOCK
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+
     try {
-      const response = await fetch("/createProfile", {
-        method: "POST",
+      const response = await axios.put("http://localhost:3000/users/profile", formData, {
         headers: {
+          ...headers,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
       });
-      if (response.ok) {
-        console.log("Profile created successfully");
-        // You can perform additional actions here, such as redirecting the user or showing a success message
-        setShowForm(false);
-      } else {
-        console.error("Failed to create profile");
-        // Handle error appropriately
-      }
+      console.log(response.data);
+      setShowForm(false);
     } catch (error) {
-      console.error("Error creating profile:", error);
-      // Handle error appropriately
+      // console.error("Error occurred:", error);
+      console.log("Server error occurred.");
     }
   };
 

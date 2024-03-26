@@ -8,7 +8,7 @@ const dbConnection = async () => {
   if (!_connection) {
     _connection = await MongoClient.connect(mongoConfig.serverUrl);
     _db = _connection.db(mongoConfig.database);
-    console.warn(_db, "db");
+    // console.warn(_db, "db");
   }
 
   return _db;

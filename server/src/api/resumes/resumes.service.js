@@ -536,7 +536,7 @@ function parseExperiance(extracted) {
  * @throws {UnexpectedError} - If an unexpected error occurs.
  * @example createResumeFromPDF(resumepdf, "60f2c4d9b8b3f6e1d8b1e1f3");
  */
-const createResumeFromPDF = async (resumepdf, id) => {
+const createResumeFromPDF = async (resumepdf, id, filename) => {
   if (!id) {
     throw new BadRequestError("User id is required");
   }
@@ -579,6 +579,7 @@ const createResumeFromPDF = async (resumepdf, id) => {
   let resumeData = {
     userId: id,
     resumeType: "pdf",
+    pdfName: filename,
     extractedText: pages[0].text,
     extractedSections: extractAllSections(modifiedText),
     pdfJSON: {
