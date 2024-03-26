@@ -10,9 +10,12 @@
   "permissions": [
       "scripting",
       "tabs",
-      "notifications"
-      ] ,
+      "notifications",
+      "downloads",
+      "webNavigation"
+      ],
   "host_permissions": ["<all_urls>"],
+  "background": { "service_worker": "background.js" },
   "icons": {
       "16": "iconwhite.png",
       "48": "iconwhite.png",

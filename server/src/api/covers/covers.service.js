@@ -132,7 +132,7 @@ const genBasicLetter = async (description) => {
 const getCoverLetterById = async (cover_id) => {
   const coversCollection = await covers();
   const coverLetter = await coversCollection.findOne({
-    _id: ObjectId(cover_id),
+    _id: new ObjectId(cover_id),
   });
   return coverLetter;
 };
@@ -140,13 +140,13 @@ const getCoverLetterById = async (cover_id) => {
 const updateCoverLetter = async (cover_id, paragraphs) => {
   const coverCollection = await covers();
   const updateResult = await coverCollection.updateOne(
-    { _id: ObjectId(cover_id) },
+    { _id: new ObjectId(cover_id) },
     { $set: { paragraphs: paragraphs } }
   );
   if (updateResult.modifiedCount === 0)
     throw new Error("Failed to update cover letter.");
   const coverLetter = await coverCollection.findOne({
-    _id: ObjectId(cover_id),
+    _id: new ObjectId(cover_id),
   });
   return coverLetter;
 };
