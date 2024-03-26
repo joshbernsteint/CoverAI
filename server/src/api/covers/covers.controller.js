@@ -444,4 +444,39 @@ router
     }
   );
 
+
+  router.route("/makeFileFromLast").get(ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }), async (req,res) => {
+    const user_id = req.auth.sessionClaims.sub;
+    const allCls = await getAllCoverLettersFromUser(user_id);
+    const mostRecent = allCls[allCls.length - 1];
+    const fileName = 'temp_cl.pdf'
+    const doc = new PDFDocument();
+    doc.pipe(fs.createWriteStream(fileName));
+  
+    for (const paragraph of mostRecent.paragraphs) {
+      doc.text(paragraph);
+      doc.moveDown();
+    }
+    doc.end();
+    const absPath = path.resolve(fileName);
+    res.sendFile(absPath, () => res.end());
+  
+  });
+  
+  router.route("/makeFileFromId/:id").get(ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }), async (req,res) => {
+      const cover_id = req.params.id;
+      const response = await getCoverLetterById(cover_id);
+      const fileName = 'temp_cl.pdf'
+      const doc = new PDFDocument();
+      doc.pipe(fs.createWriteStream(fileName));
+    
+      for (const paragraph of response.paragraphs) {
+        doc.text(paragraph);
+        doc.moveDown();
+      }
+      doc.end();
+      const absPath = path.resolve(fileName);
+      res.sendFile(absPath, () => res.end());
+  });
+
 export default router;

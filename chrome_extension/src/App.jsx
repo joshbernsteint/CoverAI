@@ -1,17 +1,15 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
-import 'bootstrap/dist/css/bootstrap.min.css';
+import axios from 'axios';
 import './App.css'
 
-import { ClerkProvider } from '@clerk/chrome-extension';
+import { ClerkProvider, SignUp } from '@clerk/chrome-extension';
 import { useNavigate, Routes, Route, MemoryRouter, Link } from 'react-router-dom';
 import Settings from './components/Settings/Settings';
 import Home from './components/Home';
 import { IoFileTrayFullOutline, IoHome, IoSettingsSharp } from "react-icons/io5";
 import PastLetters from './components/PastLetters';
-import SignUp from './components/Settings/SignUp';
-import Login from './components/Settings/Login';
 
 
 
@@ -31,10 +29,18 @@ const publishableKey = env.VITE_CLERK_PUBLISHABLE_KEY || '';
 
 function ClerkProviderWithRoutes() {
   const navigate = useNavigate();
-  const stylesheet = {};
-  const [userSettings, setUserSettings] = useState({});
+  const darkMode = {backgroundColor: "#242424", color: "rgba(255, 255, 255, 0.87)"};
+  const lightMode = {backgroundColor: "white", color: "black"};
+
+  const [userSettings, setUserSettings] = useState({
+    darkMode: true,
+    styleSheet: darkMode,
+    autoDownloadCL: true,
+  });
+
   const [activeScrapeData, setActiveScrapeData] = useState(JSON.parse(localStorage.getItem("scrapeData")));
   const [activeCL, setActiveCL] = useState(undefined);
+  const [loginStatus, setLoginStatus] = useState(false);
 
   function handleSetScrape(newVal){
     if(newVal.raw.length !== 0) localStorage.setItem('scrapeData', JSON.stringify(newVal));
@@ -45,18 +51,45 @@ function ClerkProviderWithRoutes() {
     setActiveCL(newCL);
   }
 
+  function handleChangeSettings(newSettings){
+    setUserSettings({
+      ...newSettings,
+      styleSheet: newSettings.darkMode ? darkMode : lightMode,
+    });
+  }
+
+  useEffect(() => {
+    async function isLoggedIn(){
+      try {
+        await axios.get("http://localhost:3000/users/settings");
+        setLoginStatus(true);
+        return true;
+      } catch (error) {
+        return false;
+      }
+    }
+    isLoggedIn();
+  }, []);
+
+  useEffect(() => {
+    document.body.style.backgroundColor = userSettings.styleSheet.backgroundColor;
+    document.body.style.color = userSettings.styleSheet.color;
+  }, [userSettings]);
 
   return (
-    <ClerkProvider
+    <div style={userSettings.styleSheet}>
+      <ClerkProvider
       publishableKey={publishableKey}
       navigate={to => navigate(to)}
     >
       <Routes>
-        <Route path='/signup' element={<SignUp />}/>
-        <Route path='/login' element={<Login/>}/>
+        <Route
+          path='/signup/*'
+          element={<SignUp signInUrl='/'/>}
+        />
         <Route path='/' element={<Home scrapeData={activeScrapeData} setScrape={handleSetScrape} activeCL={activeCL} setCL={handleSetCL}/>}/>
-        <Route path='/past' element={<PastLetters/>}/>
-        <Route path='/settings' element={<Settings/>}/>
+        <Route path='/past' element={<PastLetters loginStatus={loginStatus}/>}/>
+        <Route path='/settings' element={<Settings loginStatus={loginStatus} settings={userSettings} changeSettings={handleChangeSettings}/>}/>
       </Routes><br/>
       <table style={{position: "fixed", bottom: "0", width: "100%", left: "0%", textAlign: "center"}}>
         <trow>
@@ -66,6 +99,7 @@ function ClerkProviderWithRoutes() {
         </trow>
       </table>
     </ClerkProvider>
+    </div>
   );
 }
 

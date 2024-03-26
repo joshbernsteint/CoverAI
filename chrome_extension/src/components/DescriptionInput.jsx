@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FormControl, Button, Spinner } from 'react-bootstrap';
 import axios from 'axios';
+import { useAuth } from '@clerk/chrome-extension';
+import Requests from '../services/requests';
 
 function DescriptionInput({ value, setValue, hideThis, setCL,...props}) {
   function getFromStorage(key, defaultValue, transformFn=JSON.parse){
@@ -16,6 +18,8 @@ function DescriptionInput({ value, setValue, hideThis, setCL,...props}) {
   const [scrapeError, setScrapeError] = useState(value.raw.length === 0);
   const [textData, setTextData] = useState(value.raw.length === 0 ? getFromStorage("scrapeData", {raw: "", employer: "", jobName: ""}) : value );
   const [loadingAPI, setLoading] = useState(false);
+  const myRequester = new Requests();
+
 
 
   function handleCloseError(){
@@ -25,16 +29,17 @@ function DescriptionInput({ value, setValue, hideThis, setCL,...props}) {
   
   async function handleCreate(){
     setLoading(true);
-    const {data} = await axios.post("http://localhost:3000/covers/genCoverLetter", {
-      employer_name: textData.employer,
+    const {data} = await myRequester.post("http://localhost:3000/covers/genCoverLetter", {
+      company_name: textData.employer,
       job_title: textData.jobName,
       useScraper: true,
       scrapedData: textData.raw,
     });
-    await chrome.downloads.download({method: "GET", url: "http://localhost:3000/covers/makeFileFromLast", saveAs: true}, () => {
-      setCL(data);
-      setValue(textData); // Needs to be the last thing, will cause a complete re-render
-    });
+
+    await chrome.downloads.download({method: "GET", url: "http://localhost:3000/covers/makeFileFromLast",  headers: [{name: "Authorization", value: await myRequester.getToken()}]});
+
+    setCL(data);
+    setValue(textData); // Needs to be the last thing, will cause a complete re-render
 
   }
 
