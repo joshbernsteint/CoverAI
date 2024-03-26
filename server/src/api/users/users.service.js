@@ -28,6 +28,10 @@ const getSettings = async (user_id) => {
 
 const setSettings = async (user_id, settings) => {
   const userCollection = await users();
+  const currentUser = await userCollection.findOne({ _id: user_id });
+  if (JSON.stringify(currentUser.settings) === JSON.stringify(settings)) {
+    return currentUser;
+  }
   const updateResult = await userCollection.updateOne(
     { _id: user_id },
     { $set: { settings } }

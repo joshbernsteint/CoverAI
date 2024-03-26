@@ -72,14 +72,14 @@ const genLetter = async (
     additionalInfo += `About the job: ${scrapedData}`;
   }
 
-  const promptContent = `Generate a cover letter for the position of ${job_title} at ${company_name}, reflecting the tone and style of the applicant's previous letters. Previous content for reference: "${previousParagraphs}". ${additionalInfo} The applicant's name is ${firstName} ${lastName}.`;
+  const promptContent = `Generate a cover letter for the position of ${job_title} at ${company_name}, reflecting the tone and style of the applicant's previous letters. Previous content for reference: "${previousParagraphs}". ${additionalInfo}.`;
 
   const completion = await openai.chat.completions.create({
     messages: [
       {
         role: "system",
         content:
-          "Respond in JSON format filling in this template: paragraphs: [first_paragraph, second_paragraph, third_paragraph] where paragraphs is an array of strings. Ensure the new cover letter matches the tone of the previous cover letters if they are provided. Also, make sure to incorporate any information from the user's resume or the job description if available.",
+          "Respond in JSON format filling in this template: paragraphs: [first_paragraph, second_paragraph, third_paragraph] where paragraphs is an array of strings. Ensure the new cover letter matches the tone of the previous cover letters if they are provided, but do not include a greeting in any og the paragraphs or a signature at the end. Also, make sure to incorporate any information from the user's resume or the job description if available.",
       },
       {
         role: "user",

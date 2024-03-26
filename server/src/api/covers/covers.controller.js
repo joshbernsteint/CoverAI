@@ -18,9 +18,9 @@ router
   .post(
     ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
     async (req, res, next) => {
+      console.log(req.headers);
       try {
         const user_id = req.auth.sessionClaims.sub;
-        // const user_id = "user_2dC6mNNpMcxT5kubchWOsfUs2TB";
         const {
           company_name,
           job_title,
@@ -68,7 +68,6 @@ router
       return res.status(200).json(response);
     }
   );
-
 
 router
   .route("/getAllCoverLetters")
