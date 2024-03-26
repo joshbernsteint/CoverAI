@@ -4,79 +4,73 @@ import { ClerkExpressRequireAuth } from "@clerk/clerk-sdk-node";
 import * as userService from "./users.service.js";
 import { UnexpectedError } from "../../utils/errors.js";
 
-/**
- * @swagger
- * components:
- *   schemas:
- *     Users:
- *       type: object
- *       required:
- *         - firstName
- *         - lastName
- *       properties:
- *         id:
- *           type: string
- *           format: uuid
- *           description: The unique identifier for the user.
- *         firstName:
- *           type: string
- *           description: First name of the user.
- *         lastName:
- *           type: string
- *           description: Last name of the user.
- *       example:
- *         id: user_2bSO2FvIlVSIAXMUOGr5v1fCGIG
- *         firstName: John
- *         lastName: Doe
- */
-
-/**
- * @swagger
- * /users/signup:
- *   post:
- *     summary: User Signup
- *     description: Allows users to sign up.
- *     tags: [Users]
- *     security:
- *       - BearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Users'
- *     responses:
- *       200:
- *         description: User signed up successfully.
- *         content:
- *           application/json:
- *             schema:
- *               type: string
- *               example: User signed up successfully
- *       401:
- *         description: Unauthorized. User is not authenticated.
- *       500:
- *         description: Internal Server Error
- */
-
-router.route("/signup").post(
-  ClerkExpressRequireAuth({
-    authorizedParties: [process.env.CLIENT_URL],
-  }),
-  async (req, res) => {
-    try {
-      const { firstName, lastName } = req.body;
-      const response = await userService.signUp({
-        uuid: req.auth.sessionClaims.sub,
-        firstName,
-        lastName,
-      });
-      res.status(200).json(response);
-    } catch (error) {
-      console.error(error);
-      res.status(500).send(error);
+router
+  .route("/skills")
+  .get(
+    ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
+    async function (req, res, next) {
+      try {
+        const user_id = req.auth.sessionClaims.sub;
+        const skills = await userService.getSkills(user_id);
+        res.json({ skills });
+      } catch (err) {
+        next(err);
+      }
     }
-  }
-);
+  )
+  .post(
+    ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
+    async function (req, res, next) {
+      try {
+        const user_id = req.auth.sessionClaims.sub;
+        const { skills } = req.body;
+        const updatedUser = await userService.setSkills(user_id, skills);
+        res.json({ skills: updatedUser.skills });
+      } catch (err) {
+        next(err);
+      }
+    }
+  );
+
+router
+  .route("/settings")
+  .get(
+    ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
+    async function (req, res, next) {
+      try {
+        const user_id = req.auth.sessionClaims.sub;
+        const settings = await userService.getSettings(user_id);
+        res.json({ settings });
+      } catch (err) {
+        console.error(err);
+        next(err);
+      }
+    }
+  )
+  .post(
+    ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
+    async function (req, res, next) {
+      try {
+        const user_id = req.auth.sessionClaims.sub;
+        const { settings } = req.body;
+        const updatedUser = await userService.setSettings(user_id, settings);
+        res.json({ settings: updatedUser.settings });
+      } catch (err) {
+        next(err);
+      }
+    }
+  )
+  .delete(
+    ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
+    async function (req, res, next) {
+      try {
+        const user_id = req.auth.sessionClaims.sub;
+        const updatedUser = await userService.resetSettings(user_id);
+        res.json({ settings: updatedUser.settings });
+      } catch (err) {
+        next(err);
+      }
+    }
+  );
 
 export default router;
