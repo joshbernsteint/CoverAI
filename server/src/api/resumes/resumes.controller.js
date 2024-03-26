@@ -26,8 +26,8 @@ router.post(
 
 router.post(
   "/",
-  upload.single("file"),
   ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
+  upload.single("file"),
   async (req, res) => {
     try {
       const file = req.file;
@@ -75,7 +75,8 @@ router
     }
   )
   .put(
-    ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }), upload.single("file"), async (req, res) => {
+    ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
+    upload.single("file"), async (req, res) => {
       try {
         const id = req.params.id;
         const file = req.file;
