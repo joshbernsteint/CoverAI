@@ -1,11 +1,5 @@
-import React, { useState } from "react";
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  Navigate,
-  useNavigate,
-} from "react-router-dom";
+import React from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
 import NoPage from "./pages/NoPage";
 import SignUpClerk from "./pages/SignUpClerk";
@@ -16,79 +10,48 @@ import CoverLetters from "./pages/CoverLetters";
 import TextEditor from "./pages/TextEditor";
 import SettingsPage from "./pages/SettingsPage";
 import About from "./pages/About";
-
+import ProtectedPage from "./pages/ProtectedPage";
 import {
-  ClerkProvider,
   SignedIn,
   SignedOut,
+  SignInButton,
   UserButton,
 } from "@clerk/clerk-react";
 
 function App() {
-  const [userAuthenticated, setUserAuthenticated] = useState(false);
-
-  const ClerkWithRoutes = () => {
-    const navigate = useNavigate();
-  };
-
-  const ProtectedRoute = ({
-    component: Component,
-    isAuthenticated,
-    ...rest
-  }) => {
-    return isAuthenticated ? (
-      <Route {...rest} element={<Component />} />
-    ) : (
-      <Navigate to="/login" replace />
-    );
-  };
-
   return (
     <BrowserRouter>
-      <NavbarComp userAuthenticated={userAuthenticated} />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route
-          path="/edit-profile"
-          element={
-            <ProtectedRoute
-              component={EditProfile}
-              isAuthenticated={userAuthenticated}
-            />
-          }
-        />
-        <Route
-          path="/cover-letters"
-          element={
-            <ProtectedRoute
-              component={CoverLetters}
-              isAuthenticated={userAuthenticated}
-            />
-          }
-        />
-        <Route
-          path="/text-editor/:id"
-          element={
-            <ProtectedRoute
-              component={TextEditor}
-              isAuthenticated={userAuthenticated}
-            />
-          }
-        />
-        <Route
-          path="/settings"
-          element={
-            <ProtectedRoute
-              component={SettingsPage}
-              isAuthenticated={userAuthenticated}
-            />
-          }
-        />
-        <Route path="/sign-up" element={<SignUpClerk />} />
-        <Route path="/login" element={<LoginClerk />} />
-        <Route path="*" element={<NoPage />} />
-      </Routes>
+      <>
+        <SignedIn>
+          <NavbarComp userAuthenticated={true} />
+          <UserButton />
+          <Routes>
+            <Route path="/" element={<Navigate to="/home" />} />
+            <Route path="/home" element={<Home />} />
+            <Route path="/sign-up" element={<SignUpClerk />} />
+            <Route path="/login" element={<LoginClerk />} />
+            <Route path="/edit-profile" element={<EditProfile />} />
+            <Route path="/cover-letters" element={<CoverLetters />} />
+            <Route path="/text-editor/:id" element={<TextEditor />} />
+            <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/protected" element={<ProtectedPage />} />
+            <Route path="*" element={<NoPage />} />
+          </Routes>
+        </SignedIn>
+        <SignedOut>
+          <NavbarComp userAuthenticated={false} />
+          <SignInButton />
+          <Routes>
+            <Route path="/" element={<Navigate to="/home" />} />
+            <Route path="/home" element={<Home />} />
+            <Route path="/sign-up" element={<SignUpClerk />} />
+            <Route path="/login" element={<LoginClerk />} />
+            <Route path="/about" element={<About />} />
+            <Route path="*" element={<NoPage />} />
+          </Routes>
+        </SignedOut>
+      </>
     </BrowserRouter>
   );
 }

@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import logo from "../assets/iconblack.png";
-import { Link, NavLink} from "react-router-dom";
-
+import { Link, NavLink } from "react-router-dom";
 import { Navbar } from "flowbite-react";
 
 const NavbarComp = ({ userAuthenticated }) => {
@@ -21,16 +20,40 @@ const NavbarComp = ({ userAuthenticated }) => {
   ];
 
   return (
-    <Navbar>
-      { userAuthenticated ?
-        navItemsAuth.map(({ name, href }) => (
-          <Link to={href} key={href}>{name}</Link>
-        )) :
-        navItems.map(({ name, href }) => (
-          <Link to={href} key={href}>{name}</Link>
-        ))
-      }
-    </Navbar>
+    <nav className="navigation bg-gray-800">
+      <ul>
+        <div>
+          <li>
+            <NavLink to="/home">
+              <img src={logo} alt="logo" className="w-12" />
+            </NavLink>
+          </li>
+        </div>
+        <div>
+          {userAuthenticated
+            ? navItemsAuth.map((item, index) => (
+                <li key={index}>
+                  <NavLink
+                    to={item.href}
+                    className="text-white hover:bg-gray-900"
+                  >
+                    {item.name}
+                  </NavLink>
+                </li>
+              ))
+            : navItems.map((item, index) => (
+                <li key={index}>
+                  <NavLink
+                    to={item.href}
+                    className="text-white hover:bg-gray-900"
+                  >
+                    {item.name}
+                  </NavLink>
+                </li>
+              ))}
+        </div>
+      </ul>
+    </nav>
   );
 };
 
