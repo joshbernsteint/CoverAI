@@ -74,4 +74,17 @@ router
     }
   );
 
+router.route("/profile").put(
+  ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
+  async function (req, res, next) {
+    try {
+      const user_id = req.auth.sessionClaims.sub;
+      const { firstName, lastName } = req.body;
+      const updatedUser = await userService.setName(user_id, firstName, lastName);
+      res.json({ firstName: updatedUser.first_name, lastName: updatedUser.last_name });
+    } catch (err) {
+      next(err);
+    }
+  });
+
 export default router;

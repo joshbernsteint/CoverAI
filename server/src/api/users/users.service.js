@@ -62,4 +62,40 @@ const resetSettings = async (user_id) => {
   return updatedUser;
 };
 
-export { setSkills, getSkills, setSettings, getSettings, resetSettings };
+const setName = async (user_id, firstName, lastName) => {
+  if (!firstName || !lastName) throw new UnexpectedError("First name and last name are required.");
+  if (typeof firstName !== "string" || typeof lastName !== "string") throw new UnexpectedError("First name and last name must be strings.");
+  if (firstName.trim().length === 0 || lastName.trim().length === 0) throw new UnexpectedError("First name and last name must not be empty.");
+
+  firstName = firstName.trim();
+  lastName = lastName.trim();
+
+  const userCollection = await users();
+  const user = await userCollection.findOne({ _id: user_id });
+  if (!user) throw new UnexpectedError("User not found.");
+
+  let changes = 0;
+  let toBeUpdated = {};
+  if (firstName !== user.first_name) {
+    toBeUpdated.first_name = firstName;
+    changes++;
+  };
+  if (lastName !== user.last_name) {
+    toBeUpdated.last_name = lastName;
+    changes++;
+  };
+
+  if (changes === 0) throw new UnexpectedError("No changes detected.");
+
+  const updateResult = await userCollection.updateOne(
+    { _id: user_id },
+    { $set: toBeUpdated }
+  );
+  if (updateResult.modifiedCount === 0) throw new UnexpectedError("Failed to update user name.");
+  const updatedUser = await userCollection.findOne({ _id: user_id });
+
+  return updatedUser;
+
+}
+
+export { setSkills, getSkills, setSettings, getSettings, resetSettings, setName };
