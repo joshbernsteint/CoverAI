@@ -21,19 +21,12 @@ export default function Settings({changeSettings, settings, ...props}) {
       default:
         break;
     }
-    const settingsCopy = {...settings};
-    delete settingsCopy.styleSheet;
-    console.log(settingsCopy);
-    await myRequester.post("http://localhost:3000/users/settings", {settings: settingsCopy});
   }
 
   async function handleSubmit(){
     const settingsCopy = {...settings};
     delete settingsCopy.styleSheet;
     const {data} = await myRequester.post("http://localhost:3000/users/settings", {settings: settingsCopy});
-    console.log('here', data);
-
-
   }
 
   return (

@@ -24,7 +24,6 @@ router
     async (req, res, next) => {
       try {
         const user_id = req.auth.sessionClaims.sub;
-        // const user_id = "user_2dC6mNNpMcxT5kubchWOsfUs2TB";
         const {
           company_name,
           job_title,
@@ -120,6 +119,7 @@ router
       const response = await getCoverLetterById(cover_id);
       const fileName = 'temp_cl.pdf'
       const doc = new PDFDocument();
+      console.log(response.paragraphs);
       doc.pipe(fs.createWriteStream(fileName));
     
       for (const paragraph of response.paragraphs) {
