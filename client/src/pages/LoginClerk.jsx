@@ -1,49 +1,49 @@
 import {
-    SignInButton,
-    SignOutButton,
-    SignedIn,
-    SignedOut,
-    useAuth,
-    useUser,
-  } from "@clerk/clerk-react";
-  import apiClient from "../services/apiClient";
-  import { useEffect } from "react";
-  import SignUp from './SignUp.jsx'
-  
-  const SignUpClerk = () => {
-  
-  //   useEffect(() => {
-  //     async function signUpUser() {
-  //       apiClient.setTokenRetrievalMethod(() =>
-  //         getToken().then((token) => token)
-  //       );
-  //       if (isSignedIn && user) {
-  //         const payload = {
-  //           firstName: user.firstName,
-  //           lastName: user.lastName,
-  //         };
-  
-  //         // Theres a way to sync Clerk with the backend but I have to figure that out later. I only saw it with prisma but im using mongo so idk.
-  //         // Pray for me
-  //         apiClient.signUpUser(payload).then((res) => {
-  //           console.log(res);
-  //         });
-  //       }
-  //     }
-  //     signUpUser();
-  //   }, [isSignedIn, user]);
-    return (
-      <div>
-        <SignedIn>
-          <p>You are signed in.</p>
-          <SignOutButton />
-        </SignedIn>
-        <SignedOut>
-          <p>You are not signed in.</p>
-          <SignInButton />
-        </SignedOut>
-      </div>
-    );
-  };
-  
-  export default SignUpClerk;
+  SignInButton,
+  SignOutButton,
+  SignedIn,
+  SignedOut,
+  useAuth,
+} from "@clerk/clerk-react";
+import axios from "axios";
+
+const SignUpClerk = () => {
+  const { getToken } = useAuth();
+  return (
+    <div>
+      <SignedIn>
+        <button
+          onClick={async () => {
+            const settings = {
+              dark_mode: true,
+              suggest_cl: false,
+              auto_download_cl: true,
+            };
+            console.log(await getToken());
+            const response = await axios.post(
+              "http://localhost:3000/users/settings",
+              { settings },
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${await getToken()}`,
+                },
+              }
+            );
+            console.log(response);
+          }}
+        >
+          Click me{" "}
+        </button>
+        <p>You are signed in.</p>
+        <SignOutButton />
+      </SignedIn>
+      <SignedOut>
+        <p>You are not signed in.</p>
+        <SignInButton />
+      </SignedOut>
+    </div>
+  );
+};
+
+export default SignUpClerk;

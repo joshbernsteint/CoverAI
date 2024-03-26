@@ -79,7 +79,7 @@ const genLetter = async (
       {
         role: "system",
         content:
-          "Respond in JSON format filling in this template: paragraphs: [first_paragraph, second_paragraph, third_paragraph] where paragraphs is an array of strings. Ensure the new cover letter matches the tone of the previous cover letters if they are provided, but do not add a greeting at the beginning or a signature at the end. Also, make sure to incorporate any information from the user's resume or the job description if available.",
+          "Respond in JSON format filling in this template: paragraphs: [first_paragraph, second_paragraph, third_paragraph] where paragraphs is an array of strings. Ensure the new cover letter matches the tone of the previous cover letters if they are provided, but do not include a greeting in any og the paragraphs or a signature at the end. Also, make sure to incorporate any information from the user's resume or the job description if available.",
       },
       {
         role: "user",
