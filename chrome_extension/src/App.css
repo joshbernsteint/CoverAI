@@ -5,6 +5,7 @@
   text-align: center;
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
+  background-color: #242424;
 }
 
 .logo {
@@ -125,4 +126,15 @@
 
 .past_cl:hover{
   background-color: grey;
+}
+
+.signin-field{
+  min-width: 150px;
+  display: inline-block;
+  text-align: left;
+}
+
+.input-box{
+  width: 50%;
+  display: inline-block;
 }

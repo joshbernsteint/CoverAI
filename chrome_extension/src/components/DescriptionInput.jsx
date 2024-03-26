@@ -85,7 +85,7 @@ function DescriptionInput({ value, setValue, hideThis, setCL,...props}) {
           <FormControl
           as="textarea"
           id="description-textarea"
-          style={{ height: "auto", overflowY: "scroll", resize: "both", width: "400px", height: "295px"}}
+          style={{overflowY: "scroll", resize: "both", width: "400px", height: "295px"}}
           type="text"
           value={textData.raw}
           onChange={(e) => setTextData({...textData, raw: e.currentTarget.value})}

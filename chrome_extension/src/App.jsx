@@ -1,14 +1,17 @@
 import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css'
 
-import { SignUp, ClerkProvider } from '@clerk/chrome-extension';
+import { ClerkProvider } from '@clerk/chrome-extension';
 import { useNavigate, Routes, Route, MemoryRouter, Link } from 'react-router-dom';
-import Settings from './components/Settings';
+import Settings from './components/Settings/Settings';
 import Home from './components/Home';
 import { IoFileTrayFullOutline, IoHome, IoSettingsSharp } from "react-icons/io5";
 import PastLetters from './components/PastLetters';
+import SignUp from './components/Settings/SignUp';
+import Login from './components/Settings/Login';
 
 
 
@@ -49,10 +52,8 @@ function ClerkProviderWithRoutes() {
       navigate={to => navigate(to)}
     >
       <Routes>
-        <Route
-          path='/sign-up/*'
-          element={<SignUp signInUrl='/' />}
-        />
+        <Route path='/signup' element={<SignUp />}/>
+        <Route path='/login' element={<Login/>}/>
         <Route path='/' element={<Home scrapeData={activeScrapeData} setScrape={handleSetScrape} activeCL={activeCL} setCL={handleSetCL}/>}/>
         <Route path='/past' element={<PastLetters/>}/>
         <Route path='/settings' element={<Settings/>}/>
