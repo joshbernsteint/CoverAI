@@ -17,11 +17,11 @@ const SignUpClerk = () => {
             const settings = {
               dark_mode: true,
               suggest_cl: false,
-              auto_download_cl: true,
+              auto_download_cl: false,
             };
             console.log(await getToken());
             const response = await axios.post(
-              "http://localhost:3000/users/settings",
+              "https://cover-ai-server-three.vercel.app/users/settings",
               { settings },
               {
                 headers: {
