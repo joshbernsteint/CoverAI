@@ -56,6 +56,7 @@ router
         const updatedUser = await userService.setSettings(user_id, settings);
         res.json({ settings: updatedUser.settings });
       } catch (err) {
+        console.log(err);
         next(err);
       }
     }
