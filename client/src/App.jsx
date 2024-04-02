@@ -1,6 +1,6 @@
 import SignUp from "./pages/SignUp";
 import SignUpClerk from "./pages/SignUpClerk";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import Home from "./pages/Home";
 import EditProfile from "./pages/EditProfile";
 import NoPage from "./pages/NoPage";

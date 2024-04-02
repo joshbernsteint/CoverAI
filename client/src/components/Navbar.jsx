@@ -3,8 +3,19 @@ import logo from "../assets/iconblack.png";
 import { Link, NavLink} from "react-router-dom";
 
 import { Navbar } from "flowbite-react";
+import {
+  SignOutButton,
+  SignUpButton,
+  SignedIn,
+  SignedOut,
+  useAuth,
+  useUser,
+} from "@clerk/clerk-react";
 
 const NavbarComp = () => {
+  const {isLoaded, isSignedIn} = useAuth();
+  console.log(isLoaded, isSignedIn);
+
   const navItems = [
     { key: "1", name: "Home", href: "/home" },
     { key: "2", name: "Profile", href: "/edit-profile" },
@@ -13,8 +24,12 @@ const NavbarComp = () => {
     { key: "5", name: "About", href: "/about" },
     { key: "6", name: "Settings", href: "/settings" },
     { key: "7", name: "Login", href: "/login" },
-    { key: "8", name: "Sign Up", href: "/sign-up" }, 
   ];
+
+  if(isLoaded && isSignedIn){
+    // navItems[navItems.length - 1] = {key: "9", name: "Logout", href: "/logout"};
+    navItems.pop();
+  }
 
   return (
     <Navbar fluid rounded>
@@ -31,6 +46,7 @@ const NavbarComp = () => {
             {name}
           </Link>
         ))}
+        {isLoaded && isSignedIn ? (<SignOutButton displayName="Logout"/>) : (<></>)}
       </Navbar.Collapse>
     </Navbar>
   );

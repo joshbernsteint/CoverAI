@@ -4,11 +4,20 @@ import {
   SignedIn,
   SignedOut,
   useAuth,
+  SignIn,
 } from "@clerk/clerk-react";
 import axios from "axios";
+import { useEffect } from "react";
+import {useNavigate} from 'react-router-dom';
 
 const SignUpClerk = () => {
-  const { getToken } = useAuth();
+  const navigate = useNavigate();
+  const { getToken, isSignedIn, isLoaded } = useAuth();
+  useEffect(() => {
+    if(isLoaded && isSignedIn){
+      navigate("/");
+    }
+  }, [isLoaded, isSignedIn])
   return (
     <div>
       <SignedIn>
@@ -39,8 +48,10 @@ const SignUpClerk = () => {
         <SignOutButton />
       </SignedIn>
       <SignedOut>
-        <p>You are not signed in.</p>
-        <SignInButton />
+      <SignIn
+          afterSignInUrl='/'
+          signUpUrl='/sign-up'
+        />
       </SignedOut>
     </div>
   );

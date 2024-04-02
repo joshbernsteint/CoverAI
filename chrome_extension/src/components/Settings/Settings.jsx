@@ -10,7 +10,6 @@ export default function Settings({changeSettings, settings, ...props}) {
   const myRequester = new Requests();
 
   async function handleChange(e){
-    console.log(e);
     const target = e.target;
     switch (target.id) {
       case "dark_mode_check":

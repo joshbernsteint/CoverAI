@@ -7,6 +7,7 @@ import {
   ExpressError,
 } from "../../utils/errors.js";
 import { ObjectId } from "mongodb";
+import { getUser } from "../users/users.service.js";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -20,11 +21,14 @@ const genLetter = async (
   scrapedData = null
 ) => {
   const user = await clerkClient.users.getUser(user_id);
+  const nameData = await getUser(user_id);
+  console.log(nameData);
+  console.log(user);
   if (!user) {
     throw new NotFoundError("User not found");
   }
-  const firstName = user.firstName;
-  const lastName = user.lastName;
+  const firstName = nameData.first_name;
+  const lastName = nameData.last_name;
 
   const coversCollection = await covers();
   const lastThreeCoverLetters = await coversCollection

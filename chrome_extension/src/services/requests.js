@@ -9,17 +9,11 @@ class Requests{
         this.token = undefined;
     }
     async get(endPoint, otherHeaders={}){
-        if(!this.token){
-            this.token = await this.getToken();
-        }
-        return (await axios.get(endPoint, {headers: {...otherHeaders, "Authorization": `Bearer ${this.token}`}}));
+        return (await axios.get(endPoint, {headers: {...otherHeaders, "Authorization": `Bearer ${await this.getToken()}`}}));
     }
 
     async post(endPoint, body, otherHeaders={}){
-        if(!this.token){
-            this.token = await this.getToken();
-        }
-        return (await axios.post(endPoint, body, {headers: {...otherHeaders, "Authorization": `Bearer ${this.token}`}}));
+        return (await axios.post(endPoint, body, {headers: {...otherHeaders, "Authorization": `Bearer ${await this.getToken()}`}}));
     }
 
     async getAuthHeader(){
