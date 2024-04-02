@@ -102,7 +102,7 @@ router
     const fileName = 'temp_cl.pdf'
     const doc = new PDFDocument();
     doc.pipe(fs.createWriteStream(fileName));
-  
+    doc.font('Times-Roman');
     for (const paragraph of mostRecent.paragraphs) {
       doc.text(paragraph);
       doc.moveDown();
@@ -119,7 +119,7 @@ router
       const fileName = 'temp_cl.pdf'
       const doc = new PDFDocument();
       doc.pipe(fs.createWriteStream(fileName));
-    
+      doc.font('Times-Roman');
       for (const paragraph of response.paragraphs) {
         doc.text(paragraph);
         doc.moveDown();

@@ -16,12 +16,13 @@ function PastLetters({loginStatus, ...props}){
 
     function Letter({id, date, employer}){
         const [isFocused, setFocus] = useState(false);
+        const editorLink = `${import.meta.env.VITE_WEBSITE_URL || "http://localhost:5173/"}/text-editor/${id}`
         return (
             <div className='past_cl' onMouseLeave={() => setFocus(false)} onClick={() => setFocus(true)}>
                 {
                     isFocused ? (
                     <>
-                        <a style={{width: "70%", height: "100%",color: "rgba(255, 255, 255, 0.87)", padding: ".6em 4em"}} href={import.meta.env.VITE_WEBSITE_URL} target='_blank' className='like-button'>Edit</a>
+                        <a style={{width: "70%", height: "100%",color: "rgba(255, 255, 255, 0.87)", padding: ".6em 4em"}} href={editorLink} target='_blank' className='like-button'>Edit</a>
                         <Button style={{width: "50%"}} onClick={() => downloadById(id)}>Download</Button>
                     </>
                     
