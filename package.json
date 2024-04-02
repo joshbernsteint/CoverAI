@@ -5,6 +5,8 @@
   "scripts": {
     "build": "cd client/ && npm run build",
     "setup": "npm i && cd chrome_extension/ && npm i && cd ../client/ && npm i && cd ../server/ && npm i",
+    "predeploy": "cd client/ && npm run build",
+    "deploy": "cd client/ && gh-pages -d build",
     "dev": "concurrently \"cd client && npm run dev \" \"cd server && npm run dev \"",
     "ext": "cd chrome_extension && npm run build"
   },
