@@ -23,11 +23,13 @@ function Home({scrapeData, setScrape, activeCL, setCL, ...props}){
         disableScannerInput();
     }
 
+    const webUrl = import.meta.env.VITE_WEBSITE_URL;
+
     return (
         <div>
             <h1 style={{margin: ".1rem"}}>CoverAI Chrome</h1>
             {/* TODO: Change link */}
-            <h4>Visit our <a href="http://localhost:5173/" target="_blank">Website</a> for even more features!</h4>
+            <h4>Visit our <a href={webUrl} target="_blank">Website</a> for even more features!</h4>
             <div>
                 {
                     activeCL ? (

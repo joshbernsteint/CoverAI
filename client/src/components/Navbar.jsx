@@ -1,54 +1,79 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import logo from "../assets/iconblack.png";
-import { Link, NavLink} from "react-router-dom";
-
+import { Link, NavLink } from "react-router-dom";
 import { Navbar } from "flowbite-react";
-import {
-  SignOutButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  useAuth,
-  useUser,
-} from "@clerk/clerk-react";
+import { SignIn, UserButton, SignInButton } from "@clerk/clerk-react";
 
-const NavbarComp = () => {
-  const {isLoaded, isSignedIn} = useAuth();
-  console.log(isLoaded, isSignedIn);
+const NavbarComp = ({ userAuthenticated }) => {
 
   const navItems = [
-    { key: "1", name: "Home", href: "/home" },
-    { key: "2", name: "Profile", href: "/edit-profile" },
-    { key: "3", name: "Cover Letters", href: "/cover-letters" },
-    { key: "4", name: "Cover Letter Editor", href: "/text-editor/1" },
-    { key: "5", name: "About", href: "/about" },
-    { key: "6", name: "Settings", href: "/settings" },
-    { key: "7", name: "Login", href: "/login" },
+    { name: "Home", href: "/home" },
+    { name: "Sign Up", href: "/sign-up" },
   ];
 
-  if(isLoaded && isSignedIn){
-    // navItems[navItems.length - 1] = {key: "9", name: "Logout", href: "/logout"};
-    navItems.pop();
-  }
+  const navItemsAuth = [
+    { name: "Home", href: "/home" },
+    { name: "Profile", href: "/edit-profile" },
+    { name: "Cover Letters", href: "/cover-letters" },
+    { name: "Cover Letter Editor", href: "/text-editor/1" },
+    { name: "About", href: "/about" },
+    { name: "Settings", href: "/settings" },
+  ];
 
   return (
-    <Navbar fluid rounded>
-      <Navbar.Brand as={Link} href="/">
-        <img src={logo} className="mr-3 h-6 sm:h-9" alt="Cover.AI Logo" />
-        <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
-          Cover.AI
-        </span>
-      </Navbar.Brand>
-      <Navbar.Toggle />
-      <Navbar.Collapse>
-        {navItems.map(({ name, href }) => (
-          <Link key={name} to={href}>
-            {name}
-          </Link>
-        ))}
-        {isLoaded && isSignedIn ? (<SignOutButton displayName="Logout"/>) : (<></>)}
-      </Navbar.Collapse>
-    </Navbar>
+    <nav className="flex items-center justify-between px-4 py-2">
+      <ul className="flex items-center w-full justify-between">
+        <div>
+          <li>
+            <NavLink to="/home">
+              <img src={logo} alt="logo" className="w-12" />
+            </NavLink>
+          </li>
+        </div>
+        <div className="flex gap-6 items-center">
+          <div className="flex gap-4 items-center">
+            {userAuthenticated
+              ? navItemsAuth.map((item, index) => (
+                  <li key={index}>
+                    <NavLink
+                      to={item.href}
+                      className="hover:text-gray-400 font-body"
+                    >
+                      {item.name}
+                    </NavLink>
+                  </li>
+                ))
+              : navItems.map((item, index) => (
+                  <li key={index}>
+                    {item.name === "Sign Up" ? (
+                      <NavLink
+                        to={item.href}
+                        className="hover:text-gray-400 font-body border-2 px-4 py-2 rounded-2xl border-[#474CF3]"
+                      >
+                        {item.name}
+                      </NavLink>
+                    ) : (
+                      <NavLink
+                        to={item.href}
+                        className="hover:text-gray-400 font-body"
+                      >
+                        {item.name}
+                      </NavLink>
+                    )}
+                  </li>
+                ))}
+            {userAuthenticated ? (
+              () => <UserButton />
+            ) : (
+              <SignInButton className="font-body bg-[#474CF3] px-4 py-2 rounded-2xl text-white" />
+            )}
+          </div>
+          <div>
+            <UserButton />
+          </div>
+        </div>
+      </ul>
+    </nav>
   );
 };
 

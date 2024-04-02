@@ -14,9 +14,11 @@ export default {
         lightPurple: "#9290C3",
         lightGray: "#F7F7F7",
         coverLetterBlue: "#214ad0",
+        background_dark: "#201F1F",
       },
       fontFamily: {
         body: ["Poppins"],
+        jockey: ["Jockey One"],
       },
     },
   },

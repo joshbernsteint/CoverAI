@@ -6,7 +6,6 @@ import MyFooter from "../components/MyFooter";
 export default function HomePage() {
   return (
     <>
-      <NavbarComp />
       <Home />
       <Services />
       <MyFooter />

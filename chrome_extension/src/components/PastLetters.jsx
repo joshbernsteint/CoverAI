@@ -1,14 +1,13 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { useNavigate } from "react-router-dom";
 import { SignedIn, SignedOut, SignIn, ClerkProvider, SignOutButton } from '@clerk/chrome-extension';
 import Requests from '../services/requests';
+import { Button } from 'react-bootstrap';
 
 
 
 function PastLetters({loginStatus, ...props}){
-    const navigate = useNavigate();
-    const myRequester = new Requests();
+    const myRequester = new Requests()
 
     async function downloadById(id){
         await chrome.downloads.download({method: "GET", url: `http://localhost:3000/covers/makeFileFromId/${id}`, saveAs: true, headers: [{name: "Authorization", value: await myRequester.getToken()}]});
@@ -16,10 +15,23 @@ function PastLetters({loginStatus, ...props}){
 
 
     function Letter({id, date, employer}){
+        const [isFocused, setFocus] = useState(false);
         return (
-            <div className='past_cl' onClick={() => downloadById(id)}>
-                <span>{employer}</span><br/>
-                <span>{date}</span>
+            <div className='past_cl' onMouseLeave={() => setFocus(false)} onClick={() => setFocus(true)}>
+                {
+                    isFocused ? (
+                    <>
+                        <a style={{width: "70%", height: "100%",color: "rgba(255, 255, 255, 0.87)", padding: ".6em 4em"}} href={import.meta.env.VITE_WEBSITE_URL} target='_blank' className='like-button'>Edit</a>
+                        <Button style={{width: "50%"}} onClick={() => downloadById(id)}>Download</Button>
+                    </>
+                    
+                    ) : (
+                        <>
+                            <span>{employer}</span><br/>
+                            <span>{date}</span>
+                        </>
+                    )
+                }
             </div>
         );
     }

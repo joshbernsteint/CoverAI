@@ -22,8 +22,6 @@ const genLetter = async (
 ) => {
   const user = await clerkClient.users.getUser(user_id);
   const nameData = await getUser(user_id);
-  console.log(nameData);
-  console.log(user);
   if (!user) {
     throw new NotFoundError("User not found");
   }

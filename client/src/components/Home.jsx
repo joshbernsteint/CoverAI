@@ -1,29 +1,46 @@
-import React from "react";
-import { Carousel } from "flowbite-react";
-import hero from "../assets/hero.png";
+import { motion } from "framer-motion";
+
+import { styles } from "../styles";
+import Letter from "../components/canvas/Letter";
 
 const Home = () => {
-  const handleClick = () => {
-    window.location.href = "/edit-profile";
-  };
-
-
-
-
   return (
-    <div className="bg-lightGray max-w-screen2xl min-h-screen h-screen py-48 flex justify-center">
-      <div className="md:w-1/2 ml-4">
-        <h1 className="text-5xl font-semibold mb-4 leading-snug">
-          Automate cover letters with Cover.AI
-        </h1>
-        <button className="px-7 py-2 bg-coverLetterBlue text-white rounded hover:bg-secondary transition-all duration-300 hover:-translate-y-2" onClick={handleClick}>
-          Get Started
-        </button>
+    <section className="relative w-full min-h-screen bg-white">
+      <div
+        className={`${styles.paddingX} absolute inset-0 top-[120px] max-w-7xl mx-auto flex flex-row items-start gap-5`}
+      >
+        <div>
+          <h1 className={`text-[60px] text-black`}>
+            Crafting <br /> Success,
+            <br />
+          </h1>
+        </div>
       </div>
-      <div>
-        <img src={hero} alt="img" className="w-64 mr-20" />
+      <div className="absolute bottom-[120px] right-10 pr-10 pb-10">
+        <span className="text-black font-semibold text-[60px]">
+          One Letter <br /> at a Time
+        </span>
       </div>
-    </div>
+      <Letter />
+
+      <div className="absolute xs:bottom-10 bottom-32 w-full flex justify-center items-center z-10">
+        <a href="#about">
+          <div className="w-[35px] h-[64px] rounded-3xl border-4 border-secondary flex justify-center items-start p-2">
+            <motion.div
+              animate={{
+                y: [0, 24, 0],
+              }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                repeatType: "loop",
+              }}
+              className="w-3 h-3 rounded-full bg-secondary mb-1"
+            />
+          </div>
+        </a>
+      </div>
+    </section>
   );
 };
 
