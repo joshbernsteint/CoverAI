@@ -1,45 +1,56 @@
-import SignUp from "./pages/SignUp";
-import SignUpClerk from "./pages/SignUpClerk";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import React from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
-import EditProfile from "./pages/EditProfile";
 import NoPage from "./pages/NoPage";
+import SignUpClerk from "./pages/SignUpClerk";
+import LoginClerk from "./pages/LoginClerk";
+import NavbarComp from "./components/Navbar";
+import EditProfile from "./pages/EditProfile";
 import CoverLetters from "./pages/CoverLetters";
-import Login from "./pages/Login.jsx";
-import LoginClerk from "./pages/LoginClerk.jsx";
-import React, { useState } from "react";
 import TextEditor from "./pages/TextEditor";
-import CLContext from "./CLContext";
-import SettingsPage from "./pages/SettingsPage"
+import SettingsPage from "./pages/SettingsPage";
+import About from "./pages/About";
+import ProtectedPage from "./pages/ProtectedPage";
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  UserButton,
+} from "@clerk/clerk-react";
 
 function App() {
-  const [activeCL, setActiveCL] = useState(
-    JSON.parse(
-      localStorage.getItem("activeCL") ||
-        `{"ops": [{"insert": "Place your cover letter here!"}]}`
-    )
-  );
-  const [t, setT] = useState(`${Date.now()}`);
-  console.log(t);
-
   return (
-    <>
-      <CLContext.Provider value={{ activeCL, setActiveCL }}>
-        <BrowserRouter>
+    <BrowserRouter>
+      <>
+        <SignedIn>
+          <NavbarComp userAuthenticated={true} />
           <Routes>
-            <Route index element={<Home />} />
+            <Route path="/" element={<Navigate to="/home" />} />
             <Route path="/home" element={<Home />} />
+            <Route path="/sign-up" element={<SignUpClerk />} />
+            <Route path="/login" element={<LoginClerk />} />
             <Route path="/edit-profile" element={<EditProfile />} />
             <Route path="/cover-letters" element={<CoverLetters />} />
             <Route path="/text-editor/:id" element={<TextEditor />} />
-            <Route path="/settings" element={<SettingsPage/>} />
+            <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/protected" element={<ProtectedPage />} />
             <Route path="*" element={<NoPage />} />
-            <Route path="/sign-up" element={<SignUpClerk />} />
-            <Route path="/login" element={<LoginClerk />}/>
           </Routes>
-        </BrowserRouter>
-      </CLContext.Provider>
-    </>
+        </SignedIn>
+        <SignedOut>
+          <NavbarComp userAuthenticated={false} />
+          <Routes>
+            <Route path="/" element={<Navigate to="/home" />} />
+            <Route path="/home" element={<Home />} />
+            <Route path="/sign-up" element={<SignUpClerk />} />
+            <Route path="/login" element={<LoginClerk />} />
+            <Route path="/about" element={<About />} />
+            <Route path="*" element={<NoPage />} />
+          </Routes>
+        </SignedOut>
+      </>
+    </BrowserRouter>
   );
 }
 

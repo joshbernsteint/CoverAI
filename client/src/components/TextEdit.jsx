@@ -6,13 +6,45 @@ import { pdfExporter } from 'quill-to-pdf';
 import CLContext from "../CLContext";
 
 import { saveAs } from 'file-saver';
+import axios from 'axios';
+import { useAuth } from "@clerk/clerk-react";
+import { useEffect } from 'react';
 
 export default function TextEdit(props) {
-
-
+  const { getToken } = useAuth();
+  console.log("id: ", props.id);
   const {activeCL, setActiveCL} = useContext(CLContext);
   const [editorContent, setEditorContent] = useState(activeCL);
   const quillRef = useRef(null);
+
+  useEffect(() => {
+    const getEditorContent = async () => {
+      //call api /covers/getCoverLetterById/:id
+      try {
+        const response = await axios.get(
+          `https://cover-ai-server-three.vercel.app/covers/getCoverLetterById/${props.id}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${await getToken()}`,
+            },
+          }
+        );
+        console.log("response data", response.data);
+        // for each paragraph in paragraphs array add its string to editorContent
+        let temp = ""
+        for (const paragraph of response.data.paragraphs) {
+          temp += paragraph + "<br/>" + "<br/>";
+        }
+        setEditorContent(temp);
+        console.log("editorContent", editorContent);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    getEditorContent();
+  }, [props.id]);
+  
 
   const toolbarOptions = [
     ['bold', 'italic', 'underline'],        // toggled buttons

@@ -6,7 +6,6 @@ import CLForm from "../components/CLForm";
 export default function CoverLetters() {
   return (
     <>
-      <Navbar />
       <CLForm/>
       <CLCards />
       <MyFooter />
