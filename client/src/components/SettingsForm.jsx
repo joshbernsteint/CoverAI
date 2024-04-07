@@ -7,6 +7,9 @@ import CLContext from "../CLContext";
 import axios from 'axios';
 import { useAuth } from '@clerk/clerk-react';
 
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 export default function SettingForm(props) {
   const [formData, setFormData] = useState({
     dark_mode: true,
@@ -44,6 +47,7 @@ export default function SettingForm(props) {
       } catch (error) {
         // console.error("Error occurred:", error);
         console.log("Server error occurred.");
+        toast.error("Server error occurred.");
       }
     };
 
@@ -62,7 +66,7 @@ export default function SettingForm(props) {
     };
 
     try {
-      const response = axios.post("http://localhost:3000/users/settings", {
+      const response = await axios.post("http://localhost:3000/users/settings", {
         settings: formData
       },
         {
@@ -76,6 +80,7 @@ export default function SettingForm(props) {
     } catch (error) {
       // console.error("Error occurred:", error);
       console.log("Server error occurred.");
+      toast.error("Server error occurred.");
     }
   };
 

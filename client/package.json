@@ -13,6 +13,7 @@
     "@clerk/clerk-react": "^4.30.3",
     "@pdfme/common": "^3.2.3",
     "@pdfme/ui": "^3.2.3",
+    "@splinetool/react-spline": "^2.2.6",
     "axios": "^1.6.7",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
@@ -28,6 +29,8 @@
     "react-quill": "^2.0.0",
     "react-router-dom": "^6.22.0",
     "react-select": "^5.8.0",
+    "react-toastify": "^10.0.5",
+    "save": "^2.9.0",
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7"
   },
