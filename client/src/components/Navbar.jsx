@@ -69,7 +69,7 @@ const NavbarComp = ({ userAuthenticated }) => {
             )}
           </div>
           <div>
-            <UserButton />
+            <UserButton afterSignOutUrl="/"/>
           </div>
         </div>
       </ul>

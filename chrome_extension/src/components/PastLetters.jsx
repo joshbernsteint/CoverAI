@@ -1,16 +1,14 @@
-import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { SignedIn, SignedOut, SignIn, ClerkProvider, SignOutButton } from '@clerk/chrome-extension';
-import Requests from '../services/requests';
+import { SignedIn, SignedOut, SignIn, useAuth } from '@clerk/chrome-extension';
 import { Button } from 'react-bootstrap';
 
 
 
-function PastLetters({loginStatus, ...props}){
-    const myRequester = new Requests()
-
+function PastLetters({requester, env, ...props}){
+    const { isSignedIn } = useAuth();
     async function downloadById(id){
-        await chrome.downloads.download({method: "GET", url: `http://localhost:3000/covers/makeFileFromId/${id}`, saveAs: true, headers: [{name: "Authorization", value: await myRequester.getToken()}]});
+        const URL = `${requester.baseUrl}/covers/makeFileFromId/${id}`;
+        await chrome.downloads.download({method: "GET", url:URL, saveAs: true, headers: [{name: "Authorization", value: `Bearer ${await requester.getToken()}`}]});
     }
 
 
@@ -40,13 +38,12 @@ function PastLetters({loginStatus, ...props}){
 
     useEffect(() => {
         async function getPastLetters(){
-            const {data} = await myRequester.get("http://localhost:3000/covers/getAllCoverLetters");
+            const {data} = await requester.get("/covers/getAllCoverLetters");
             setList(data.reverse());
         }
-        getPastLetters();
-    }, []);
+        if(isSignedIn && requester) getPastLetters();
+    }, [isSignedIn, requester]);
 
-    console.log(list);
 
     return (
         <div>

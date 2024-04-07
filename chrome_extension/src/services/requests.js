@@ -1,25 +1,19 @@
 import axios from 'axios';
-import { useAuth } from '@clerk/chrome-extension';
 
 
-class Requests{
-    constructor(){
-        const { getToken } = useAuth();
+class Requester{
+    constructor(baseUrl="", token, getToken){
         this.getToken = getToken;
-        this.token = undefined;
+        this.baseUrl = baseUrl;
+        this.token = token
     }
     async get(endPoint, otherHeaders={}){
-        return (await axios.get(endPoint, {headers: {...otherHeaders, "Authorization": `Bearer ${await this.getToken()}`}}));
+        return (await axios.get(this.baseUrl + endPoint, {headers: {...otherHeaders, "Authorization": `Bearer ${this.token}`}}));
     }
 
     async post(endPoint, body, otherHeaders={}){
-        return (await axios.post(endPoint, body, {headers: {...otherHeaders, "Authorization": `Bearer ${await this.getToken()}`}}));
-    }
-
-    async getAuthHeader(){
-        if(!this.token) this.token = await this.getToken();
-        return {"Authorization": `Bearer ${this.token}`};
+        return (await axios.post(this.baseUrl + endPoint, body, {headers: {...otherHeaders, "Authorization": `Bearer ${this.token}`}}));
     }
 }
 
-export default Requests;
+export default Requester;
