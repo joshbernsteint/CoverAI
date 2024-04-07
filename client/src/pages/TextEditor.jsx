@@ -26,7 +26,6 @@ export default function TextEditor() {
         <h1 className="font-bold text-3xl"> Your Cover Letter</h1>
         <TextEdit id={id}></TextEdit>
       </div>
-      <MyFooter />
     </>
   );
 }

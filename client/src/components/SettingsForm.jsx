@@ -95,17 +95,6 @@ export default function SettingForm(props) {
             </select>
           </div>
           <div className="form-field mb-4">
-            <label className="text-xl font-bold tracking-tight text-gray-700 dark:text-white">Suggest Cover Letter: </label>
-            <select
-              name="suggest_cl"
-              value={formData.suggest_cl}
-              onChange={handleChange}
-            >
-              <option value="true">True</option>
-              <option value="false">False</option>
-            </select>
-          </div>
-          <div className="form-field mb-4">
             <label className="text-xl font-bold tracking-tight text-gray-700 dark:text-white" >Auto Download Cover Letter: </label>
             <select
               name="auto_download_cl"

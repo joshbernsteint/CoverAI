@@ -8,7 +8,6 @@ export default function HomePage() {
     <>
       <Home />
       <Services />
-      <MyFooter />
     </>
   );
 }
