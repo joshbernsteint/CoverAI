@@ -3,7 +3,6 @@ import {
   SignUpButton,
   SignedIn,
   SignedOut,
-  SignUp,
   useAuth,
   SignUp,
   useUser,
