@@ -1,16 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { SignedIn, SignedOut, SignIn, ClerkProvider, SignOutButton, useAuth } from '@clerk/chrome-extension';
-import axios from 'axios';
-import Requests from "../../services/requests";
  
-export default function Settings({changeSettings, settings, ...props}) {
-
-
-  const myRequester = new Requests();
+export default function Settings({changeSettings, settings, requester, ...props}) {
 
   async function handleChange(e){
-    console.log(e);
     const target = e.target;
     switch (target.id) {
       case "dark_mode_check":
@@ -26,7 +20,8 @@ export default function Settings({changeSettings, settings, ...props}) {
   async function handleSubmit(){
     const settingsCopy = {...settings};
     delete settingsCopy.styleSheet;
-    const {data} = await myRequester.post("http://localhost:3000/users/settings", {settings: settingsCopy});
+    const {data} = await requester.post("/users/settings", {settings: settingsCopy});
+    changeSettings(data.settings);
   }
 
   return (

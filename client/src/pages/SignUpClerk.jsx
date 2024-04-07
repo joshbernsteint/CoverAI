@@ -5,6 +5,7 @@ import {
   SignedOut,
   SignUp,
   useAuth,
+  SignUp,
   useUser,
 } from "@clerk/clerk-react";
 import apiClient from "../services/apiClient";
@@ -33,6 +34,16 @@ const SignUpClerk = () => {
 //     }
 //     signUpUser();
 //   }, [isSignedIn, user]);
+const navigate = useNavigate();
+const {isLoaded, isSignedIn} = useAuth();
+
+
+  useEffect(() => {
+    if(isLoaded && isSignedIn){
+      navigate("/")
+    }
+  }, [isLoaded, isSignedIn]);
+
   return (
     <div style={{display: "flex", justifyContent: "center"}}>
       <SignedIn>

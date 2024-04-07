@@ -22,7 +22,6 @@ router
   .post(
     ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
     async (req, res, next) => {
-      console.log(req.headers);
       try {
         const user_id = req.auth.sessionClaims.sub;
         const {
@@ -103,7 +102,7 @@ router
     const fileName = 'temp_cl.pdf'
     const doc = new PDFDocument();
     doc.pipe(fs.createWriteStream(fileName));
-  
+    doc.font('Times-Roman');
     for (const paragraph of mostRecent.paragraphs) {
       doc.text(paragraph);
       doc.moveDown();
@@ -119,9 +118,8 @@ router
       const response = await getCoverLetterById(cover_id);
       const fileName = 'temp_cl.pdf'
       const doc = new PDFDocument();
-      console.log(response.paragraphs);
       doc.pipe(fs.createWriteStream(fileName));
-    
+      doc.font('Times-Roman');
       for (const paragraph of response.paragraphs) {
         doc.text(paragraph);
         doc.moveDown();
