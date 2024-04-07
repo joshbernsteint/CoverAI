@@ -1,54 +1,18 @@
 import {
-  SignInButton,
-  SignOutButton,
+  SignIn,
   SignedIn,
   SignedOut,
-  useAuth,
-  SignIn,
 } from "@clerk/clerk-react";
-import axios from "axios";
-import { useEffect } from "react";
-import {useNavigate} from 'react-router-dom';
+import { Navigate } from "react-router-dom";
 
-const SignUpClerk = () => {
-  const navigate = useNavigate();
-  const { getToken, isSignedIn, isLoaded } = useAuth();
-  useEffect(() => {
-    if(isLoaded && isSignedIn){
-      navigate("/");
-    }
-  }, [isLoaded, isSignedIn])
+const LoginClerk = () => {
   return (
-    <div>
+    <div style={{display: "flex", justifyContent: "center"}}>
       <SignedIn>
-        <button
-          onClick={async () => {
-            const settings = {
-              dark_mode: true,
-              suggest_cl: false,
-              auto_download_cl: false,
-            };
-            console.log(await getToken());
-            const response = await axios.post(
-              "https://cover-ai-server-three.vercel.app/users/settings",
-              { settings },
-              {
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: `Bearer ${await getToken()}`,
-                },
-              }
-            );
-            console.log(response);
-          }}
-        >
-          Click me{" "}
-        </button>
-        <p>You are signed in.</p>
-        <SignOutButton />
+        <Navigate to={'/home'} />
       </SignedIn>
       <SignedOut>
-      <SignIn
+        <SignIn
           afterSignInUrl='/'
           signUpUrl='/sign-up'
         />
@@ -57,4 +21,4 @@ const SignUpClerk = () => {
   );
 };
 
-export default SignUpClerk;
+export default LoginClerk;

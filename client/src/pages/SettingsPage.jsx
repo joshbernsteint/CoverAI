@@ -15,7 +15,6 @@ export default function SettingsPage() {
             <br />
             <SettingForm></SettingForm>
         </div>
-        <MyFooter />
     </>
   );
 }
