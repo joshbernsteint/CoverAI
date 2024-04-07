@@ -46,7 +46,7 @@ export default function SettingForm(props) {
         setFormData(response.data.settings);
       } catch (error) {
         // console.error("Error occurred:", error);
-        console.log("Server error occurred.");
+        //console.log("Server error occurred.");
         toast.error("Server error occurred.");
       }
     };
@@ -77,9 +77,10 @@ export default function SettingForm(props) {
         });
 
       console.log(response.data);
+      toast.success("Settings updated successfully.");
     } catch (error) {
       // console.error("Error occurred:", error);
-      console.log("Server error occurred.");
+      //console.log("Server error occurred.");
       toast.error("Server error occurred.");
     }
   };
