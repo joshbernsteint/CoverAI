@@ -1,10 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FormControl, Button, Spinner } from 'react-bootstrap';
-import axios from 'axios';
-import { useAuth } from '@clerk/chrome-extension';
-import Requests from '../services/requests';
 
-function DescriptionInput({ value, setValue, hideThis, setCL,...props}) {
+function DescriptionInput({requester, value, setValue, hideThis, setCL,...props}) {
   function getFromStorage(key, defaultValue, transformFn=JSON.parse){
     const item = localStorage.getItem(key);
     if(item)
@@ -18,7 +15,6 @@ function DescriptionInput({ value, setValue, hideThis, setCL,...props}) {
   const [scrapeError, setScrapeError] = useState(value.raw.length === 0);
   const [textData, setTextData] = useState(value.raw.length === 0 ? getFromStorage("scrapeData", {raw: "", employer: "", jobName: ""}) : value );
   const [loadingAPI, setLoading] = useState(false);
-  const myRequester = new Requests();
 
 
 
@@ -29,14 +25,14 @@ function DescriptionInput({ value, setValue, hideThis, setCL,...props}) {
   
   async function handleCreate(){
     setLoading(true);
-    const {data} = await myRequester.post("http://localhost:3000/covers/genCoverLetter", {
+    const {data} = await requester.post("/covers/genCoverLetter", {
       company_name: textData.employer,
       job_title: textData.jobName,
       useScraper: true,
       scrapedData: textData.raw,
     });
 
-    await chrome.downloads.download({method: "GET", url: "http://localhost:3000/covers/makeFileFromLast",  headers: [{name: "Authorization", value: await myRequester.getToken()}]});
+    await chrome.downloads.download({method: "GET", url: requester.baseUrl + "/covers/makeFileFromLast",  headers: [{name: "Authorization", value: await requester.getToken()}]});
 
     setCL(data);
     setValue(textData); // Needs to be the last thing, will cause a complete re-render

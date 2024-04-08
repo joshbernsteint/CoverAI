@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb";
 import { users } from "../../config/mongoCollections.js";
 import { UnexpectedError } from "../../utils/errors.js";
 import { clerkClient } from "@clerk/clerk-sdk-node";
@@ -62,6 +63,13 @@ const resetSettings = async (user_id) => {
   return updatedUser;
 };
 
+const getUser = async (user_id) => {
+  const userCollection = await users();
+  const user = await userCollection.findOne({ _id: user_id });
+  return user;
+};
+
+
 const setName = async (user_id, firstName, lastName) => {
   if (!firstName || !lastName) throw new UnexpectedError("First name and last name are required.");
   if (typeof firstName !== "string" || typeof lastName !== "string") throw new UnexpectedError("First name and last name must be strings.");
@@ -70,13 +78,14 @@ const setName = async (user_id, firstName, lastName) => {
   firstName = firstName.trim();
   lastName = lastName.trim();
 
+  
   const userCollection = await users();
   const user = await userCollection.findOne({ _id: user_id });
   if (!user) throw new UnexpectedError("User not found.");
-
+  
   let changes = 0;
   let toBeUpdated = {};
-  if (firstName !== user.first_name) {
+  if (!user.first_name || firstName !== user.first_name) {
     toBeUpdated.first_name = firstName;
     changes++;
   };
@@ -84,7 +93,7 @@ const setName = async (user_id, firstName, lastName) => {
     toBeUpdated.last_name = lastName;
     changes++;
   };
-
+  
   if (changes === 0) throw new UnexpectedError("No changes detected.");
 
   const updateResult = await userCollection.updateOne(
@@ -92,10 +101,10 @@ const setName = async (user_id, firstName, lastName) => {
     { $set: toBeUpdated }
   );
   if (updateResult.modifiedCount === 0) throw new UnexpectedError("Failed to update user name.");
-  const updatedUser = await userCollection.findOne({ _id: user_id });
+  const updatedUser = await userCollection.findOne({ _id: new ObjectId(user_id) });
 
   return updatedUser;
 
 }
 
-export { setSkills, getSkills, setSettings, getSettings, resetSettings, setName };
+export { setSkills, getSkills, setSettings, getSettings, resetSettings, setName, getUser };

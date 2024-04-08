@@ -1,7 +1,7 @@
 import Router from "express";
-import fs from 'fs';
-import PDFDocument from 'pdfkit';
-import path from 'path';
+import fs from "fs";
+import PDFDocument from "pdfkit";
+import path from "path";
 
 const router = Router();
 import { ClerkExpressRequireAuth } from "@clerk/clerk-sdk-node";
@@ -13,16 +13,11 @@ import {
   getAllCoverLettersFromUser,
 } from "./covers.service.js";
 
-router.route("/test").get((req, res) => {
-  res.json({ message: "Hello, world!" });
-});
-
 router
   .route("/genCoverLetter")
   .post(
-    ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
+    ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL, process.env.LOCALHOST_URL] }),
     async (req, res, next) => {
-      console.log(req.headers);
       try {
         const user_id = req.auth.sessionClaims.sub;
         const {
@@ -64,7 +59,7 @@ router.route("/genBasicLetter").post(async (req, res, next) => {
 router
   .route("/updateCoverLetter")
   .patch(
-    ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
+    ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL, process.env.LOCALHOST_URL] }),
     async (req, res) => {
       const cover_id = req.body.cover_id;
       const description = req.body.description;
@@ -73,21 +68,27 @@ router
     }
   );
 
-router
-  .route("/getAllCoverLetters")
-  .get(
-    ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
-    async (req, res) => {
+router.route("/getAllCoverLetters").get(
+  ClerkExpressRequireAuth({
+    debug: true,
+  }),
+  async (req, res) => {
+    try {
+      console.log(req.auth.sessionClaims.sub);
       const user_id = req.auth.sessionClaims.sub;
       const response = await getAllCoverLettersFromUser(user_id);
       return res.status(200).json(response);
+    } catch (err) {
+      console.log(err);
+      next(err);
     }
-  );
+  }
+);
 
 router
   .route("/getCoverLetterById/:id")
   .get(
-    ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
+    ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL, process.env.LOCALHOST_URL] }),
     async (req, res) => {
       const cover_id = req.params.id;
       const response = await getCoverLetterById(cover_id);
@@ -95,33 +96,35 @@ router
     }
   );
 
-
-  router.route("/makeFileFromLast").get(ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }), async (req,res) => {
-    const user_id = req.auth.sessionClaims.sub;
+router
+  .route("/makeFileFromLast")
+  .get(
+    ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL, process.env.LOCALHOST_URL] }),
+    async (req, res) => {
+      const user_id = req.auth.sessionClaims.sub;
     const allCls = await getAllCoverLettersFromUser(user_id);
     const mostRecent = allCls[allCls.length - 1];
     const fileName = 'temp_cl.pdf'
     const doc = new PDFDocument();
     doc.pipe(fs.createWriteStream(fileName));
-  
+    doc.font('Times-Roman');
     for (const paragraph of mostRecent.paragraphs) {
       doc.text(paragraph);
       doc.moveDown();
     }
-    doc.end();
-    const absPath = path.resolve(fileName);
-    res.sendFile(absPath, () => res.end());
-  
-  });
-  
-  router.route("/makeFileFromId/:id").get(ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }), async (req,res) => {
+  );
+
+router
+  .route("/makeFileFromId/:id")
+  .get(
+    ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL, process.env.LOCALHOST_URL] }),
+    async (req, res) => {
       const cover_id = req.params.id;
       const response = await getCoverLetterById(cover_id);
-      const fileName = 'temp_cl.pdf'
+      const fileName = "temp_cl.pdf";
       const doc = new PDFDocument();
-      console.log(response.paragraphs);
       doc.pipe(fs.createWriteStream(fileName));
-    
+      doc.font('Times-Roman');
       for (const paragraph of response.paragraphs) {
         doc.text(paragraph);
         doc.moveDown();
@@ -129,6 +132,7 @@ router
       doc.end();
       const absPath = path.resolve(fileName);
       res.sendFile(absPath, () => res.end());
-  });
+    }
+  );
 
 export default router;

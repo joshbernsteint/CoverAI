@@ -33,7 +33,7 @@ export default function UserForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // console.log("Form submitted:", formData);
+    console.log("Form submitted:", formData);
     const token = await getToken();
 
     //REAL API CALL GOES HERE THIS IS JUST A MOCK

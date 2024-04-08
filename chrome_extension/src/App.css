@@ -126,6 +126,7 @@
   margin: .5rem 0;
   cursor: pointer;
   font-size: 14pt;
+  text-align: center;
 }
 
 .past_cl:hover{
@@ -147,4 +148,23 @@
 .input-box{
   width: 50%;
   display: inline-block;
+}
+
+.like-button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+.like-button:hover {
+  border-color: #646cff;
+}
+.like-button:focus,
+.like-button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
 }

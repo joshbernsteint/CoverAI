@@ -5,6 +5,7 @@ import { Navbar } from "flowbite-react";
 import { SignIn, UserButton, SignInButton } from "@clerk/clerk-react";
 
 const NavbarComp = ({ userAuthenticated }) => {
+
   const navItems = [
     { name: "Home", href: "/home" },
     { name: "Sign Up", href: "/sign-up" },
@@ -68,7 +69,7 @@ const NavbarComp = ({ userAuthenticated }) => {
             )}
           </div>
           <div>
-            <UserButton />
+            <UserButton afterSignOutUrl="/"/>
           </div>
         </div>
       </ul>
