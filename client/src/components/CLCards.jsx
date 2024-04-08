@@ -1,16 +1,17 @@
 import React from "react";
-import { Card } from "flowbite-react";
-import { Link } from "react-router-dom";
+import { Card, Button } from "flowbite-react";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Requests from "../services/requests";
 import { useAuth } from "@clerk/clerk-react";
+import { FiTrash, FiChevronRight } from "react-icons/fi";
+import { Modal } from "flowbite-react";
 
 const CLCards = () => {
-  const myRequester = new Requests();
   const { getToken } = useAuth();
-  //console.log(myRequester);
-  //get cover letters from api
+  const [openModal, setOpenModal] = useState(false);
+  const [coverIdToDelete, setCoverIdToDelete] = useState(null); // Changed to null to indicate no cover ID to delete
+
   const [coverLetters, setCoverLetters] = useState(undefined);
   useEffect(() => {
     const fetchCoverLetters = async () => {
@@ -32,33 +33,77 @@ const CLCards = () => {
     fetchCoverLetters();
   }, []);
 
+  const handleDeleteCoverLetter = (event, coverId) => {
+    setOpenModal(true);
+    setCoverIdToDelete(coverId); 
+  };
+
+  const handleDeleteCoverLetterConfirmed = async () => {
+    console.log("Deleting cover letter with ID confirmed: ", coverIdToDelete);
+
+    //TODO: api call to delete cover letter
+
+    setOpenModal(false);
+  };
+
   return (
     <div className="md:px-14 px-4 py-16 max-w-screen-2xl mx-auto text-center mt-11">
       <h1 className="font-bold text-3xl"> Your Past Cover Letters </h1>
-        <div className="mt-4">
-          {
-            coverLetters ? (
-              coverLetters.map((cover, i) => (
-                <Card
-                  href={`text-editor/${cover._id}`}
-                  className="max-w px-4 mt-4"
-                  key={i}
-                >
+      <div className="mt-4">
+        {coverLetters ? (
+          coverLetters.map((cover, i) => (
+            <Card
+              href={`text-editor/${cover._id}`}
+              className="max-w px-4 mt-4 justify-between -z-10"
+              key={i}
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <FiChevronRight className="text-3xl" />
+                </div>
+                <div>
                   <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                    {cover.company_name}
+                    {cover.company_name !== null
+                      ? cover.company_name
+                      : "Untitled"}
                   </h5>
                   <p className="font-normal text-gray-700 dark:text-gray-400">
                     Created: {cover.date}
                   </p>
-                </Card>
-              ))
-            ) : (
-              <div style={{display: "flex", justifyContent: "center"}}>
-              <div className="loader-orbit"></div>
+                </div>
+                <div>
+                  <button
+                    className="z-10 hover:text-red-500 p-2 relative rounded-full"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      event.preventDefault();
+                      handleDeleteCoverLetter(event, cover._id);
+                    }}
+                  >
+                    <FiTrash className="text-3xl" />
+                  </button>
+                </div>
               </div>
-            )
-          }
-        </div>
+            </Card>
+          ))
+        ) : (
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <div className="loader-orbit"></div>
+          </div>
+        )}
+      </div>
+      <Modal show={openModal} onClose={() => setOpenModal(false)}>
+        <Modal.Header>Delete Cover Letter</Modal.Header>
+        <Modal.Body>
+          Are you sure you want to delete this cover letter?
+        </Modal.Body>
+        <Modal.Footer>
+          <button onClick={() => setOpenModal(false)} className="btn-outline border-black text-black">Cancel</button>
+          <button onClick={handleDeleteCoverLetterConfirmed} className="btn bg-red-500 border-red-500">
+            Delete
+          </button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };

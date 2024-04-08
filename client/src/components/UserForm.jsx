@@ -165,7 +165,7 @@ export default function UserForm() {
             <div className="flex gap-2 mt-4">
               <button
                 onClick={() => setShowForm(false)}
-                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                className="px-4 py-2 btn-outline"
               >
                 Close
               </button>
@@ -173,7 +173,7 @@ export default function UserForm() {
               <button
                 onClick={handleSubmit}
                 type="submit"
-                className="px-7 py-2 bg-coverLetterBlue text-white rounded hover:bg-secondary"
+                className="px-8 py-2 btn"
               >
                 Submit
               </button>
@@ -184,13 +184,13 @@ export default function UserForm() {
 
       <div id="right-form" className="w-2/4 flex justify-center items-center">
         <div className="flex flex-col items-center text-center gap-2">
-          <div className="text-2xl">Fill out this form</div>
+          {/* <div className="text-2xl">Fill out this form</div> */}
           <div>
             <button
               onClick={handleButtonClick}
-              className="px-7 py-2 bg-coverLetterBlue text-white rounded hover:bg-secondary"
+              className="px-7 py-6 btn"
             >
-              Take me there
+              Fill out this form
             </button>
           </div>
         </div>

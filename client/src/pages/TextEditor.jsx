@@ -22,8 +22,8 @@ export default function TextEditor() {
   
   return (
     <>
-      <div className="md:px-14 px-4 py-16 max-w-screen-2xl mx-auto text-center mt-11">
-        <h1 className="font-bold text-3xl"> Your Cover Letter</h1>
+      <div className="md:px-14 px-4 max-w-screen-2xl mx-auto text-center mt-11">
+        <h1 className="font-bold text-3xl py-4"> Your Cover Letter</h1>
         <TextEdit id={id}></TextEdit>
       </div>
     </>

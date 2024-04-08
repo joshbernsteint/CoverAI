@@ -4,12 +4,16 @@ import axios from "axios";
 import CLContext from "../CLContext";
 import DocumentManager from "../services/documentManager";
 import { useAuth } from "@clerk/clerk-react";
+import { HiInformationCircle } from "react-icons/hi";
+import { Alert } from "flowbite-react";
 
 function CLForm(props) {
   const buttonRef = useRef(null);
   const formRef = useRef(null);
   const navigate = useNavigate();
   const { activeCL, setActiveCL } = useContext(CLContext);
+  const [error, setError] = useState(null);
+
   const toggleVisibility = (newValue = undefined) => {
     buttonRef.current.hidden =
       typeof newValue === "undefined" ? !buttonRef.current.hidden : newValue;
@@ -26,9 +30,7 @@ function CLForm(props) {
       try {
         const response = await axios.post(
           "https://cover-ai-server-three.vercel.app/covers/genCoverLetter",
-          { scrapedData: promptContent , 
-            company_name: "Doordash"
-        },
+          { scrapedData: promptContent, company_name: "Doordash" },
           {
             headers: {
               "Content-Type": "application/json",
@@ -47,6 +49,8 @@ function CLForm(props) {
       }
     } else {
       console.log("Prompt too short");
+      setError("Prompt too short. Please be more descriptive on what you want your cover letter to be about.");
+      
     }
   };
 
@@ -59,17 +63,23 @@ function CLForm(props) {
   }
 
   return (
-    <div className="md:px-14 px-4 py-16 max-w-screen-2xl mx-auto text-center mt-11">
-      <button
-        ref={buttonRef}
-        className="bg-primary text-white py-2 px-4 transition-all duration-300 rounded text-2xl hover:bg-greyishPurple"
-        onClick={toggleVisibility}
-      >
+    <div className="md:px-14 px-4 max-w-screen-2xl mx-auto text-center mt-11">
+      {error && (
+        <Alert color="failure" icon={HiInformationCircle} className="my-10 transition-opacity">
+          <span className="font-medium">Alert!</span> {error}
+        </Alert>
+      )}
+      <button ref={buttonRef} className="btn" onClick={toggleVisibility}>
         Make a new Cover Letter
       </button>
-      <form ref={formRef} onSubmit={handleSubmit} hidden>
+      <form
+        ref={formRef}
+        onSubmit={handleSubmit}
+        hidden
+        className="bg-indigo-50 rounded-lg p-4"
+      >
         <label>
-          <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+          <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white ">
             Input your prompt below:
           </h2>
           <textarea
@@ -79,18 +89,25 @@ function CLForm(props) {
           />
         </label>
         <br />
-        <button
-          className="bg-primary text-white py-2 px-4 transition-all duration-300 rounded text-2xl hover:bg-greyishPurple mr-5"
-          onClick={() => toggleVisibility(false)}
-        >
-          Cancel
-        </button>
-        <button
-          type="submit"
-          className="bg-primary text-white py-2 px-4 transition-all duration-300 rounded text-2xl hover:bg-greyishPurple"
-        >
-          Submit
-        </button>
+        <div className="flex justify-center gap-12">
+          <div>
+            <button
+              className="btn-outline"
+              type="button"
+              onClick={() => 
+                {toggleVisibility(false)
+                setError(null)}
+              }
+            >
+              Cancel
+            </button>
+          </div>
+          <div>
+            <button type="submit" className="btn">
+              Submit
+            </button>
+          </div>
+        </div>
       </form>
     </div>
   );

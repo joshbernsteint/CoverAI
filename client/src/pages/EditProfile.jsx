@@ -1,22 +1,16 @@
-import Navbar from "../components/Navbar";
-import MyFooter from "../components/MyFooter";
+import React from "react";
+import { useState, useEffect } from "react";
+
 import UploadFile from "../components/UploadFile";
 import UserForm from "../components/UserForm";
+import FormFilled from "../components/FormFilled";
 
-import { FileInput, Label } from "flowbite-react";
-import { FloatingLabel } from "flowbite-react";
-import { Datepicker } from "flowbite-react";
-import { TextInput } from "flowbite-react";
+import axios from "axios";
+import { useAuth } from "@clerk/clerk-react";
 
-import React from "react";
-
-import Select from "react-select";
-
-import { useState } from "react";
-
-// import { motion as m } from "framer-motion";
 
 export default function EditProfile() {
+  const { getToken } = useAuth();
   const [showForm, setShowForm] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
 
@@ -98,12 +92,34 @@ export default function EditProfile() {
   ];
 
   const [resumeFile, setResumeFile] = useState(null);
+  const [resumes, setResumes] = useState([]);
 
   // Function to handle successful file upload
   const handleUploadSuccess = (file) => {
     setResumeFile(file);
     setUploadSuccess(true);
   };
+
+  useEffect(() => {
+    const fetchResumes = async () => {
+      try {
+        const response = await axios.get(
+          "https://cover-ai-server-three.vercel.app/resumes/all",
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${await getToken()}`,
+            },
+          }
+        );
+        setResumes(response.data);
+        console.log(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchResumes();
+  }, []);
 
   return (
     <>

@@ -5,9 +5,9 @@ import MyFooter from "../components/MyFooter";
 
 export default function HomePage() {
   return (
-    <>
+    <div className="">
       <Home />
       <Services />
-    </>
+    </div>
   );
 }
