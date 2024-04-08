@@ -28,7 +28,7 @@ const MyFooter = () => {
               <Footer.Title title="Follow us" />
               <Footer.LinkGroup col>
                 <Footer.Link href="#">Instagram</Footer.Link>
-                <Footer.Link href="#">Discord</Footer.Link>
+                <Footer.Link href="https://discord.gg/4GYCbZcVU3" target='_blank'>Discord</Footer.Link>
               </Footer.LinkGroup>
             </div>
             <div>

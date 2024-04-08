@@ -4,11 +4,12 @@ import {
   SignedIn,
   SignedOut,
   useAuth,
+  SignUp,
   useUser,
 } from "@clerk/clerk-react";
 import apiClient from "../services/apiClient";
 import { useEffect } from "react";
-import SignUp from './SignUp.jsx'
+import { Navigate } from "react-router-dom";
 
 const SignUpClerk = () => {
 
@@ -32,15 +33,23 @@ const SignUpClerk = () => {
 //     }
 //     signUpUser();
 //   }, [isSignedIn, user]);
+const navigate = useNavigate();
+const {isLoaded, isSignedIn} = useAuth();
+
+
+  useEffect(() => {
+    if(isLoaded && isSignedIn){
+      navigate("/")
+    }
+  }, [isLoaded, isSignedIn]);
+
   return (
-    <div>
+    <div style={{display: "flex", justifyContent: "center"}}>
       <SignedIn>
-        <p>You are signed in.</p>
-        <SignOutButton />
+        <Navigate to={'/home'} />
       </SignedIn>
       <SignedOut>
-        <p>You are not signed in.</p>
-        <SignUpButton />
+        <SignUp signInUrl='/'/>
       </SignedOut>
     </div>
   );

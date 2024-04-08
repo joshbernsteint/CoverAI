@@ -17,6 +17,8 @@ import {
   SignInButton,
   UserButton,
 } from "@clerk/clerk-react";
+import MyFooter from "./components/MyFooter";
+import "./App.css";
 
 function App() {
   return (
@@ -50,6 +52,7 @@ function App() {
           </Routes>
         </SignedOut>
       </>
+      <MyFooter />
     </BrowserRouter>
   );
 }

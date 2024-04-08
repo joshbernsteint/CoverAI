@@ -61,9 +61,9 @@ export default function TextEdit(props) {
     }
     editorContent.ops = newOps;
     localStorage.setItem('activeCL', JSON.stringify(editorContent));
+    console.log(editorContent);
     const pdfAsBlob = await pdfExporter.generatePdf(editorContent); // converts to PDF
     saveAs(pdfAsBlob, 'NEW_CL.pdf'); // downloads from the browser
-    
     // TODO: Save editorContent to database or process further
   };
 

@@ -18,7 +18,6 @@ router
   .post(
     ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL, process.env.LOCALHOST_URL] }),
     async (req, res, next) => {
-      console.log(req.headers);
       try {
         const user_id = req.auth.sessionClaims.sub;
         const {
@@ -103,19 +102,15 @@ router
     ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL, process.env.LOCALHOST_URL] }),
     async (req, res) => {
       const user_id = req.auth.sessionClaims.sub;
-      const allCls = await getAllCoverLettersFromUser(user_id);
-      const mostRecent = allCls[allCls.length - 1];
-      const fileName = "temp_cl.pdf";
-      const doc = new PDFDocument();
-      doc.pipe(fs.createWriteStream(fileName));
-
-      for (const paragraph of mostRecent.paragraphs) {
-        doc.text(paragraph);
-        doc.moveDown();
-      }
-      doc.end();
-      const absPath = path.resolve(fileName);
-      res.sendFile(absPath, () => res.end());
+    const allCls = await getAllCoverLettersFromUser(user_id);
+    const mostRecent = allCls[allCls.length - 1];
+    const fileName = 'temp_cl.pdf'
+    const doc = new PDFDocument();
+    doc.pipe(fs.createWriteStream(fileName));
+    doc.font('Times-Roman');
+    for (const paragraph of mostRecent.paragraphs) {
+      doc.text(paragraph);
+      doc.moveDown();
     }
   );
 
@@ -128,9 +123,8 @@ router
       const response = await getCoverLetterById(cover_id);
       const fileName = "temp_cl.pdf";
       const doc = new PDFDocument();
-      console.log(response.paragraphs);
       doc.pipe(fs.createWriteStream(fileName));
-
+      doc.font('Times-Roman');
       for (const paragraph of response.paragraphs) {
         doc.text(paragraph);
         doc.moveDown();
