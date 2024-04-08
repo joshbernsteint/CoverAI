@@ -2,6 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
 import { ClerkProvider } from "@clerk/clerk-react";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './index.css'
 
 // Import your publishable key
@@ -16,5 +18,6 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
       <App />
     </ClerkProvider>
+    <ToastContainer />
   </React.StrictMode>
 );

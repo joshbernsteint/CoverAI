@@ -21,5 +21,9 @@
   "homepage": "https://github.com/joshbernsteint/CoverAI#readme",
   "devDependencies": {
     "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "framer-motion": "^11.0.12",
+    "save": "^2.9.0"
   }
 }
