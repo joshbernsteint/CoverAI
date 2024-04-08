@@ -15,7 +15,6 @@ router.post(
     try {
       const resumeData = req.body;
       const id = req.auth.sessionClaims.sub;
-      // const id = "65f74a1ef1a8f10d860bb03f";
       const data = await resumeService.createResumeFromJSON(resumeData, id);
       return res.status(200).json(data);
     } catch (error) {
@@ -32,11 +31,14 @@ router.post(
     try {
       const file = req.file;
       const id = req.auth.sessionClaims.sub;
-      // const id = "65f74a1ef1a8f10d860bb03f";
       if (!file) {
         throw new UnexpectedError("Invalid request");
       }
-      const data = await resumeService.createResumeFromPDF(file, id, file.originalname);
+      const data = await resumeService.createResumeFromPDF(
+        file,
+        id,
+        file.originalname
+      );
       return res.status(200).json(data);
     } catch (error) {
       console.log(error);
@@ -51,7 +53,6 @@ router.get(
   async (req, res) => {
     try {
       const id = req.auth.sessionClaims.sub;
-      // const id = "65f74a1ef1a8f10d860bb03f";
       const data = await resumeService.getAllResumesById(id);
       return res.status(200).json(data);
     } catch (error) {
@@ -76,23 +77,38 @@ router
   )
   .put(
     ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
-    upload.single("file"), async (req, res) => {
+    upload.single("file"),
+    async (req, res) => {
       try {
         const id = req.params.id;
         const file = req.file;
         const resumeData = req.body;
+        const userId = req.auth.sessionClaims.sub;
         if (file) {
-          const data = await resumeService.updateResumeById(id, file, "pdf");
+          const data = await resumeService.updateResumeById(
+            id,
+            file,
+            "pdf",
+            userId,
+            file.originalname
+          );
           return res.status(200).json(data);
         }
-        const data = await resumeService.updateResumeById(id, resumeData, "json");
+        const data = await resumeService.updateResumeById(
+          id,
+          resumeData,
+          "json",
+          userId
+        );
         return res.status(200).json(data);
       } catch (error) {
         return res.status(error.status || 500).json({ message: error.message });
       }
-    })
+    }
+  )
   .delete(
-    ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }), async (req, res) => {
+    ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
+    async (req, res) => {
       try {
         const id = req.params.id;
         const data = await resumeService.deleteResumeById(id);
@@ -100,6 +116,7 @@ router
       } catch (error) {
         return res.status(error.status || 500).json({ message: error.message });
       }
-    });
+    }
+  );
 
 export default router;

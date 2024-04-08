@@ -237,17 +237,34 @@ const createPDF = async (resume, pdfname) => {
   doc.end();
 };
 
+const uploadToDatabase = async (resumeData) => {
+  const resumeCollection = await resumes();
+  if (!resumeCollection) {
+    throw new UnexpectedError("Error getting resume collection");
+  }
+
+  const insertInfo = await resumeCollection.insertOne(resumeData);
+  if (insertInfo.insertedCount === 0) {
+    throw new UnexpectedError("Error inserting resume");
+  }
+
+  resumeData._id = insertInfo.insertedId.toString();
+
+  return resumeData;
+};
+
 /**
  * Create a resume from a JSON object.
  * @param {Object} resume - The resume data.
  * @param {string} id - The ID of the user to create the resume for.
+ * @param {boolean} upload - Whether to upload the resume to the database.
  * @returns - The resume data.
  * @throws {UnprocessableEntityError} - If the resume data is invalid.
  * @throws {BadRequestError} - If the user ID is not provided.
  * @throws {UnexpectedError} - If an unexpected error occurs.
  * @example createResumeFromJSON(resume, "60f2c4d9b8b3f6e1d8b1e1f3");
  */
-const createResumeFromJSON = async (resume, id) => {
+const createResumeFromJSON = async (resume, id, upload = true) => {
   if (!id) {
     throw new BadRequestError("User id is required");
   }
@@ -339,19 +356,11 @@ const createResumeFromJSON = async (resume, id) => {
   // Get all the sections from the text
   resumeData.extractedSections = extractAllSections(resumeData.extractedText);
 
-  const resumeCollection = await resumes();
-  if (!resumeCollection) {
-    throw new UnexpectedError("Error getting resume collection");
+  if (upload) {
+    return uploadToDatabase(resumeData);
+  } else {
+    return resumeData;
   }
-
-  const insertInfo = await resumeCollection.insertOne(resumeData);
-  if (insertInfo.insertedCount === 0) {
-    throw new UnexpectedError("Error inserting resume");
-  }
-
-  resumeData._id = insertInfo.insertedId.toString();
-
-  return resumeData;
 };
 
 /**
@@ -531,12 +540,19 @@ function parseExperiance(extracted) {
  * Create a resume from a PDF.
  * @param {Buffer} resumepdf - The resume in PDF format.
  * @param {string} id - The ID of the user to create the resume for.
+ * @param {string} filename - The name of the PDF file.
+ * @param {boolean} upload - (Optional) Whether to upload the resume to the database.
  * @returns - The resume data.
  * @throws {BadRequestError} - If the user ID is not provided.
  * @throws {UnexpectedError} - If an unexpected error occurs.
- * @example createResumeFromPDF(resumepdf, "60f2c4d9b8b3f6e1d8b1e1f3");
+ * @example createResumeFromPDF(resumepdf, "60f2c4d9b8b3f6e1d8b1e1f3", "resume.pdf");
  */
-const createResumeFromPDF = async (resumepdf, id, filename) => {
+const createResumeFromPDF = async (
+  resumepdf,
+  id,
+  filename = "resume.pdf",
+  upload = true
+) => {
   if (!id) {
     throw new BadRequestError("User id is required");
   }
@@ -601,20 +617,11 @@ const createResumeFromPDF = async (resumepdf, id, filename) => {
       resumeData.pdfJSON.experience = parseExperiance(section.extracted);
     }
   }
-
-  const resumeCollection = await resumes();
-  if (!resumeCollection) {
-    throw new UnexpectedError("Error getting resume collection");
+  if (upload) {
+    return uploadToDatabase(resumeData);
+  } else {
+    return resumeData;
   }
-
-  const insertInfo = await resumeCollection.insertOne(resumeData);
-  if (insertInfo.insertedCount === 0) {
-    throw new UnexpectedError("Error inserting resume");
-  }
-
-  resumeData._id = insertInfo.insertedId.toString();
-
-  return resumeData;
 };
 
 /**
@@ -665,25 +672,57 @@ const getResumeById = async (id) => {
  * @param {*} id - The ID of the resume to update.
  * @param {*} resume - The updated resume data.
  * @param {*} type - The type of the resume (e.g., "json" or "pdf").
+ * @param {*} userId - The ID of the user who owns the resume.
+ * @param {*} filename - (Optional) The name of the PDF file.
  * @returns - The updated resume.
  * @throws {BadRequestError} - If the resume ID is not provided.
  * @throws {UnexpectedError} - If an unexpected error occurs.
  * @example updateResumeById("60f2c4d9b8b3f6e1d8b1e1f3", updatedResume);
  */
-const updateResumeById = async (id, resume, type) => {
+const updateResumeById = async (id, resume, type, userId, filename = "") => {
   if (!id) {
     throw new BadRequestError("Resume ID is required");
   }
+  if (!userId) {
+    throw new BadRequestError("User ID is required");
+  }
+  if (!type) {
+    throw new BadRequestError("Resume type is required");
+  }
+
+  var updatedResumeData = {};
 
   if (type === "json") {
-    const updatedResume = await createResumeFromJSON(resume, resume.userId);
-    return updatedResume;
+    updatedResumeData = await createResumeFromJSON(resume, userId, false);
   } else if (type === "pdf") {
-    const updatedResume = await createResumeFromPDF(resume, resume.userId);
-    return updatedResume;
+    updatedResumeData = await createResumeFromPDF(
+      resume,
+      userId,
+      filename,
+      false
+    );
   } else {
     throw new BadRequestError("Invalid resume type");
   }
+
+  let resumeCollection = await resumes();
+  if (!resumeCollection) {
+    throw new UnexpectedError("Error getting resume collection");
+  }
+
+  let updatedResume = await resumeCollection.updateOne(
+    { _id: new ObjectId(id) },
+    { $set: updatedResumeData }
+  );
+  if (!updatedResume) {
+    throw new UnexpectedError("Error updating resume");
+  }
+  if (updatedResume.modifiedCount === 0) {
+    throw new UnexpectedError("Error updating resume");
+  }
+
+  updatedResumeData._id = id;
+  return updatedResumeData;
 };
 
 /**
