@@ -13,10 +13,9 @@ const NavbarComp = ({ userAuthenticated }) => {
 
   const navItemsAuth = [
     { name: "Home", href: "/home" },
-    { name: "Profile", href: "/edit-profile" },
     { name: "Cover Letters", href: "/cover-letters" },
-    { name: "About", href: "/about" },
     { name: "Settings", href: "/settings" },
+    { name: "Profile", href: "/edit-profile" },
   ];
 
   return (
@@ -24,8 +23,9 @@ const NavbarComp = ({ userAuthenticated }) => {
       <ul className="flex items-center w-full justify-between">
         <div>
           <li>
-            <NavLink to="/home">
+            <NavLink to="/home" className="flex items-center">
               <img src={logo} alt="logo" className="w-12" />
+              <h1 className="font-bold text-3xl">Cover.AI</h1>
             </NavLink>
           </li>
         </div>

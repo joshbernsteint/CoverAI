@@ -142,7 +142,7 @@ export default function SettingForm(props) {
             </select>
           </div> */}
           <br />
-          <button type="submit" className="bg-primary text-white py-2 px-4 transition-all duration-300 rounded text-base hover:bg-greyishPurple">Submit</button>
+          <button type="submit" className="btn">Submit</button>
         </div>
       </form>
     </div>

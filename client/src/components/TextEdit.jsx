@@ -1,19 +1,19 @@
-import { useState } from 'react'
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';  // Import styles
-import { useRef, useContext } from 'react';
-import { pdfExporter } from 'quill-to-pdf';
+import { useState } from "react";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css"; // Import styles
+import { useRef, useContext } from "react";
+import { pdfExporter } from "quill-to-pdf";
 import CLContext from "../CLContext";
 
-import { saveAs } from 'file-saver';
-import axios from 'axios';
+import { saveAs } from "file-saver";
+import axios from "axios";
 import { useAuth } from "@clerk/clerk-react";
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
 export default function TextEdit(props) {
   const { getToken } = useAuth();
   console.log("id: ", props.id);
-  const {activeCL, setActiveCL} = useContext(CLContext);
+  const { activeCL, setActiveCL } = useContext(CLContext);
   const [editorContent, setEditorContent] = useState(activeCL);
   const quillRef = useRef(null);
 
@@ -32,7 +32,7 @@ export default function TextEdit(props) {
         );
         console.log("response data", response.data);
         // for each paragraph in paragraphs array add its string to editorContent
-        let temp = ""
+        let temp = "";
         for (const paragraph of response.data.paragraphs) {
           temp += paragraph + "<br/>" + "<br/>";
         }
@@ -44,40 +44,45 @@ export default function TextEdit(props) {
     };
     getEditorContent();
   }, [props.id]);
-  
 
   const toolbarOptions = [
-    ['bold', 'italic', 'underline'],        // toggled buttons
-    [{ 'list': 'ordered'}, { 'list': 'bullet' }],   // dropdowns with defaults from theme
-    [{ 'align': [] }],
-    ['link', 'image']
+    ["bold", "italic", "underline"], // toggled buttons
+    [{ list: "ordered" }, { list: "bullet" }], // dropdowns with defaults from theme
+    [{ align: [] }],
+    ["link", "image"],
   ];
 
-  const handleSave = async  () => {
+  const handleSave = async () => {
     const editorContent = quillRef.current.getEditor().editor.getDelta();
     const newOps = [];
     for (const item of editorContent.ops) {
-      newOps.push({...item, insert: item.insert.replaceAll("\t", "    ")});
+      newOps.push({ ...item, insert: item.insert.replaceAll("\t", "    ") });
     }
     editorContent.ops = newOps;
-    localStorage.setItem('activeCL', JSON.stringify(editorContent));
+    localStorage.setItem("activeCL", JSON.stringify(editorContent));
     console.log(editorContent);
     const pdfAsBlob = await pdfExporter.generatePdf(editorContent); // converts to PDF
-    saveAs(pdfAsBlob, 'NEW_CL.pdf'); // downloads from the browser
+    saveAs(pdfAsBlob, "NEW_CL.pdf"); // downloads from the browser
     // TODO: Save editorContent to database or process further
   };
 
   return (
     <>
-    <div>
-      <ReactQuill ref={quillRef} value={editorContent} onChange={setEditorContent} modules={{ toolbar: toolbarOptions }}/>
-      <div>
-        <button onClick={handleSave} className="bg-primary text-white py-2 px-4 transition-all duration-300 rounded text-base hover:bg-greyishPurple">
+      <div className="flex flex-col items-center">
+        <ReactQuill
+          ref={quillRef}
+          value={editorContent}
+          onChange={setEditorContent}
+          modules={{ toolbar: toolbarOptions }}
+          style={{ width: "60%" }}
+          className=""
+        />
+        <div>
+          <button onClick={handleSave} className="btn my-4">
             Save
-        </button>
+          </button>
+        </div>
       </div>
-    </div>
     </>
-  )
+  );
 }
-
