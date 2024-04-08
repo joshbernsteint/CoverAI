@@ -107,16 +107,18 @@ router
         next(err);
       }
     }
-  })
-  .get(ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
-  async function (req, res, next) {
-    try {
-      const user_id = req.auth.sessionClaims.sub;
-      const userData = await userService.getUser(user_id);
-      res.json(userData);
-    } catch (error) {
-      next(error);
+  )
+  .get(
+    ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
+    async function (req, res, next) {
+      try {
+        const user_id = req.auth.sessionClaims.sub;
+        const userData = await userService.getUser(user_id);
+        res.json(userData);
+      } catch (error) {
+        next(error);
+      }
     }
-  });
+  );
 
 export default router;

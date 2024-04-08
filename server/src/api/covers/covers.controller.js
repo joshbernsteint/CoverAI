@@ -112,7 +112,7 @@ router
       doc.text(paragraph);
       doc.moveDown();
     }
-  );
+  });
 
 router
   .route("/makeFileFromId/:id")
