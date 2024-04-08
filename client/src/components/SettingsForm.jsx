@@ -13,7 +13,6 @@ import 'react-toastify/dist/ReactToastify.css';
 export default function SettingForm(props) {
   const [formData, setFormData] = useState({
     dark_mode: true,
-    suggest_cl: true,
     auto_download_cl: false,
   }); // will need to populate with current logged in user setting, for now hardcode
 
@@ -36,7 +35,7 @@ export default function SettingForm(props) {
       };
 
       try {
-        const response = await axios.get("http://localhost:3000/users/settings", {
+        const response = await axios.get("https://cover-ai-server-three.vercel.app/users/settings", {
           headers: {
             ...headers,
             "Content-Type": "application/json",
@@ -66,7 +65,7 @@ export default function SettingForm(props) {
     };
 
     try {
-      const response = await axios.post("http://localhost:3000/users/settings", {
+      const response = await axios.post("https://cover-ai-server-three.vercel.app/users/settings", {
         settings: formData
       },
         {
@@ -76,6 +75,15 @@ export default function SettingForm(props) {
           },
         });
 
+      //refetch updated settings
+      const response1 = await axios.get("https://cover-ai-server-three.vercel.app/users/settings", {
+          headers: {
+            ...headers,
+            "Content-Type": "application/json",
+          },
+        });
+
+        setFormData(response1.data.settings);
       console.log(response.data);
       toast.success("Settings updated successfully.");
     } catch (error) {
