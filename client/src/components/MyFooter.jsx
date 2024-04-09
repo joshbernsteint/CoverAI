@@ -20,6 +20,7 @@ const MyFooter = () => {
             <div>
               <Footer.Title title="about" />
               <Footer.LinkGroup col>
+                <Footer.Link href="#">Our Project</Footer.Link>
                 <Footer.Link href="#">Our Developers</Footer.Link>
               </Footer.LinkGroup>
             </div>
