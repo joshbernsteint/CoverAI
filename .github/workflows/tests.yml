@@ -3,26 +3,7 @@ name: Tests CI
 on: [push, pull_request]
 
 jobs:
-  create-envfile:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Make envfile
-      uses: SpicyPizza/create-envfile@v2.0
-      with:
-        envkey_CLERK_SECRET_KEY: ${{ secrets.CLERK_KEY }}
-        envkey_MONGODB_URI: ${{ secrets.MONGODB }}
-        envkey_OPENAI_API_KEY: ${{ secrets.OPENAI }}
-        envkey_TEST_TOKEN: ${{ secrets.TESTER }}
-        envkey_WEBHOOK_SECRET: ${{ secrets.WEBHOOK }}
-        directory: server
-        file_name: .env
-        fail_on_empty: true
-        sort_keys: false
-  
-
-
   test:
-    needs: create-envfile
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -30,6 +11,16 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: '18'
+      - name: 'Create env file'
+        run: |
+          cd server/
+          touch .env
+          echo CLERK_SECRET_KEY=${{ secrets.CLERK_KEY }} >> .env
+          echo MONGODB_URI=${{ secrets.MONGODB }} >> .env
+          echo OPENAI_API_KEY=${{ secrets.OPENAI }} >> .env
+          echo WEBHOOK_SECRET=${{ secrets.WEBHOOK }} >> .env
+          echo TEST_TOKEN=${{ secrets.TESTER }} >> .env
+          cat .env
       - run: cd server/ && ls && npm install
       - run: cd server/ && npm run test
 
