@@ -6,7 +6,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: Running Automatic tests
+      - name: Running Automatic Tests!
       - uses: actions/checkout@v2
       - name: Test using Node.js
         uses: actions/setup-node@v1
