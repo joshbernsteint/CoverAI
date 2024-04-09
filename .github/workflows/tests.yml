@@ -20,9 +20,9 @@ jobs:
           echo OPENAI_API_KEY=${{ secrets.OPENAI }} >> .env
           echo WEBHOOK_SECRET=${{ secrets.WEBHOOK }} >> .env
           echo TEST_TOKEN=${{ secrets.TESTER }} >> .env
+          echo "" >> .env
           cat .env
           echo ".env file created!"
-          ls -la
       - run: cd server/ && ls && npm install
       - run: cd server/ && npm run test
 
