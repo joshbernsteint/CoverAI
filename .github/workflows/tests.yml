@@ -22,6 +22,7 @@ jobs:
           echo TEST_TOKEN=${{ secrets.TESTER }} >> .env
           cat .env
           echo ".env file created!"
+          ls
       - run: cd server/ && ls && npm install
       - run: cd server/ && npm run test
 
