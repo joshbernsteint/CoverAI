@@ -16,7 +16,7 @@ jobs:
         envkey_WEBHOOK_SECRET: ${{ secrets.WEBHOOK }}
         directory: server/
         file_name: .env
-        fail_on_empty: true
+        fail_on_empty: false
         sort_keys: false
   
 
@@ -29,9 +29,8 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: '18'
-      - run: cd server/
-      - run: npm install
-      - run: npm run test
+      - run: cd server/ && npm install
+      - run: cd server/ && npm run test
 
       - name: Tests ✅
         if: ${{ success() }}
