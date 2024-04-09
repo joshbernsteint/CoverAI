@@ -25,7 +25,7 @@ jobs:
           echo "" >> .env
           cat .env
           echo ".env file created!"
-      - run: cd server/ && ls && npm install
+      - run: cd server/ && npm install
       - run: cd server/ && npm run test
 
       - name: Tests ✅
