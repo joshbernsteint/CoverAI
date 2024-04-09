@@ -14,7 +14,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url)); // Define __dirn
 
 dotenv.config();
 
-console.log(process.env.TEST_TOKEN[0]);
+console.log(process.env.TEST_TOKEN[0], process.env.TEST_TOKEN[TEST_TOKEN.length - 1]);
 
 const app = express();
 app.use(cors());
