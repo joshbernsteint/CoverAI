@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon src/server.js",
     "dev": "nodemon src/server.js",
-    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --no-cache --detectOpenHandles --forceExit"
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --no-cache --forceExit"
   },
   "type": "module",
   "keywords": [],
