@@ -22,7 +22,7 @@ export default function TextEdit(props) {
       //call api /covers/getCoverLetterById/:id
       try {
         const response = await axios.get(
-          `https://cover-ai-server-three.vercel.app/covers/getCoverLetterById/${props.id}`,
+          `https://cover-ai-server-three.vercel.app/covers/${props.id}`,
           {
             headers: {
               "Content-Type": "application/json",
