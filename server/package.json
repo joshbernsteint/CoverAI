@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon src/server.js",
     "dev": "nodemon src/server.js",
-    "test": "node --experimental-vm-modules ./node_modules/.bin/jest --no-cache --detectOpenHandles --forceExit"
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --no-cache --detectOpenHandles --forceExit"
   },
   "type": "module",
   "keywords": [],
@@ -33,6 +33,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@types/dotenv": "^8.2.0"
+    "@types/dotenv": "^8.2.0",
+    "cross-env": "^7.0.3"
   }
 }
