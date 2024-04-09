@@ -13,9 +13,6 @@ import { fileURLToPath } from "url"; // Import fileURLToPath
 const __dirname = path.dirname(fileURLToPath(import.meta.url)); // Define __dirname for ES Modules
 
 dotenv.config();
-
-console.log(process.env.TEST_TOKEN[0], process.env.TEST_TOKEN[process.env.TEST_TOKEN.length - 1]);
-
 const app = express();
 app.use(cors());
 app.use(express.json());

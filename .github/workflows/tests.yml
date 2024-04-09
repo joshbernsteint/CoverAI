@@ -3,7 +3,7 @@ name: Tests CI
 on: [push, pull_request]
 
 jobs:
-  test:
+  Unit-Tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -19,6 +19,9 @@ jobs:
           echo MONGODB_URI=${{ secrets.MONGODB }} >> .env
           echo OPENAI_API_KEY=${{ secrets.OPENAI }} >> .env
           echo WEBHOOK_SECRET=${{ secrets.WEBHOOK }} >> .env
+          echo TEST_TOKEN=${{ secrets.TESTER }} >> .env
+          echo "SERVER_URL=http://127.0.0.1:3000" >> .env
+          echo "CLIENT_URL=http://127.0.0.1:5173" >> .env
           echo TEST_TOKEN=${{ secrets.TESTER }} >> .env
           echo "" >> .env
           cat .env
