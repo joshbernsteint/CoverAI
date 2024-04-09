@@ -15,6 +15,8 @@ dotenv.config();
 
 const test_token = process.env.TEST_TOKEN;
 
+console.log(test_token[0], test_token.length);
+
 const resumeIds = [];
 
 describe("POST /resumes/manual", () => {
@@ -29,7 +31,7 @@ describe("POST /resumes/manual", () => {
     if (res.body && res.body._id) {
       resumeIds.push(res.body._id);
     }
-  },10000);
+  });
 });
 
 describe("POST /resumes", () => {
@@ -44,7 +46,7 @@ describe("POST /resumes", () => {
     if (res.body && res.body._id) {
       resumeIds.push(res.body._id);
     }
-  },10000);
+  });
 });
 
 describe("GET /resumes/all", () => {
@@ -54,7 +56,7 @@ describe("GET /resumes/all", () => {
       .set("Authorization", `Bearer ${test_token}`);
     expect(res.statusCode).toEqual(200);
     expect(res.body).toBeInstanceOf(Array);
-  },10000);
+  });
 });
 
 describe("GET /resumes/:id", () => {
@@ -67,7 +69,7 @@ describe("GET /resumes/:id", () => {
       expect(res.body).toHaveProperty("_id");
       expect(res.body._id).toEqual(id);
     }
-  },10000);
+  });
 });
 
 describe("PUT /resumes/:id", () => {
@@ -81,7 +83,7 @@ describe("PUT /resumes/:id", () => {
     expect(res.body._id).toEqual(resumeIds[0]);
     expect(res.body.pdfJSON).toHaveProperty("name");
     expect(res.body.pdfJSON.name).toEqual(data.jsonResumeUpdated.name);
-  },10000);
+  });
 });
 
 describe("DELETE /resumes/:id", () => {
@@ -94,5 +96,5 @@ describe("DELETE /resumes/:id", () => {
       expect(res.body).toHaveProperty("deletedCount");
       expect(res.body.deletedCount).toEqual(1);
     }
-  },10000);
+  });
 });
