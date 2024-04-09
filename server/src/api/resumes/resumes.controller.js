@@ -10,7 +10,9 @@ var upload = multer({ storage: storage });
 
 router.post(
   "/manual",
-  ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
+  ClerkExpressRequireAuth({
+    authorizedParties: [process.env.CLIENT_URL, process.env.LOCALHOST_URL],
+  }),
   async (req, res) => {
     try {
       const resumeData = req.body;
@@ -25,7 +27,9 @@ router.post(
 
 router.post(
   "/",
-  ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
+  ClerkExpressRequireAuth({
+    authorizedParties: [process.env.CLIENT_URL, process.env.LOCALHOST_URL],
+  }),
   upload.single("file"),
   async (req, res) => {
     try {
@@ -49,7 +53,9 @@ router.post(
 
 router.get(
   "/all",
-  ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
+  ClerkExpressRequireAuth({
+    authorizedParties: [process.env.CLIENT_URL, process.env.LOCALHOST_URL],
+  }),
   async (req, res) => {
     try {
       const id = req.auth.sessionClaims.sub;
@@ -64,7 +70,9 @@ router.get(
 router
   .route("/:id")
   .get(
-    ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
+    ClerkExpressRequireAuth({
+      authorizedParties: [process.env.CLIENT_URL, process.env.LOCALHOST_URL],
+    }),
     async (req, res) => {
       try {
         const id = req.params.id;
@@ -76,7 +84,9 @@ router
     }
   )
   .put(
-    ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
+    ClerkExpressRequireAuth({
+      authorizedParties: [process.env.CLIENT_URL, process.env.LOCALHOST_URL],
+    }),
     upload.single("file"),
     async (req, res) => {
       try {
@@ -107,7 +117,9 @@ router
     }
   )
   .delete(
-    ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
+    ClerkExpressRequireAuth({
+      authorizedParties: [process.env.CLIENT_URL, process.env.LOCALHOST_URL],
+    }),
     async (req, res) => {
       try {
         const id = req.params.id;
