@@ -6,6 +6,7 @@ jobs:
   create-envfile:
     runs-on: ubuntu-latest
     steps:
+    - run: cd server && ls
     - name: Make envfile
       uses: SpicyPizza/create-envfile@v1.3.1
       with:
@@ -14,7 +15,7 @@ jobs:
         envkey_OPENAI_API_KEY: ${{ secrets.OPENAI }}
         envkey_TEST_TOKEN: ${{ secrets.TESTER }}
         envkey_WEBHOOK_SECRET: ${{ secrets.WEBHOOK }}
-        directory: server/
+        directory: server
         file_name: .env
         fail_on_empty: true
         sort_keys: false
