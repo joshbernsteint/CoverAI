@@ -4,8 +4,15 @@ import { ClerkExpressRequireAuth } from "@clerk/clerk-sdk-node";
 import * as resumeService from "./resumes.service.js";
 import { UnexpectedError } from "../../utils/errors.js";
 import multer from "multer";
+import fs from "fs";
 
-var storage = multer.memoryStorage();
+// var storage = multer.memoryStorage();
+var storage = multer.diskStorage({
+  destination: "/tmp/",
+  filename: function (req, file, cb) {
+    cb(null, file.originalname);
+  },
+});
 var upload = multer({ storage: storage });
 
 router.post(
@@ -33,11 +40,14 @@ router.post(
   upload.single("file"),
   async (req, res) => {
     try {
-      const file = req.file;
+      let file = req.file;
       const id = req.auth.sessionClaims.sub;
       if (!file) {
         throw new UnexpectedError("Invalid request");
       }
+      // get file from tmp folder
+      file = fs.readFileSync(file.path);
+      // console.log(file);
       const data = await resumeService.createResumeFromPDF(
         file,
         id,
@@ -91,10 +101,11 @@ router
     async (req, res) => {
       try {
         const id = req.params.id;
-        const file = req.file;
+        let file = req.file;
         const resumeData = req.body;
         const userId = req.auth.sessionClaims.sub;
         if (file) {
+          file = fs.readFileSync(file.path);
           const data = await resumeService.updateResumeById(
             id,
             file,
