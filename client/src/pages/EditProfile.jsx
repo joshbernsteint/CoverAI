@@ -100,6 +100,7 @@ export default function EditProfile() {
     setUploadSuccess(true);
   };
 
+
   useEffect(() => {
     const fetchResumes = async () => {
       try {
@@ -112,6 +113,7 @@ export default function EditProfile() {
             },
           }
         );
+
         setResumes(response.data);
         console.log(response.data);
       } catch (error) {

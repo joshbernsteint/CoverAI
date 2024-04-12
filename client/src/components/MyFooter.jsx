@@ -20,7 +20,7 @@ const MyFooter = () => {
             <div>
               <Footer.Title title="about" />
               <Footer.LinkGroup col>
-                <Footer.Link href="#">Cover.AI</Footer.Link>
+                <Footer.Link href="#">Our Project</Footer.Link>
                 <Footer.Link href="#">Our Developers</Footer.Link>
               </Footer.LinkGroup>
             </div>
@@ -28,13 +28,11 @@ const MyFooter = () => {
               <Footer.Title title="Follow us" />
               <Footer.LinkGroup col>
                 <Footer.Link href="#">Instagram</Footer.Link>
-                <Footer.Link href="https://discord.gg/4GYCbZcVU3" target='_blank'>Discord</Footer.Link>
               </Footer.LinkGroup>
             </div>
             <div>
               <Footer.Title title="Legal" />
               <Footer.LinkGroup col>
-                <Footer.Link href="#">Privacy Policy</Footer.Link>
                 <Footer.Link href="#">Terms &amp; Conditions</Footer.Link>
               </Footer.LinkGroup>
             </div>
@@ -44,11 +42,8 @@ const MyFooter = () => {
         <div className="w-full sm:flex sm:items-center sm:justify-between">
           <Footer.Copyright href="#" by="Cover.AI™" year={2024} />
           <div className="mt-4 flex space-x-6 sm:mt-0 sm:justify-center">
-            <Footer.Icon href="#" icon={BsFacebook} />
             <Footer.Icon href="#" icon={BsInstagram} />
-            <Footer.Icon href="#" icon={BsTwitter} />
-            <Footer.Icon href="#" icon={BsGithub} />
-            <Footer.Icon href="#" icon={BsDribbble} />
+            <Footer.Icon href="https://github.com/joshbernsteint/CoverAI" icon={BsGithub} />
           </div>
         </div>
       </div>

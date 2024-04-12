@@ -17,7 +17,7 @@ const CLCards = () => {
     const fetchCoverLetters = async () => {
       try {
         const response = await axios.get(
-          "https://cover-ai-server-three.vercel.app/covers/getAllCoverLetters",
+          "https://cover-ai-server-three.vercel.app/covers/all",
           {
             headers: {
               "Content-Type": "application/json",
@@ -31,7 +31,7 @@ const CLCards = () => {
       }
     };
     fetchCoverLetters();
-  }, []);
+  }, [coverIdToDelete]);
 
   const handleDeleteCoverLetter = (event, coverId) => {
     setOpenModal(true);
@@ -42,13 +42,34 @@ const CLCards = () => {
     console.log("Deleting cover letter with ID confirmed: ", coverIdToDelete);
 
     //TODO: api call to delete cover letter
-
+    try {
+      console.log("coverIDToDelete: ", coverIdToDelete)
+      const response = await axios.delete(
+        `https://cover-ai-server-three.vercel.app/covers/${coverIdToDelete}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${await getToken()}`,
+          },
+        }
+      );
+      console.log("response data", response.data);
+      console.log("after deleter")
+      setCoverIdToDelete(null);
+    } catch (error) {
+      console.log("Error deleting cover letter with id: ", coverIdToDelete)
+      console.error(error);
+    }
     setOpenModal(false);
   };
 
   return (
     <div className="md:px-14 px-4 py-16 max-w-screen-2xl mx-auto text-center mt-11">
-      <h1 className="font-bold text-3xl"> Your Past Cover Letters </h1>
+      <h1 className="font-bold text-3xl"> 
+        Your Past Cover Letters 
+        {/* add count of cover letters */}
+        { coverLetters ? `(${coverLetters.length})` : "" }
+      </h1>
       <div className="mt-4">
         {coverLetters ? (
           coverLetters.map((cover, i) => (
