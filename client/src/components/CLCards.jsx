@@ -17,7 +17,7 @@ const CLCards = () => {
     const fetchCoverLetters = async () => {
       try {
         const response = await axios.get(
-          "https://cover-ai-server-three.vercel.app/covers/getAllCoverLetters",
+          "/covers/getAllCoverLetters",
           {
             headers: {
               "Content-Type": "application/json",

@@ -25,7 +25,7 @@ export default function UploadFile({ onUploadSuccess }) {
 
     try {
       const response = await axios.post(
-        "https://cover-ai-server-three.vercel.app/api-docs/resumes",
+        "/api-docs/resumes",
         formData,
         {
           headers: {

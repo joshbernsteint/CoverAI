@@ -29,7 +29,7 @@ function CLForm(props) {
     if (promptContent.length > 25) {
       try {
         const response = await axios.post(
-          "https://cover-ai-server-three.vercel.app/covers/genCoverLetter",
+          "/covers/genCoverLetter",
           { scrapedData: promptContent, company_name: "Doordash" },
           {
             headers: {
