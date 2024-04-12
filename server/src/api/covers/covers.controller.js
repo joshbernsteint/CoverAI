@@ -13,7 +13,6 @@ import {
   getAllCoverLettersFromUser,
 } from "./covers.service.js";
 
-console.log(process.env);
 
 router
   .route("/genCoverLetter")

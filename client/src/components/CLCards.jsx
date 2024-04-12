@@ -25,7 +25,9 @@ const CLCards = () => {
             },
           }
         );
-        setCoverLetters(response.data.reverse());
+        console.log(response.data);
+        if(response.data)
+          setCoverLetters(response.data.reverse());
       } catch (error) {
         console.error(error);
       }
