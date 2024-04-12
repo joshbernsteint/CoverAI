@@ -121,6 +121,7 @@ app.get('*', async (req,res) => {
 });
 
 app.use((err, req, res, next) => {
+  console.log("Unauthorized!");
   // --> This handles auth errors
   // --> Maybe move this to a middleware file with function below
   if (err.message === "Unauthenticated") throw new UnauthorizedError();
