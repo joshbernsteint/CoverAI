@@ -113,7 +113,7 @@ app.use(
 
 configRoutes(app);
 
-const publicPath = path.resolve('../../client/dist');
+const publicPath = path.resolve('../client/dist');
 app.use(express.static(publicPath));
 
 app.get('*', async (req,res) => {
