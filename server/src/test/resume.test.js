@@ -14,7 +14,6 @@ dotenv.config();
  */
 
 const test_token = process.env.TEST_TOKEN;
-
 const resumeIds = [];
 
 describe("POST /resumes/manual", () => {

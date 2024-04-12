@@ -357,7 +357,7 @@ const createResumeFromJSON = async (resume, id, upload = true) => {
   resumeData.extractedSections = extractAllSections(resumeData.extractedText);
 
   if (upload) {
-    return uploadToDatabase(resumeData);
+    return await uploadToDatabase(resumeData);
   } else {
     return resumeData;
   }
@@ -618,7 +618,7 @@ const createResumeFromPDF = async (
     }
   }
   if (upload) {
-    return uploadToDatabase(resumeData);
+    return await uploadToDatabase(resumeData);
   } else {
     return resumeData;
   }
