@@ -113,6 +113,13 @@ app.use(
 
 configRoutes(app);
 
+const publicPath = path.resolve('../../client/dist');
+app.use(express.static(publicPath));
+
+app.get('*', async (req,res) => {
+  res.sendFile(publicPath + '/index.html');
+});
+
 app.use((err, req, res, next) => {
   // --> This handles auth errors
   // --> Maybe move this to a middleware file with function below
