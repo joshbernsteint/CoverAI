@@ -19,7 +19,7 @@ app.use(cors());
 app.use(express.json());
 
 // Health Check
-app.get("/", async function (req, res) {
+app.get("/ping", async function (req, res) {
   return res.status(200).json({
     ping: "pong",
   });
