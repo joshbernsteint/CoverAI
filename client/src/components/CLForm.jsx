@@ -29,7 +29,7 @@ function CLForm(props) {
     if (promptContent.length > 25) {
       try {
         const response = await axios.post(
-          import.meta.env.VITE_API_URL+"/covers/genCoverLetter",
+          import.meta.env.VITE_API_URL+"/covers/",
           { scrapedData: promptContent, company_name: "Doordash" },
           {
             headers: {

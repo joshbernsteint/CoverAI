@@ -22,7 +22,7 @@ export default function TextEdit(props) {
       //call api /covers/getCoverLetterById/:id
       try {
         const response = await axios.get(
-          import.meta.env.VITE_API_URL+`/covers/getCoverLetterById/${props.id}`,
+          import.meta.env.VITE_API_URL+`/covers/${props.id}`,
           {
             headers: {
               "Content-Type": "application/json",
