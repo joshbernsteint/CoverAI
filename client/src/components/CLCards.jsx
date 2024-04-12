@@ -16,6 +16,7 @@ const CLCards = () => {
   useEffect(() => {
     const fetchCoverLetters = async () => {
       try {
+        console.log(import.meta.env.VITE_API_URL + "/covers/getAllCoverLetters");
         const response = await axios.get(
           import.meta.env.VITE_API_URL + "/covers/getAllCoverLetters",
           {
