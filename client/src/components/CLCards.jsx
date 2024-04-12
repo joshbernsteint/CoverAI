@@ -17,7 +17,7 @@ const CLCards = () => {
     const fetchCoverLetters = async () => {
       try {
         const response = await axios.get(
-          "/covers/getAllCoverLetters",
+          import.meta.env.VITE_API_URL + "/covers/getAllCoverLetters",
           {
             headers: {
               "Content-Type": "application/json",
