@@ -11,9 +11,9 @@ if(inDevelopmentMode){
   });
 }
 else{
-  const httpsOptions = inDevelopmentMode ? {} : {
-    pfx: fs.readFileSync(process.env.CERT_PATH),
-    passphrase: "",
+  const httpsOptions = {
+    key: fs.readFileSync(process.env.KEY_PATH),
+    cert: fs.readFileSync(process.env.CERT_PATH),
   };
   const httpsServer =  https.createServer(httpsOptions, app);
   httpsServer.listen((process.env.PORT || 3000), () => {
