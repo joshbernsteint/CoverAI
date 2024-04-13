@@ -563,7 +563,7 @@ const createResumeFromPDF = async (
 
   const dataBuffer = resumepdf.buffer;
 
-  let pages = await PDFJS.getDocument({ data: new Uint8Array(dataBuffer) })
+  let pages = await PDFJS.getDocument({ data: dataBuffer })
     // .promise.then(async (pdf) => {
     //   let allPages = [];
     //   for (let i = 1; i <= pdf.numPages; i++) {
