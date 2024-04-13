@@ -34,3 +34,4 @@ dist-ssr
 config/settings.js
 .vercel
 *.pem
+*.zip
