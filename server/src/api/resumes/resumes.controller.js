@@ -8,7 +8,7 @@ import fs from "fs";
 
 // var storage = multer.memoryStorage();
 var storage = multer.diskStorage({
-  destination: "/tmp/",
+  destination: "/tmp",
   filename: function (req, file, cb) {
     cb(null, file.originalname);
   },
@@ -47,6 +47,7 @@ router.post(
       }
       // get file from tmp folder
       file = fs.readFileSync(file.path);
+      console.log(file.length);
       // console.log(file);
       const data = await resumeService.createResumeFromPDF(
         file,
