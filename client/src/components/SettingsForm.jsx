@@ -35,7 +35,7 @@ export default function SettingForm(props) {
       };
 
       try {
-        const response = await axios.get("/users/settings", {
+        const response = await axios.get(import.meta.env.VITE_API_URL+"/users/settings", {
           headers: {
             ...headers,
             "Content-Type": "application/json",
