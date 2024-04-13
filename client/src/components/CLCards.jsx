@@ -6,6 +6,7 @@ import Requests from "../services/requests";
 import { useAuth } from "@clerk/clerk-react";
 import { FiTrash, FiChevronRight } from "react-icons/fi";
 import { Modal } from "flowbite-react";
+import { useNavigate } from "react-router-dom";
 
 const CLCards = () => {
   const { getToken } = useAuth();
@@ -47,7 +48,7 @@ const CLCards = () => {
     try {
       console.log("coverIDToDelete: ", coverIdToDelete)
       const response = await axios.delete(
-        `https://cover-ai-server-three.vercel.app/covers/${coverIdToDelete}`,
+        import.meta.env.VITE_API_URL+ `/covers/${coverIdToDelete}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -65,6 +66,8 @@ const CLCards = () => {
     setOpenModal(false);
   };
 
+  const navigate = useNavigate();
+
   return (
     <div className="md:px-14 px-4 py-16 max-w-screen-2xl mx-auto text-center mt-11">
       <h1 className="font-bold text-3xl"> 
@@ -76,9 +79,10 @@ const CLCards = () => {
         {coverLetters ? (
           coverLetters.map((cover, i) => (
             <Card
-              href={`text-editor/${cover._id}`}
+              // href={`text-editor/${cover._id}`}
               className="max-w px-4 mt-4 justify-between -z-10"
               key={i}
+              onClick={() => navigate(`text-editor/${cover._id}`)}
             >
               <div className="flex items-center justify-between">
                 <div>
