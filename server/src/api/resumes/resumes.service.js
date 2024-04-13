@@ -562,25 +562,24 @@ const createResumeFromPDF = async (
   id = id.trim();
 
   const dataBuffer = resumepdf.buffer;
-  console.log(dataBuffer);
 
   let pages = await PDFJS.getDocument({ data: new Uint8Array(dataBuffer) })
-    .promise.then(async (pdf) => {
-      let allPages = [];
-      for (let i = 1; i <= pdf.numPages; i++) {
-        await pdf.getPage(i).then(async (page) => {
-          await page.getTextContent().then(async (textContent) => {
-            const text = textContent.items.map((item) => item.str).join(" ");
-            allPages.push({ page: i, text });
-          });
-        });
-      }
-      return { data: allPages };
-    })
-    .catch((err) => {
-      console.log(err);
-      return { error: err };
-    });
+    // .promise.then(async (pdf) => {
+    //   let allPages = [];
+    //   for (let i = 1; i <= pdf.numPages; i++) {
+    //     await pdf.getPage(i).then(async (page) => {
+    //       await page.getTextContent().then(async (textContent) => {
+    //         const text = textContent.items.map((item) => item.str).join(" ");
+    //         allPages.push({ page: i, text });
+    //       });
+    //     });
+    //   }
+    //   return { data: allPages };
+    // })
+    // .catch((err) => {
+    //   console.log(err);
+    //   return { error: err };
+    // });
 
   if (pages.error) {
     throw new UnexpectedError("Error parsing PDF");
