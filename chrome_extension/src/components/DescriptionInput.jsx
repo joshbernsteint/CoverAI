@@ -25,7 +25,7 @@ function DescriptionInput({requester, value, setValue, hideThis, setCL,...props}
   
   async function handleCreate(){
     setLoading(true);
-    const {data} = await requester.post("/covers/genCoverLetter", {
+    const {data} = await requester.post("/covers/", {
       company_name: textData.employer,
       job_title: textData.jobName,
       useScraper: true,

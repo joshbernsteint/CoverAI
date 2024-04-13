@@ -17,7 +17,7 @@ import {
 
 // Middleware for authenticating requests
 const authenticateRequest = ClerkExpressRequireAuth({
-  authorizedParties: [process.env.CLIENT_URL, process.env.LOCALHOST_URL],
+  authorizedParties: [process.env.CLIENT_URL,process.env.WCLIENT_URL, process.env.LOCALHOST_URL],
 });
 
 router.post("/", authenticateRequest, async (req, res, next) => {
