@@ -28,7 +28,7 @@ export default function UploadFile({ onUploadSuccess }) {
     try {
       console.log("Uploading file to database...");
       const response = await axios.post(
-        import.meta.env.VITE_API_URL+"/api-docs/resumes",
+        import.meta.env.VITE_API_URL+"/resumes",
         formData,
         {
           headers: {
