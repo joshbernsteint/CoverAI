@@ -49,7 +49,7 @@ router.post(
       file = fs.readFileSync(file.path);
       // console.log(file);
       const data = await resumeService.createResumeFromPDF(
-        {buffer: file},
+        file,
         id,
         file.originalname
       );
