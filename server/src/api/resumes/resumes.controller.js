@@ -47,10 +47,9 @@ router.post(
       }
       // get file from tmp folder
       file = fs.readFileSync(file.path);
-      console.log(file.length);
       // console.log(file);
       const data = await resumeService.createResumeFromPDF(
-        file,
+        {buffer: file},
         id,
         file.originalname
       );
