@@ -4,10 +4,10 @@ import coverRoutes from "./covers/covers.controller.js";
 import clerkWebHook from "./webhooks/clerk.js";
 
 const routes = (app) => {
-  app.use("/users", userRoutes);
-  app.use("/covers", coverRoutes);
-  app.use("/resumes", resumeRoutes);
-  app.use("/webhooks", clerkWebHook);
+  app.use("/api/users", userRoutes);
+  app.use("/api/covers", coverRoutes);
+  app.use("/api/resumes", resumeRoutes);
+  app.use("/api/webhooks", clerkWebHook);
 };
 
 export default routes;
