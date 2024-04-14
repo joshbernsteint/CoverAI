@@ -4,7 +4,8 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon src/server.js",
+    "start": "sudo /home/ubuntu/.nvm/versions/node/v21.7.3/bin/node  --js-promise-withresolvers src/server.js",
+    "full-start": "cd ../client/ && npm run build && cd ../server/ && npm start",
     "dev": "nodemon src/server.js",
     "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --no-cache --forceExit"
   },

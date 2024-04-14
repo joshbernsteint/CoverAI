@@ -4,13 +4,24 @@ import { ClerkExpressRequireAuth } from "@clerk/clerk-sdk-node";
 import * as resumeService from "./resumes.service.js";
 import { UnexpectedError } from "../../utils/errors.js";
 import multer from "multer";
+import fs from "fs";
 
-var storage = multer.memoryStorage();
+// var storage = multer.memoryStorage();
+var storage = multer.diskStorage({
+  destination: "/tmp",
+  filename: function (req, file, cb) {
+    cb(null, file.originalname);
+  },
+});
 var upload = multer({ storage: storage });
+
+const clerkAuth = ClerkExpressRequireAuth({
+  authorizedParties: [process.env.CLIENT_URL, ,process.env.WCLIENT_URL,process.env.LOCALHOST_URL],
+});
 
 router.post(
   "/manual",
-  ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
+  clerkAuth,
   async (req, res) => {
     try {
       const resumeData = req.body;
@@ -25,15 +36,18 @@ router.post(
 
 router.post(
   "/",
-  ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
+  clerkAuth,
   upload.single("file"),
   async (req, res) => {
     try {
-      const file = req.file;
+      let file = req.file;
       const id = req.auth.sessionClaims.sub;
       if (!file) {
         throw new UnexpectedError("Invalid request");
       }
+      // get file from tmp folder
+      file = fs.readFileSync(file.path);
+      // console.log(file);
       const data = await resumeService.createResumeFromPDF(
         file,
         id,
@@ -41,7 +55,7 @@ router.post(
       );
       return res.status(200).json(data);
     } catch (error) {
-      console.log(error);
+      console.log("ERROR:", error.toString());
       return res.status(error.status || 500).json({ message: error.message });
     }
   }
@@ -49,7 +63,7 @@ router.post(
 
 router.get(
   "/all",
-  ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
+  clerkAuth,
   async (req, res) => {
     try {
       const id = req.auth.sessionClaims.sub;
@@ -64,7 +78,7 @@ router.get(
 router
   .route("/:id")
   .get(
-    ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
+    clerkAuth,
     async (req, res) => {
       try {
         const id = req.params.id;
@@ -76,15 +90,16 @@ router
     }
   )
   .put(
-    ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
+    clerkAuth,
     upload.single("file"),
     async (req, res) => {
       try {
         const id = req.params.id;
-        const file = req.file;
+        let file = req.file;
         const resumeData = req.body;
         const userId = req.auth.sessionClaims.sub;
         if (file) {
+          file = fs.readFileSync(file.path);
           const data = await resumeService.updateResumeById(
             id,
             file,
@@ -107,7 +122,7 @@ router
     }
   )
   .delete(
-    ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
+    clerkAuth,
     async (req, res) => {
       try {
         const id = req.params.id;

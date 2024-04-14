@@ -42,7 +42,7 @@ export default function UserForm() {
     };
 
     try {
-      const response = await axios.put("http://localhost:3000/users/profile", formData, {
+      const response = await axios.put(import.meta.env.VITE_API_URL+"/profile", formData, {
         headers: {
           ...headers,
           "Content-Type": "application/json",

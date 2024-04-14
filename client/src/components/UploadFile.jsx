@@ -15,8 +15,10 @@ export default function UploadFile({ onUploadSuccess }) {
 
     const formData = new FormData();
     formData.append("file", file);
+    console.log("formData", formData);
 
     const fileURL = URL.createObjectURL(file);
+    console.log("fileURL", fileURL);
     onUploadSuccess(fileURL);
 
     const headers = {
@@ -24,8 +26,9 @@ export default function UploadFile({ onUploadSuccess }) {
     };
 
     try {
+      console.log("Uploading file to database...");
       const response = await axios.post(
-        "https://cover-ai-server-three.vercel.app/api-docs/resumes",
+        import.meta.env.VITE_API_URL+"/resumes",
         formData,
         {
           headers: {
@@ -34,8 +37,10 @@ export default function UploadFile({ onUploadSuccess }) {
           },
         }
       );
-
-      console.log(response.data.extractedText);
+      console.log("File", file);
+      console.log("type", typeof file);
+      console.log(response.status);
+      console.log(response);
       setExtractedText(response.data.extractedText);
     } catch (error) {
       console.error("Error occurred:", error);

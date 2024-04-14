@@ -4,12 +4,14 @@ import { ClerkExpressRequireAuth } from "@clerk/clerk-sdk-node";
 import * as userService from "./users.service.js";
 import { UnexpectedError } from "../../utils/errors.js";
 
+const clerkAuth = ClerkExpressRequireAuth({
+  authorizedParties: [process.env.CLIENT_URL, ,process.env.WCLIENT_URL,process.env.LOCALHOST_URL],
+});
+
 router
   .route("/skills")
   .get(
-    ClerkExpressRequireAuth({
-      authorizedParties: [process.env.CLIENT_URL, process.env.LOCALHOST_URL],
-    }),
+    clerkAuth,
     async function (req, res, next) {
       try {
         const user_id = req.auth.sessionClaims.sub;
@@ -21,9 +23,7 @@ router
     }
   )
   .post(
-    ClerkExpressRequireAuth({
-      authorizedParties: [process.env.CLIENT_URL, process.env.LOCALHOST_URL],
-    }),
+    clerkAuth,
     async function (req, res, next) {
       try {
         const user_id = req.auth.sessionClaims.sub;
@@ -39,9 +39,7 @@ router
 router
   .route("/settings")
   .get(
-    ClerkExpressRequireAuth({
-      authorizedParties: [process.env.CLIENT_URL, process.env.LOCALHOST_URL],
-    }),
+    clerkAuth,
     async function (req, res, next) {
       try {
         const user_id = req.auth.sessionClaims.sub;
@@ -54,9 +52,7 @@ router
     }
   )
   .post(
-    ClerkExpressRequireAuth({
-      authorizedParties: [process.env.CLIENT_URL, process.env.LOCALHOST_URL],
-    }),
+    clerkAuth,
     async function (req, res, next) {
       try {
         const user_id = req.auth.sessionClaims.sub;
@@ -70,9 +66,7 @@ router
     }
   )
   .delete(
-    ClerkExpressRequireAuth({
-      authorizedParties: [process.env.CLIENT_URL, process.env.LOCALHOST_URL],
-    }),
+    clerkAuth,
     async function (req, res, next) {
       try {
         const user_id = req.auth.sessionClaims.sub;
@@ -87,9 +81,7 @@ router
 router
   .route("/profile")
   .put(
-    ClerkExpressRequireAuth({
-      authorizedParties: [process.env.CLIENT_URL, process.env.LOCALHOST_URL],
-    }),
+    clerkAuth,
     async function (req, res, next) {
       try {
         const user_id = req.auth.sessionClaims.sub;
@@ -109,7 +101,7 @@ router
     }
   )
   .get(
-    ClerkExpressRequireAuth({ authorizedParties: [process.env.CLIENT_URL] }),
+    clerkAuth,
     async function (req, res, next) {
       try {
         const user_id = req.auth.sessionClaims.sub;

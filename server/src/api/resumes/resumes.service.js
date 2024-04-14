@@ -357,7 +357,7 @@ const createResumeFromJSON = async (resume, id, upload = true) => {
   resumeData.extractedSections = extractAllSections(resumeData.extractedText);
 
   if (upload) {
-    return uploadToDatabase(resumeData);
+    return await uploadToDatabase(resumeData);
   } else {
     return resumeData;
   }
@@ -563,7 +563,7 @@ const createResumeFromPDF = async (
 
   const dataBuffer = resumepdf.buffer;
 
-  let pages = await PDFJS.getDocument({ data: new Uint8Array(dataBuffer) })
+  let pages = await PDFJS.getDocument({ data: dataBuffer })
     .promise.then(async (pdf) => {
       let allPages = [];
       for (let i = 1; i <= pdf.numPages; i++) {
@@ -618,7 +618,7 @@ const createResumeFromPDF = async (
     }
   }
   if (upload) {
-    return uploadToDatabase(resumeData);
+    return await uploadToDatabase(resumeData);
   } else {
     return resumeData;
   }

@@ -100,11 +100,12 @@ export default function EditProfile() {
     setUploadSuccess(true);
   };
 
+
   useEffect(() => {
     const fetchResumes = async () => {
       try {
         const response = await axios.get(
-          "https://cover-ai-server-three.vercel.app/resumes/all",
+          import.meta.env.VITE_API_URL+"/resumes/all",
           {
             headers: {
               "Content-Type": "application/json",
@@ -112,6 +113,7 @@ export default function EditProfile() {
             },
           }
         );
+
         setResumes(response.data);
         console.log(response.data);
       } catch (error) {
