@@ -18,7 +18,7 @@ app.use(cors());
 app.use(express.json());
 
 // Health Check
-app.get("/", async function (req, res) {
+app.get("/ping", async function (req, res) {
   return res.status(200).json({
     ping: "pong",
   });
@@ -111,6 +111,13 @@ app.use(
 );
 
 configRoutes(app);
+
+const publicPath = path.resolve('../client/dist');
+app.use(express.static(publicPath));
+
+app.get('*', async (req,res) => {
+  res.sendFile(publicPath + '/index.html');
+});
 
 app.use((err, req, res, next) => {
   // --> This handles auth errors

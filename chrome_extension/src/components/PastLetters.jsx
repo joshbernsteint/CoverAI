@@ -38,7 +38,7 @@ function PastLetters({requester, env, ...props}){
 
     useEffect(() => {
         async function getPastLetters(){
-            const {data} = await requester.get("/covers/getAllCoverLetters");
+            const {data} = await requester.get("/covers/all");
             setList(data.reverse());
         }
         if(isSignedIn && requester) getPastLetters();

@@ -105,7 +105,7 @@ export default function EditProfile() {
     const fetchResumes = async () => {
       try {
         const response = await axios.get(
-          "https://cover-ai-server-three.vercel.app/resumes/all",
+          import.meta.env.VITE_API_URL+"/resumes/all",
           {
             headers: {
               "Content-Type": "application/json",

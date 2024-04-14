@@ -9,7 +9,7 @@ import {
 } from "@clerk/clerk-react";
 import apiClient from "../services/apiClient";
 import { useEffect } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 
 const SignUpClerk = () => {
 

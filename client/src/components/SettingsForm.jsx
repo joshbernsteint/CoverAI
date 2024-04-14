@@ -35,7 +35,7 @@ export default function SettingForm(props) {
       };
 
       try {
-        const response = await axios.get("https://cover-ai-server-three.vercel.app/users/settings", {
+        const response = await axios.get(import.meta.env.VITE_API_URL+"/users/settings", {
           headers: {
             ...headers,
             "Content-Type": "application/json",
@@ -65,7 +65,7 @@ export default function SettingForm(props) {
     };
 
     try {
-      const response = await axios.post("https://cover-ai-server-three.vercel.app/users/settings", {
+      const response = await axios.post("/users/settings", {
         settings: formData
       },
         {
@@ -76,7 +76,7 @@ export default function SettingForm(props) {
         });
 
       //refetch updated settings
-      const response1 = await axios.get("https://cover-ai-server-three.vercel.app/users/settings", {
+      const response1 = await axios.get("/users/settings", {
           headers: {
             ...headers,
             "Content-Type": "application/json",

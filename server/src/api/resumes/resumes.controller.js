@@ -8,18 +8,20 @@ import fs from "fs";
 
 // var storage = multer.memoryStorage();
 var storage = multer.diskStorage({
-  destination: "/tmp/",
+  destination: "/tmp",
   filename: function (req, file, cb) {
     cb(null, file.originalname);
   },
 });
 var upload = multer({ storage: storage });
 
+const clerkAuth = ClerkExpressRequireAuth({
+  authorizedParties: [process.env.CLIENT_URL, ,process.env.WCLIENT_URL,process.env.LOCALHOST_URL],
+});
+
 router.post(
   "/manual",
-  ClerkExpressRequireAuth({
-    authorizedParties: [process.env.CLIENT_URL, process.env.LOCALHOST_URL],
-  }),
+  clerkAuth,
   async (req, res) => {
     try {
       const resumeData = req.body;
@@ -34,9 +36,7 @@ router.post(
 
 router.post(
   "/",
-  ClerkExpressRequireAuth({
-    authorizedParties: [process.env.CLIENT_URL, process.env.LOCALHOST_URL],
-  }),
+  clerkAuth,
   upload.single("file"),
   async (req, res) => {
     try {
@@ -55,7 +55,7 @@ router.post(
       );
       return res.status(200).json(data);
     } catch (error) {
-      console.log(error);
+      console.log("ERROR:", error.toString());
       return res.status(error.status || 500).json({ message: error.message });
     }
   }
@@ -63,9 +63,7 @@ router.post(
 
 router.get(
   "/all",
-  ClerkExpressRequireAuth({
-    authorizedParties: [process.env.CLIENT_URL, process.env.LOCALHOST_URL],
-  }),
+  clerkAuth,
   async (req, res) => {
     try {
       const id = req.auth.sessionClaims.sub;
@@ -80,9 +78,7 @@ router.get(
 router
   .route("/:id")
   .get(
-    ClerkExpressRequireAuth({
-      authorizedParties: [process.env.CLIENT_URL, process.env.LOCALHOST_URL],
-    }),
+    clerkAuth,
     async (req, res) => {
       try {
         const id = req.params.id;
@@ -94,9 +90,7 @@ router
     }
   )
   .put(
-    ClerkExpressRequireAuth({
-      authorizedParties: [process.env.CLIENT_URL, process.env.LOCALHOST_URL],
-    }),
+    clerkAuth,
     upload.single("file"),
     async (req, res) => {
       try {
@@ -128,9 +122,7 @@ router
     }
   )
   .delete(
-    ClerkExpressRequireAuth({
-      authorizedParties: [process.env.CLIENT_URL, process.env.LOCALHOST_URL],
-    }),
+    clerkAuth,
     async (req, res) => {
       try {
         const id = req.params.id;

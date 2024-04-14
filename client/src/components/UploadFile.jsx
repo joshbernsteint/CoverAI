@@ -28,8 +28,8 @@ export default function UploadFile({ onUploadSuccess }) {
     try {
       console.log("Uploading file to database...");
       const response = await axios.post(
-        "https://cover-ai-server-three.vercel.app/resumes",
-        file,
+        import.meta.env.VITE_API_URL+"/resumes",
+        formData,
         {
           headers: {
             ...headers,

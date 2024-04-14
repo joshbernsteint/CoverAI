@@ -31,7 +31,7 @@ function CLForm(props) {
     if (promptContent.length > 25) {
       try {
         const response = await axios.post(
-          "https://cover-ai-server-three.vercel.app/covers",
+          import.meta.env.VITE_API_URL+"/covers/",
           {
             company_name: company, // Use state value for company
             job_title: role, // Use state value for role
