@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { styles } from "../styles";
 import Letter from "../components/canvas/Letter";
 
+
 const Home = () => {
   return (
     <section className="relative w-full min-h-screen bg-white dark:bg-black">
