@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
 import { users } from "../../config/mongoCollections.js";
-import { UnexpectedError } from "../../utils/errors.js";
+import { UnexpectedError, BadRequestError } from "../../utils/errors.js";
 import { clerkClient } from "@clerk/clerk-sdk-node";
 
 const getSkills = async (user_id) => {
@@ -69,42 +69,169 @@ const getUser = async (user_id) => {
   return user;
 };
 
-
 const setName = async (user_id, firstName, lastName) => {
-  if (!firstName || !lastName) throw new UnexpectedError("First name and last name are required.");
-  if (typeof firstName !== "string" || typeof lastName !== "string") throw new UnexpectedError("First name and last name must be strings.");
-  if (firstName.trim().length === 0 || lastName.trim().length === 0) throw new UnexpectedError("First name and last name must not be empty.");
+  if (!firstName || !lastName)
+    throw new UnexpectedError("First name and last name are required.");
+  if (typeof firstName !== "string" || typeof lastName !== "string")
+    throw new UnexpectedError("First name and last name must be strings.");
+  if (firstName.trim().length === 0 || lastName.trim().length === 0)
+    throw new UnexpectedError("First name and last name must not be empty.");
 
   firstName = firstName.trim();
   lastName = lastName.trim();
 
-  
   const userCollection = await users();
   const user = await userCollection.findOne({ _id: user_id });
   if (!user) throw new UnexpectedError("User not found.");
-  
+
   let changes = 0;
   let toBeUpdated = {};
   if (!user.first_name || firstName !== user.first_name) {
     toBeUpdated.first_name = firstName;
     changes++;
-  };
+  }
   if (lastName !== user.last_name) {
     toBeUpdated.last_name = lastName;
     changes++;
-  };
-  
+  }
+
   if (changes === 0) throw new UnexpectedError("No changes detected.");
 
   const updateResult = await userCollection.updateOne(
     { _id: user_id },
     { $set: toBeUpdated }
   );
-  if (updateResult.modifiedCount === 0) throw new UnexpectedError("Failed to update user name.");
-  const updatedUser = await userCollection.findOne({ _id: new ObjectId(user_id) });
+  if (updateResult.modifiedCount === 0)
+    throw new UnexpectedError("Failed to update user name.");
+  const updatedUser = await userCollection.findOne({
+    _id: new ObjectId(user_id),
+  });
 
   return updatedUser;
+};
 
-}
+const updateProfile = async (
+  user_id,
+  firstName,
+  lastName,
+  email,
+  phoneNumber,
+  schoolName,
+  major,
+  graduationDate,
+  skills,
+  description
+) => {
+  if (
+    !firstName ||
+    !lastName ||
+    !email ||
+    !phoneNumber ||
+    !schoolName ||
+    !major ||
+    !graduationDate ||
+    !skills ||
+    !description
+  )
+    throw new BadRequestError("All fields are required.");
+  if (
+    typeof firstName !== "string" ||
+    typeof lastName !== "string" ||
+    typeof email !== "string" ||
+    typeof phoneNumber !== "string" ||
+    typeof schoolName !== "string" ||
+    typeof major !== "string" ||
+    typeof graduationDate !== "string" ||
+    !Array.isArray(skills) ||
+    typeof description !== "string"
+  )
+    throw new BadRequestError("Invalid input.");
+  if (
+    firstName.trim().length === 0 ||
+    lastName.trim().length === 0 ||
+    email.trim().length === 0 ||
+    phoneNumber.trim().length === 0 ||
+    schoolName.trim().length === 0 ||
+    major.trim().length === 0 ||
+    graduationDate.trim().length === 0 ||
+    skills.length === 0 ||
+    description.trim().length === 0
+  )
+    throw new BadRequestError("All fields must not be empty.");
 
-export { setSkills, getSkills, setSettings, getSettings, resetSettings, setName, getUser };
+  firstName = firstName.trim();
+  lastName = lastName.trim();
+  email = email.trim();
+  phoneNumber = phoneNumber.trim();
+  schoolName = schoolName.trim();
+  major = major.trim();
+  graduationDate = graduationDate.trim();
+  description = description.trim();
+
+  const userCollection = await users();
+  const user = await userCollection.findOne({ _id: user_id });
+  if (!user) throw new UnexpectedError("User not found.");
+
+  let changes = 0;
+  let toBeUpdated = user;
+  if (!user.first_name || firstName !== user.first_name) {
+    toBeUpdated.first_name = firstName;
+    changes++;
+  }
+  if (lastName !== user.last_name) {
+    toBeUpdated.last_name = lastName;
+    changes++;
+  }
+  if (email !== user.email) {
+    toBeUpdated.email = email;
+    changes++;
+  }
+  if (phoneNumber !== user.phone_number) {
+    toBeUpdated.phone_number = phoneNumber;
+    changes++;
+  }
+  if (schoolName !== user.school_name) {
+    toBeUpdated.school_name = schoolName;
+    changes++;
+  }
+  if (major !== user.major) {
+    toBeUpdated.major = major;
+    changes++;
+  }
+  if (graduationDate !== user.graduation_date) {
+    toBeUpdated.graduation_date = graduationDate;
+    changes++;
+  }
+  if (JSON.stringify(skills) !== JSON.stringify(user.skills)) {
+    toBeUpdated.skills = skills;
+    changes++;
+  }
+  if (description !== user.description) {
+    toBeUpdated.description = description;
+    changes++;
+  }
+  if (changes === 0) throw new BadRequestError("No changes detected.");
+
+  const updateResult = await userCollection.updateOne(
+    { _id: user_id },
+    { $set: toBeUpdated }
+  );
+  if (updateResult.modifiedCount === 0)
+    throw new UnexpectedError("Failed to update user profile.");
+  const updatedUser = await userCollection.findOne({ _id: user_id });
+  if (!updatedUser)
+    throw new UnexpectedError("Failed to retrieve updated user profile.");
+
+  return updatedUser;
+};
+
+export {
+  setSkills,
+  getSkills,
+  setSettings,
+  getSettings,
+  resetSettings,
+  setName,
+  getUser,
+  updateProfile,
+};
