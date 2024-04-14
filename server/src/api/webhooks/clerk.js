@@ -70,6 +70,12 @@ router
             _id: id,
             first_name: evt.data.first_name,
             last_name: evt.data.last_name,
+            email: "",
+            phone_number: "",
+            school_name: "",
+            major: "",
+            graduation_date: "",
+            description: "",
             skills: [],
             settings: {
               dark_mode: false,
