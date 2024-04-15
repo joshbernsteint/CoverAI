@@ -8,7 +8,6 @@ import FormFilled from "../components/FormFilled";
 import axios from "axios";
 import { useAuth } from "@clerk/clerk-react";
 
-
 export default function EditProfile() {
   const { getToken } = useAuth();
   const [showForm, setShowForm] = useState(false);
@@ -100,12 +99,11 @@ export default function EditProfile() {
     setUploadSuccess(true);
   };
 
-
   useEffect(() => {
     const fetchResumes = async () => {
       try {
         const response = await axios.get(
-          import.meta.env.VITE_API_URL+"/resumes/all",
+          import.meta.env.VITE_API_URL + "/resumes/all",
           {
             headers: {
               "Content-Type": "application/json",
@@ -125,12 +123,14 @@ export default function EditProfile() {
 
   return (
     <>
-      <div className="flex justify-center">
+      <div className="flex justify-center dark:bg-background_dark">
         <div className="p-12 w-full">
-          <div className="flex justify-center text-3xl font-semibold mb-4">
-            {uploadSuccess
-              ? "Your resume has been successfully uploaded!"
-              : "Get started by filling out your profile"}
+          <div className="flex justify-center text-3xl font-semibold mb-4 mt-11">
+            <h1>
+              {uploadSuccess
+                ? "Your resume has been successfully uploaded!"
+                : "Get started by filling out your profile"}
+            </h1>
           </div>
 
           <div className="flex justify-center items-center">

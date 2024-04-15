@@ -2,16 +2,20 @@ import React from 'react'
 import { Footer } from 'flowbite-react';
 import { BsDribbble, BsFacebook, BsGithub, BsInstagram, BsTwitter } from 'react-icons/bs';
 import logo from "../assets/iconblack.png";
+import logoDark from "../assets/iconwhite.png";
+import { Context } from '../App';
+import { useContext } from 'react';
 
 const MyFooter = () => {
+  const [isDarkMode, setIsDarkMode] = useContext(Context);
   return (
-    <Footer container>
-      <div className="w-full">
+    <Footer container className=' dark:bg-midGrey dark:rounded-none'>
+      <div className="w-full ">
         <div className="grid w-full justify-between sm:flex sm:justify-between md:flex md:grid-cols-1">
           <div>
             <Footer.Brand
               href="self link"
-              src= {logo}
+              src= {isDarkMode ? logoDark : logo}
               alt="Cover.AI Logo"
               name="Cover.AI"
             />
@@ -38,7 +42,7 @@ const MyFooter = () => {
             </div>
           </div>
         </div>
-        <Footer.Divider />
+        <Footer.Divider className=''/>
         <div className="w-full sm:flex sm:items-center sm:justify-between">
           <Footer.Copyright href="#" by="Cover.AI™" year={2024} />
           <div className="mt-4 flex space-x-6 sm:mt-0 sm:justify-center">

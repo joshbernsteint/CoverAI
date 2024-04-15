@@ -1,10 +1,15 @@
-import React from "react";
+import React, { useContext } from "react";
 import logo from "../assets/iconblack.png";
+import logoDark from "../assets/iconwhite.png";
 import { Link, NavLink } from "react-router-dom";
 import { Navbar } from "flowbite-react";
 import { SignIn, UserButton, SignInButton } from "@clerk/clerk-react";
+import {Context} from "../App.jsx";
+
 
 const NavbarComp = ({ userAuthenticated }) => {
+
+  const [isDarkMode, setIsDarkMode] = useContext(Context);
 
   const navItems = [
     { name: "Home", href: "/home" },
@@ -19,12 +24,12 @@ const NavbarComp = ({ userAuthenticated }) => {
   ];
 
   return (
-    <nav className="flex items-center justify-between px-4 py-2">
+    <nav className="flex items-center justify-between px-4 py-2 dark:bg-background_dark">
       <ul className="flex items-center w-full justify-between">
         <div>
           <li>
             <NavLink to="/home" className="flex items-center">
-              <img src={logo} alt="logo" className="w-12" />
+              <img src={isDarkMode ? logoDark : logo} alt="logo" className="w-12" />
               <h1 className="font-bold text-3xl">Cover.AI</h1>
             </NavLink>
           </li>

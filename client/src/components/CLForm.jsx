@@ -74,24 +74,15 @@ function CLForm(props) {
   }
 
   return (
-    <div className="md:px-14 px-4 max-w-screen-2xl mx-auto text-center mt-11">
-      {/* {error && (
-        <Alert
-          color="failure"
-          icon={HiInformationCircle}
-          className="my-10 transition-opacity"
-        >
-          <span className="font-medium">Alert!</span> {error}
-        </Alert>
-      )} */}
-      <button ref={buttonRef} className="btn" onClick={toggleVisibility}>
+    <div className="md:px-14 px-4 max-w-screen-2xl mx-auto text-center dark:bg-background_dark">
+      <button ref={buttonRef} className="btn mt-11" onClick={toggleVisibility}>
         Make a new Cover Letter
       </button>
       <form
         ref={formRef}
         onSubmit={handleSubmit}
         hidden
-        className="bg-indigo-50 rounded-lg p-4"
+        className="bg-indigo-50 dark:bg-midGrey rounded-lg p-4"
       >
         <label>
           <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white ">
@@ -101,7 +92,7 @@ function CLForm(props) {
             type="text"
             value={company}
             onChange={(e) => setCompany(e.target.value)}
-            className="max-w-screen-2xl mx-auto mt-2 mb-2"
+            className="max-w-screen-2xl mx-auto mt-2 mb-2 dark:text-black"
           />
         </label>
         <label>
@@ -112,7 +103,7 @@ function CLForm(props) {
             type="text"
             value={role}
             onChange={(e) => setRole(e.target.value)}
-            className="max-w-screen-2xl mx-auto mt-2 mb-2"
+            className="max-w-screen-2xl mx-auto mt-2 mb-2 dark:text-black"
           />
         </label>
         <label>
@@ -120,7 +111,7 @@ function CLForm(props) {
             Input your prompt below:
           </h2>
           <textarea
-            className="max-w-screen-2xl mx-auto mt-2 mb-2"
+            className="max-w-screen-2xl mx-auto mt-2 mb-2 dark:text-black"
             style={{ width: "60%", height: "200px" }}
             id="basic-input"
           />

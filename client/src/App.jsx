@@ -20,40 +20,46 @@ import {
 import MyFooter from "./components/MyFooter";
 import "./App.css";
 
+export const Context = React.createContext();
+
 function App() {
+  const [isDarkMode, setIsDarkMode] = React.useState(false);
+
   return (
-    <BrowserRouter>
-      <>
-        <SignedIn>
-          <NavbarComp userAuthenticated={true} />
-          <Routes>
-            <Route path="/" element={<Navigate to="/home" />} />
-            <Route path="/home" element={<Home />} />
-            <Route path="/sign-up" element={<SignUpClerk />} />
-            <Route path="/login" element={<LoginClerk />} />
-            <Route path="/edit-profile" element={<EditProfile />} />
-            <Route path="/cover-letters" element={<CoverLetters />} />
-            <Route path="/text-editor/:id" element={<TextEditor />} />
-            <Route path="/settings" element={<SettingsPage />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/protected" element={<ProtectedPage />} />
-            <Route path="*" element={<NoPage />} />
-          </Routes>
-        </SignedIn>
-        <SignedOut>
-          <NavbarComp userAuthenticated={false} />
-          <Routes>
-            <Route path="/" element={<Navigate to="/home" />} />
-            <Route path="/home" element={<Home />} />
-            <Route path="/sign-up" element={<SignUpClerk />} />
-            <Route path="/login" element={<LoginClerk />} />
-            <Route path="/about" element={<About />} />
-            <Route path="*" element={<NoPage />} />
-          </Routes>
-        </SignedOut>
-      </>
-      <MyFooter />
-    </BrowserRouter>
+    <Context.Provider value={[ isDarkMode, setIsDarkMode ]}>
+      <BrowserRouter>
+        <div className={isDarkMode ? "dark" : ""}>
+          <SignedIn>
+            <NavbarComp userAuthenticated={true} />
+            <Routes>
+              <Route path="/" element={<Navigate to="/home" />} />
+              <Route path="/home" element={<Home />} />
+              <Route path="/sign-up" element={<SignUpClerk />} />
+              <Route path="/login" element={<LoginClerk />} />
+              <Route path="/edit-profile" element={<EditProfile />} />
+              <Route path="/cover-letters" element={<CoverLetters />} />
+              <Route path="/text-editor/:id" element={<TextEditor />} />
+              <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/protected" element={<ProtectedPage />} />
+              <Route path="*" element={<NoPage />} />
+            </Routes>
+          </SignedIn>
+          <SignedOut>
+            <NavbarComp userAuthenticated={false} />
+            <Routes>
+              <Route path="/" element={<Navigate to="/home" />} />
+              <Route path="/home" element={<Home />} />
+              <Route path="/sign-up" element={<SignUpClerk />} />
+              <Route path="/login" element={<LoginClerk />} />
+              <Route path="/about" element={<About />} />
+              <Route path="*" element={<NoPage />} />
+            </Routes>
+          </SignedOut>
+          <MyFooter />
+        </div>
+      </BrowserRouter>
+    </Context.Provider>
   );
 }
 

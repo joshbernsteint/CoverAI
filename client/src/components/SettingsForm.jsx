@@ -1,18 +1,22 @@
-import { useState, useEffect } from 'react'
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
-import { useRef, useContext } from 'react';
+import { useState, useEffect } from "react";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import { useRef, useContext } from "react";
 import CLContext from "../CLContext";
 
-import axios from 'axios';
-import { useAuth } from '@clerk/clerk-react';
+import axios from "axios";
+import { useAuth } from "@clerk/clerk-react";
 
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { Context } from "../App";
 
 export default function SettingForm(props) {
+
+  const [isDarkMode, setIsDarkMode] = useContext(Context);
+
   const [formData, setFormData] = useState({
-    dark_mode: true,
+    dark_mode: isDarkMode,
     auto_download_cl: false,
   }); // will need to populate with current logged in user setting, for now hardcode
 
@@ -22,7 +26,7 @@ export default function SettingForm(props) {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value === 'true' ? true : false
+      [name]: value === "true" ? true : false,
     });
   };
 
@@ -35,14 +39,20 @@ export default function SettingForm(props) {
       };
 
       try {
-        const response = await axios.get(import.meta.env.VITE_API_URL+"/users/settings", {
-          headers: {
-            ...headers,
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await axios.get(
+          import.meta.env.VITE_API_URL + "/users/settings",
+          {
+            headers: {
+              ...headers,
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
         setFormData(response.data.settings);
+        if (response.data.settings.dark_mode) {
+          setIsDarkMode(true);
+        } 
       } catch (error) {
         // console.error("Error occurred:", error);
         //console.log("Server error occurred.");
@@ -65,26 +75,34 @@ export default function SettingForm(props) {
     };
 
     try {
-      const response = await axios.post("/users/settings", {
-        settings: formData
-      },
+      const response = await axios.post(
+        import.meta.env.VITE_API_URL + "/users/settings",
+        {
+          settings: formData,
+        },
         {
           headers: {
             ...headers,
             "Content-Type": "application/json",
           },
-        });
+        }
+      );
 
       //refetch updated settings
-      const response1 = await axios.get("/users/settings", {
+      const response1 = await axios.get(
+        import.meta.env.VITE_API_URL + "/users/settings",
+        {
           headers: {
             ...headers,
             "Content-Type": "application/json",
           },
-        });
+        }
+      );
 
-        setFormData(response1.data.settings);
+      setFormData(response1.data.settings);
       console.log(response.data);
+      // reload page to apply changes
+      window.location.reload();
       toast.success("Settings updated successfully.");
     } catch (error) {
       // console.error("Error occurred:", error);
@@ -98,18 +116,22 @@ export default function SettingForm(props) {
       <form onSubmit={handleSubmit}>
         <div>
           <div className="form-field mb-4">
-            <label className="text-xl font-bold tracking-tight text-gray-700 dark:text-white">Use Dark Mode: </label>
+            <label className="text-xl font-bold tracking-tight text-gray-700 dark:text-white">
+              Use Dark Mode:{" "}
+            </label>
             <select
               name="dark_mode"
               value={formData.dark_mode}
               onChange={handleChange}
             >
-              <option value="true">True</option>
+              <option value="true" className="font-body">True</option>
               <option value="false">False</option>
             </select>
           </div>
           <div className="form-field mb-4">
-            <label className="text-xl font-bold tracking-tight text-gray-700 dark:text-white" >Auto Download Cover Letter: </label>
+            <label className="text-xl font-bold tracking-tight text-gray-700 dark:text-white">
+              Auto Download Cover Letter:{" "}
+            </label>
             <select
               name="auto_download_cl"
               value={formData.auto_download_cl}
@@ -142,7 +164,9 @@ export default function SettingForm(props) {
             </select>
           </div> */}
           <br />
-          <button type="submit" className="btn">Submit</button>
+          <button type="submit" className="btn">
+            Save
+          </button>
         </div>
       </form>
     </div>

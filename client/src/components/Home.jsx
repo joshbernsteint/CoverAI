@@ -5,7 +5,7 @@ import Letter from "../components/canvas/Letter";
 
 const Home = () => {
   return (
-    <section className="relative w-full min-h-screen bg-white dark:bg-black">
+    <section className="relative w-full min-h-screen bg-white dark:bg-background_dark">
       <div
         className={`${styles.paddingX} absolute inset-0 top-[120px] max-w-7xl mx-auto flex flex-row items-start gap-5`}
       >
