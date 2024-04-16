@@ -31,11 +31,16 @@ app.post('/github', async (req,res) => {
     }
     else if(rePull()){
         //Restart the servers
-        spawnSync('pkill screen', {shell: true});
-        spawnSync('cd ../ && npm start', {shell: true});
-
-        res.send("Server Reloading!");
-        activeTimeout = setTimeout(() => {activeTimeout = undefined}, DELAY);
+        const body = req.body;
+        const branchName = body.ref.split('/')[2];
+        if(branchName === "main"){
+            spawnSync('pkill screen', {shell: true});
+            spawnSync('cd ../ && npm start', {shell: true});
+    
+            res.send("Server Reloading!");
+            activeTimeout = setTimeout(() => {activeTimeout = undefined}, DELAY);
+        }
+        else res.send("Invalid branch name.");
     }
 });
 
