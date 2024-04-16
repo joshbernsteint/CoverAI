@@ -18,6 +18,11 @@ function rePull(){
     return stdout !== "Already up to date.\n"
 }
 
+function runServer(){
+    spawnSync('pkill screen', {shell: true});
+    spawnSync('cd ../ && npm start', {shell: true});
+}
+
 let activeTimeout = undefined;
 const DELAY = 5000;
 
@@ -34,9 +39,7 @@ app.post('/github', async (req,res) => {
         const body = req.body;
         const branchName = body.ref.split('/')[2];
         if(branchName === "main"){
-            spawnSync('pkill screen', {shell: true});
-            spawnSync('cd ../ && npm start', {shell: true});
-    
+            runServer();
             res.send("Server Reloading!");
             activeTimeout = setTimeout(() => {activeTimeout = undefined}, DELAY);
         }
@@ -45,5 +48,6 @@ app.post('/github', async (req,res) => {
 });
 
 app.listen(PORT, () => {
+    runServer();
     console.log("Server Online!");
 });
