@@ -14,6 +14,8 @@ import SettingsPage from "./pages/SettingsPage";
 import About from "./pages/About";
 import ProtectedPage from "./pages/ProtectedPage";
 import { SettingsProvider } from "./context/SettingsContext";
+import axios from "axios";
+import { useAuth } from "@clerk/clerk-react";
 
 import {
   SignedIn,
@@ -28,6 +30,51 @@ export const Context = React.createContext();
 
 function App() {
   const [isDarkMode, setIsDarkMode] = React.useState(false);
+  const { isLoaded, getToken } = useAuth();
+
+  React.useEffect(() => {
+    const fetchTheme = async () => {
+      const theme = localStorage.getItem("theme");
+      if (theme) {
+        if (theme === "dark") {
+          setIsDarkMode(true);
+        } else {
+          setIsDarkMode(false);
+        }
+        console.log("Theme set from local storage", theme);
+      } else {
+        const token = await getToken();
+        if (isLoaded === true && !token) return;
+        const headers = { Authorization: `Bearer ${token}` };
+        try {
+          const response = await axios.get(
+            import.meta.env.VITE_API_URL + "/users/settings",
+            {
+              headers: { ...headers, "Content-Type": "application/json" },
+            }
+          );
+          localStorage.setItem("theme", response.data.settings.dark_mode ? "dark" : "light");
+          setIsDarkMode(response.data.settings.dark_mode);
+          console.log("Theme set from server", response.data.settings.dark_mode);
+        } catch (error) {
+          console.error("Error occurred while fetching theme settings:", error);
+        }
+      }
+    };
+    fetchTheme();
+    // eslint-disable-next-line
+  }, []);
+
+  React.useEffect(() => {
+    const body = document.querySelector("body");
+    if (isDarkMode) {
+      body.classList.remove("light-mode");
+      body.classList.add("dark-mode");
+    } else {
+      body.classList.remove("dark-mode");
+      body.classList.add("light-mode");
+    }
+  }, [isDarkMode]);
 
   return (
     <Context.Provider value={[isDarkMode, setIsDarkMode]}>

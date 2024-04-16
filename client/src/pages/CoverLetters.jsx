@@ -1,5 +1,3 @@
-import Navbar from "../components/Navbar";
-import MyFooter from "../components/MyFooter";
 import CLCards from "../components/CLCards";
 import CLForm from "../components/CLForm";
 import { useState } from "react";

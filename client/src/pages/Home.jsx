@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 
 export default function HomePage() {
   return (
-    <div>
+    <div className="dark:bg-background_dark">
       <Home />
       <Services />
     </div>
