@@ -1,17 +1,22 @@
-import { useContext, useRef, useState, useEffect } from "react";
+import {
+  // useContext, 
+  useRef, useState, useEffect
+} from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import CLContext from "../CLContext";
+// import CLContext from "../CLContext";
 import DocumentManager from "../services/documentManager";
 import { useAuth } from "@clerk/clerk-react";
 import { HiInformationCircle } from "react-icons/hi";
-import { Alert } from "flowbite-react";
+// import { Alert } from "flowbite-react";
+import { useSettings } from '../context/SettingsContext'; // Import useSettings hook
 
 function CLForm(props) {
+  const { settings, setSettings } = useSettings(); // Access user settings from context
   const buttonRef = useRef(null);
   const formRef = useRef(null);
   const navigate = useNavigate();
-  const { activeCL, setActiveCL } = useContext(CLContext);
+  // const { activeCL, setActiveCL } = useContext(CLContext);
   const [error, setError] = useState(null);
   const [company, setCompany] = useState(""); // State to hold company value
   const [role, setRole] = useState(""); // State to hold role value
@@ -79,8 +84,11 @@ function CLForm(props) {
         const doc = response;
         console.log(doc);
         // console.log(doc.data.paragraphs);
-        navigate(`/text-editor/${doc.data._id}`);
-        toggleVisibility(false);
+        if (settings.auto_download_cl) {
+          navigate(`/text-editor/${doc.data._id}`); // Redirect to download page
+        }
+        //navigate("/text-editor/1");
+        //toggleVisibility(false);
       } catch (error) {
         console.error(error);
       }
@@ -102,24 +110,15 @@ function CLForm(props) {
   }
 
   return (
-    <div className="md:px-14 px-4 max-w-screen-2xl mx-auto text-center mt-11">
-      {/* {error && (
-        <Alert
-          color="failure"
-          icon={HiInformationCircle}
-          className="my-10 transition-opacity"
-        >
-          <span className="font-medium">Alert!</span> {error}
-        </Alert>
-      )} */}
-      <button ref={buttonRef} className="btn" onClick={toggleVisibility}>
+    <div className="md:px-14 px-4 max-w-screen-2xl mx-auto text-center dark:bg-background_dark">
+      <button ref={buttonRef} className="btn mt-11" onClick={toggleVisibility}>
         Make a new Cover Letter
       </button>
       <form
         ref={formRef}
         onSubmit={handleSubmit}
         hidden
-        className="bg-indigo-50 rounded-lg p-4"
+        className="bg-indigo-50 dark:bg-midGrey rounded-lg p-4"
       >
         <label>
           <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
@@ -129,7 +128,7 @@ function CLForm(props) {
             type="text"
             value={company}
             onChange={(e) => setCompany(e.target.value)}
-            className="max-w-screen-2xl mx-auto mt-2 mb-2 rounded-md"
+            className="max-w-screen-2xl mx-auto mt-2 mb-2 rounded-md dark:text-white dark:bg-background_dark/20"
           />
         </label>
         <label>
@@ -140,7 +139,7 @@ function CLForm(props) {
             type="text"
             value={role}
             onChange={(e) => setRole(e.target.value)}
-            className="max-w-screen-2xl mx-auto mt-2 mb-2 rounded-md"
+            className="max-w-screen-2xl mx-auto mt-2 mb-2 rounded-md dark:text-white dark:bg-background_dark/20"
           />
         </label>
         <aria-label htmlFor="select-res" hidden>Select res</aria-label>
@@ -149,19 +148,19 @@ function CLForm(props) {
             Select a resume:
           </h2>
           {resumes.length > 0 ? (<select
-            className=" max-w-[100%] mx-auto mt-2 mb-2 rounded-md"
+            className=" max-w-[100%] mx-auto mt-2 mb-2 rounded-md dark:text-white dark:bg-background_dark/20"
             style={{ width: "auto" }}
             value={selectedResume}
             onChange={(e) => setSelectedResume(e.target.value)}
           >
-            <option className=' text-black' value={"none"}>Write a prompt...</option>
+            <option className=' text-black dark:text-white dark:bg-background_dark/20' value={"none"}>Write a prompt...</option>
             {resumes.map((resume) => {
               if (resume.resumeType === "pdf") {
-                return <option className=' text-black' key={resume._id} value={resume._id}>
+                return <option className=' text-black dark:text-white dark:bg-background_dark/20' key={resume._id} value={resume._id}>
                   {resume.pdfName}
                 </option>
               } else {
-                return <option className=' text-black' key={resume._id} value={resume._id}>
+                return <option className=' text-black dark:text-white dark:bg-background_dark/20' key={resume._id} value={resume._id}>
                   {`Resume_${resume.created}`}
                 </option>
               }
@@ -179,7 +178,7 @@ function CLForm(props) {
             Input your prompt below:
           </h2>
           <textarea
-            className="max-w-screen-2xl mx-auto mt-2 mb-2 rounded-md"
+            className="max-w-screen-2xl mx-auto mt-2 mb-2 rounded-md dark:text-white dark:bg-background_dark/20"
             style={{ width: "60%", height: "200px" }}
             id="basic-input"
           />

@@ -9,13 +9,27 @@ import { saveAs } from "file-saver";
 import axios from "axios";
 import { useAuth } from "@clerk/clerk-react";
 import { useEffect } from "react";
+import { useSettings } from '../context/SettingsContext'; // Import useSettings hook
 
 export default function TextEdit(props) {
+  const { settings, setSettings } = useSettings(); // Access user settings from context
   const { getToken } = useAuth();
   console.log("id: ", props.id);
   const { activeCL, setActiveCL } = useContext(CLContext);
   const [editorContent, setEditorContent] = useState(activeCL);
   const quillRef = useRef(null);
+  const checkForAutoSave = useRef(false);//on load will check if we should autosave the cover letter after that do not 
+
+  useEffect(() => {
+    // Trigger save function if auto download setting is enabled
+    const checkForAutoDownload = async () => {
+    if (settings.auto_download_cl && !checkForAutoSave.current) {
+      checkForAutoSave.current = true; 
+      handleSave();
+    }
+    }
+    checkForAutoDownload();
+  }, [settings.auto_download_cl]);
 
   useEffect(() => {
     const getEditorContent = async () => {

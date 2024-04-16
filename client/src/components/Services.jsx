@@ -31,7 +31,7 @@ const Services = () => {
     },
   ];
   return (
-    <div className="md:px-14 px-4 py-16 max-w-screen-2xl mx-auto text-center">
+    <div className="md:px-14 px-4 py-16 max-w-screen-2xl mx-auto text-center dark:bg-background_dark">
       {/* services card */}
       <div className="mt-20 md:w-1/2 mx-auto">
         <h2 className="text-4xl font-semibold mb-2">Our Services: </h2>
@@ -42,15 +42,15 @@ const Services = () => {
         {services.map((service) => (
           <div
             key={service.id}
-            className="px-4 py-8 text-center md:w-[300px] mx-auto md:h-80 rounded-md shadow cursor-pointer hover:-translate-y-5 hover:border-b-4 transition-all duration-300 flex items-center justify-center h-full "
+            className="px-4 py-8 text-center md:w-[300px] mx-auto md:h-80 rounded-md shadow-lg shadow-indigo-500/50 cursor-pointer hover:-translate-y-5 duration-300 flex items-center justify-center h-full dark:bg-indigo-800"
             onClick={() => window.location.replace(service.link)}
           >
             <div>
-              <div className="flex justify-center items-center h-20 w-20 bg-indigo-950 text-white rounded-full mx-auto">
+              <div className="flex justify-center items-center h-20 w-20 bg-indigo-950  text-white rounded-full mx-auto">
                 {React.cloneElement(service.image, { className: "text-3xl" })} 
               </div>
-              <h3 className="text-2xl font-semibold mt-4 text-indigo-950">{service.title}</h3>
-              <p className="text-indigo-700 mt-2">{service.description}</p>
+              <h3 className="text-2xl font-semibold mt-4 text-indigo-950 dark:text-indigo-100">{service.title}</h3>
+              <p className="text-indigo-700 dark:text-indigo-300 mt-2">{service.description}</p>
             </div>
           </div>
         ))}

@@ -1,11 +1,42 @@
+import { useEffect, useContext } from "react";
 import { motion } from "framer-motion";
-
 import { styles } from "../styles";
 import Letter from "../components/canvas/Letter";
+import axios from "axios";
+import { Context } from "../App";
+import { useAuth } from "@clerk/clerk-react";
+import { toast } from "react-toastify";
 
 const Home = () => {
+  // eslint-disable-next-line no-unused-vars
+  const [isDarkMode, setIsDarkMode] = useContext(Context);
+  const { isLoaded, getToken } = useAuth();
+
+  useEffect(() => {
+    const fetchThemeSettings = async () => {
+      const token = await getToken();
+      if (isLoaded === true && !token) return;
+      const headers = { Authorization: `Bearer ${token}` };
+      try {
+        const response = await axios.get(
+          import.meta.env.VITE_API_URL + "/users/settings",
+          {
+            headers: { ...headers, "Content-Type": "application/json" },
+          }
+        );
+
+        setIsDarkMode(response.data.settings.dark_mode);
+      } catch (error) {
+        // console.error("Error occurred while fetching theme settings:", error);
+        toast.error("Server error occurred while fetching theme settings.");
+      }
+    }
+    fetchThemeSettings();
+    // eslint-disable-next-line
+  }, []);
+
   return (
-    <section className="relative w-full min-h-screen bg-white dark:bg-black">
+    <section className="relative w-full min-h-screen bg-white dark:bg-background_dark">
       <div
         className={`${styles.paddingX} absolute inset-0 top-[120px] max-w-7xl mx-auto flex flex-row items-start gap-5`}
       >
