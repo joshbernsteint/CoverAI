@@ -13,6 +13,7 @@ import TextEditor from "./pages/TextEditor";
 import SettingsPage from "./pages/SettingsPage";
 import About from "./pages/About";
 import ProtectedPage from "./pages/ProtectedPage";
+import { SettingsProvider } from "./context/SettingsContext"; 
 import {
   SignedIn,
   SignedOut,
@@ -26,6 +27,7 @@ function App() {
   return (
     <BrowserRouter>
       <>
+      <SettingsProvider>
         <SignedIn>
           <NavbarComp userAuthenticated={true} />
           <Routes>
@@ -40,6 +42,7 @@ function App() {
             <Route path="*" element={<NoPage />} />
           </Routes>
         </SignedIn>
+        </SettingsProvider>
         <SignedOut>
           <NavbarComp userAuthenticated={false} />
           <Routes>

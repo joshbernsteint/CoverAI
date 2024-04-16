@@ -9,12 +9,15 @@ import { useAuth } from '@clerk/clerk-react';
 
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useSettings } from '../context/SettingsContext'; // Import useSettings hook
 
 export default function SettingForm(props) {
+  const { settings, setSettings } = useSettings(); // Access user settings from context
+  //default vals to be changed when screen loads from context
   const [formData, setFormData] = useState({
     dark_mode: true,
-    auto_download_cl: false,
-  }); // will need to populate with current logged in user setting, for now hardcode
+    auto_download_cl: true,
+  });
 
   const { getToken } = useAuth();
 
@@ -22,6 +25,10 @@ export default function SettingForm(props) {
     const { name, value } = e.target;
     setFormData({
       ...formData,
+      [name]: value === 'true' ? true : false
+    });
+    setSettings({
+      ...settings,
       [name]: value === 'true' ? true : false
     });
   };
@@ -33,7 +40,7 @@ export default function SettingForm(props) {
       const headers = {
         Authorization: `Bearer ${token}`,
       };
-
+      console.log(import.meta.env.VITE_API_URL+"/users/settings")
       try {
         const response = await axios.get(import.meta.env.VITE_API_URL+"/users/settings", {
           headers: {
@@ -42,7 +49,14 @@ export default function SettingForm(props) {
           },
         });
 
-        setFormData(response.data.settings);
+        //setFormData(response.data.settings);
+        console.log(response.settings)
+        console.log(response.data.settings)
+        setSettings(response.data.settings);
+        setFormData({
+          dark_mode: response.data.settings ? response.data.settings.dark_mode : true,
+          auto_download_cl: response.data.settings ? response.data.settings.auto_download_cl : true,
+        });
       } catch (error) {
         // console.error("Error occurred:", error);
         //console.log("Server error occurred.");
@@ -56,7 +70,7 @@ export default function SettingForm(props) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     // here we can send the data to backend to sync settings, for now just log it
-    console.log(formData);
+    console.log(settings);
 
     const token = await getToken();
 
@@ -65,8 +79,8 @@ export default function SettingForm(props) {
     };
 
     try {
-      const response = await axios.post("/users/settings", {
-        settings: formData
+      const response = await axios.post(import.meta.env.VITE_API_URL + "/users/settings", {
+        settings: settings
       },
         {
           headers: {
@@ -74,17 +88,22 @@ export default function SettingForm(props) {
             "Content-Type": "application/json",
           },
         });
-
+      console.log(response.data.settings)
       //refetch updated settings
-      const response1 = await axios.get("/users/settings", {
+      const response1 = await axios.get( import.meta.env.VITE_API_URL + "/users/settings", {
           headers: {
             ...headers,
             "Content-Type": "application/json",
           },
         });
 
-        setFormData(response1.data.settings);
-      console.log(response.data);
+        //setFormData(response1.data.settings);
+        setSettings(response.data.settings);
+        setFormData({
+          dark_mode: response.data.settings ? response.data.settings.dark_mode : true,
+          auto_download_cl: response.data.settings ? response.data.settings.auto_download_cl : true,
+        });
+      console.log(response1.data.settings);
       toast.success("Settings updated successfully.");
     } catch (error) {
       // console.error("Error occurred:", error);
