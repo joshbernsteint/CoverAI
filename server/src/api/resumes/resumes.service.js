@@ -2,6 +2,7 @@ import { z } from "zod";
 import { ObjectId } from "mongodb";
 import OpenAI from "openai";
 import { resumes } from "../../config/mongoCollections.js";
+import { clerkClient } from "@clerk/clerk-sdk-node";
 import dotenv from "dotenv";
 import {
   BadRequestError,
@@ -22,7 +23,7 @@ const resumeSchema = z.object({
   name: z.string().optional(),
   email: z.string().optional(),
   phone: z.string().optional(),
-  education: z
+  education: z.array(z
     .object({
       school: z.string(),
       degree: z.string(),
@@ -43,12 +44,12 @@ const resumeSchema = z.object({
       }),
       description: z.string().optional(),
       courses: z.string().optional(),
-    })
+    }))
     .optional(),
   experience: z.array(
     z
       .object({
-        title: z.string(),
+        role: z.string(),
         company: z.string(),
         location: z.string(),
         from: z.object({
@@ -389,48 +390,40 @@ function extractAllSections(text) {
   const sectionStartPatterns = [
     {
       name: "Education",
-      pattern: /^education/i,
+      pattern: /(^education$)|(.education$)|(^education.)/i,
     },
     {
       name: "Experience",
-      pattern: /^experience|history/i,
+      pattern: /(^experience$)|(.experience$)|(^history$)|(.history$)/i,
     },
     {
       name: "Projects",
-      pattern: /^projects/i,
+      pattern: /(^projects$)|(.projects$)|(^projects.)/i,
     },
     {
       name: "Skills or Extracurriculars",
-      pattern: /^skills|extracurriculars/i,
+      pattern: /(^skills$)|(.skills$)|(^extracurriculars$)|(.extracurriculars$)/i,
     },
-    // {
-    //   name: 'Contact Information',
-    //   pattern: /^([A-Z]\s?)+[,.]?(\|)?[A-Z].*$/i,
-    // },
     {
       name: "Summary or Objective",
-      pattern: /^summary|objective/i,
+      pattern: /(^summary$)|(.summary$)|(^objective$)|(.objective$)/i,
     },
     {
       name: "Certifications",
-      pattern: /^certifications/i,
+      pattern: /(^certifications$)|(.certifications$)/i,
     },
     {
       name: "Awards or Honors",
-      pattern: /^awards|honors/i,
+      pattern: /(^awards$)|(.awards$)|(^honors$)|(.honors$)/i,
     },
     {
       name: "Publications",
-      pattern: /^publications/i,
+      pattern: /(^publications$)|(.publications$)/i,
     },
-    // {
-    //   name: 'Languages',
-    //   pattern: /^languages/i,
-    // },
-    // {
-    //   name: 'Hobbies or Interests',
-    //   pattern: /^hobbies/i,
-    // },
+    {
+      name: "Conferences",
+      pattern: /(^conference$)|(.conference$)|(^conference.)|(^conferences$)|(.conferences$)|(^conferences.)/i,
+    }
   ];
 
   const sections = [];
@@ -462,6 +455,23 @@ function extractAllSections(text) {
   return sections;
 }
 
+/**
+ * Parse the education section of a resume.
+ * @param {string} extracted - The extracted education section of the resume.
+ * @returns {Object} - The parsed education data.
+ * @example parseEducation("University of California, Berkeley\nBerkeley, CA\nBachelor of Science in Computer Science\nExpected May 2023\nCumulative GPA: 3.8/4.0; Dean's List\nRelevant Coursework: Data Structures, Algorithms, Operating Systems, Computer Networks");
+ * // {
+ * //   school: "University of California, Berkeley",
+ * //   location: "Berkeley, CA",
+ * //   degree: "Bachelor of Science in Computer Science",
+ * //   fieldOfStudy: "Computer Science",
+ * //   to: { month: "May", year: "2023" },
+ * //   gpa: "3.8",
+ * //   scale: "4.0",
+ * //   awards: "Dean's List",
+ * //   courses: "Data Structures, Algorithms, Operating Systems, Computer Networks"
+ * // }
+ */
 function parseEducation(extracted) {
   // Define regex patterns for various fields
   const universityPattern = /(.+)\s*?(\n|$)/;
@@ -531,7 +541,23 @@ function parseEducation(extracted) {
   return educationJSON;
 }
 
-function parseExperiance(extracted) {
+/**
+ * Parse the experience section of a resume.
+ * @param {string} extracted - The extracted experience section of the resume.
+ * @returns {Array} - An array of parsed experience data.
+ * @example parseExperience("Software Engineer Intern\nGoogle\nMountain View, CA\nJune 2022 - August 2022\n- Developed new features for the Google Search app\n- Collaborated with a team of engineers to improve app performance");
+ * // [
+ * //   {
+ * //     role: "Software Engineer Intern",
+ * //     company: "Google",
+ * //     location: "Mountain View, CA",
+ * //     from: { month: "June", year: "2022" },
+ * //     to: { month: "August", year: "2022" },
+ * //     description: "Developed new features for the Google Search app\nCollaborated with a team of engineers to improve app performance"
+ * //   }
+ * // ]
+ */
+function parseExperience(extracted) {
   const experiences = [];
 
   return experiences;
@@ -542,7 +568,7 @@ function parseExperiance(extracted) {
  * @param {Buffer} resumepdf - The resume in PDF format.
  * @param {string} id - The ID of the user to create the resume for.
  * @param {string} filename - The name of the PDF file.
- * @param {boolean} upload - (Optional) Whether to upload the resume to the database.
+ * @param {boolean} upload - (Optional) Whether to upload the resume to the database. Default is true.
  * @returns - The resume data.
  * @throws {BadRequestError} - If the user ID is not provided.
  * @throws {UnexpectedError} - If an unexpected error occurs.
@@ -616,15 +642,225 @@ const createResumeFromPDF = async (
     if (section.name.toLowerCase().includes("education")) {
       resumeData.pdfJSON.education = parseEducation(section.extracted);
     } else if (section.name.toLowerCase().includes("experience")) {
-      resumeData.pdfJSON.experience = parseExperiance(section.extracted);
+      resumeData.pdfJSON.experience = parseExperience(section.extracted);
     }
   }
+
   if (upload) {
     return await uploadToDatabase(resumeData);
   } else {
     return resumeData;
   }
 };
+
+/**
+ * Make a chat request to OpenAI.
+ * @param {string} promptContent - The content of the prompt.
+ * @param {string} systemContent - The content of the system message.
+ * @returns - The response from OpenAI.
+ * @example makeChatRequest("What is 2 + 2?", "Please solve this math problem.");
+ * @example makeChatRequest("What is the capital of France?", "Please provide the capital of France.");
+ */
+const makeChatRequest = async (promptContent, systemContent) => {
+  const completion = await openai.chat.completions.create({
+    messages: [
+      {
+        role: "system",
+        content: systemContent,
+      },
+      {
+        role: "user",
+        content: promptContent,
+      },
+    ],
+    model: "gpt-3.5-turbo",
+  });
+
+  return completion.choices[0].message.content;
+};
+
+/**
+ * Create a resume from a PDF using OpenAI.
+ * @param {Buffer} resumepdf - The resume in PDF format.
+ * @param {string} id - The ID of the user to create the resume for.
+ * @param {string} filename - The name of the PDF file.
+ * @param {boolean} upload - (Optional) Whether to upload the resume to the database. Default is true.
+ * @returns - The resume data.
+ * @throws {BadRequestError} - If the user ID is not provided.
+ * @throws {UnexpectedError} - If an unexpected error occurs.
+ * @example createResumeFromPDFAI(resumepdf, "60f2c4d9b8b3f6e1d8b1e1f3", "resume.pdf");
+ * @example createResumeFromPDFAI(resumepdf, "60f2c4d9b8b3f6e1d8b1e1f3", "resume.pdf", false);
+ * @example createResumeFromPDFAI(resumepdf, "60f2c4d9b8b3f6e1d8b1e1f3", "resume.pdf", true);
+ */
+const createResumeFromPDFAI = async (resumepdf, id, filename = "resume.pdf", upload = true) => {
+  if (!id) {
+    throw new BadRequestError("User id is required");
+  }
+  if (!resumepdf) {
+    throw new BadRequestError("Resume is required");
+  }
+
+  const user = await clerkClient.users.getUser(id);
+  if (!user) {
+    throw new NotFoundError("User not found");
+  }
+
+  const dataBuffer = resumepdf.buffer;
+
+  let pages = await PDFJS.getDocument({ data: dataBuffer })
+    .promise.then(async (pdf) => {
+      let allPages = [];
+      for (let i = 1; i <= pdf.numPages; i++) {
+        await pdf.getPage(i).then(async (page) => {
+          await page.getTextContent().then(async (textContent) => {
+            const text = textContent.items.map((item) => item.str).join(" ");
+            allPages.push({ page: i, text });
+          });
+        });
+      }
+      return { data: allPages };
+    })
+    .catch((err) => {
+      console.log(err);
+      return { error: err };
+    });
+
+  if (pages.error) {
+    throw new UnexpectedError("Error parsing PDF");
+  } else {
+    pages = pages.data;
+  }
+
+  let mergedTexts = "";
+  pages.forEach((page) => {
+    mergedTexts += `${page.text}\n`;
+  });
+
+  // Add line breaks to the text
+  mergedTexts = mergedTexts.replace(/ {2}(?! )/g, "\n");
+  // Remove null character from text
+  mergedTexts = mergedTexts.replace(/\0/g, "");
+
+  // Check if user already uploaded this resume
+  const resumeCollection = await resumes();
+  if (!resumeCollection) {
+    throw new UnexpectedError("Error getting resume collection");
+  }
+
+  const existingResume = await resumeCollection.findOne({
+    userId: id,
+    resumeType: "pdf",
+    extractedText: mergedTexts,
+  });
+  if (existingResume) {
+    existingResume._id = existingResume._id.toString();
+    return existingResume;
+  }
+
+  let extractedSections = extractAllSections(mergedTexts);
+
+  let extractedText = "";
+  extractedSections.forEach((section, index) => {
+    if (section.name !== "Conferences") {
+      if (index === extractedSections.length - 1) {
+        extractedText += `(type: ${section.name}) ${section.content}\n${section.extracted}`;
+      } else {
+        extractedText += `(type: ${section.name}) ${section.content}\n${section.extracted}\n\n`;
+      }
+    }
+  });
+
+  const rSchema = `{
+    "education": [{
+        "school": "string",
+        "degree": "string",
+        "fieldOfStudy": "string",
+        "gpa": "string (ex. 3.5)",
+        "scale": "string (ex. 4.0)",
+        "awards": "string",
+        "activities": "string",
+        "from": {"month": "string", "year": "string"},
+        "to": {"month": "string", "year": "string"} or "Present" or "N/A",
+        "description": "string",
+        "courses": list of courses just as one big string
+    }],
+    "experience": [{
+        "role": "string",
+        "company": "string",
+        "location": "string",
+        "from": {"month": "string", "year": "string"},
+        "to": {"month": "string", "year": "string"} or "Present" or "N/A",
+        "description": "description"
+    }],
+    "skills": [{"Category": "Name of Category1", "Values": ["Skill1", "Skill2", ...]}, {"Category": "Name of Category2", "Values": ["Skill1", "Skill2", ...]}, ...],
+    "projects": [{
+        "title": "string",
+        "description": "description",
+        "link": "string",
+        "from": {"month": "string", "year": "string"},
+        "to": {"month": "string", "year": "string"} or "Present" or "N/A",
+    }],
+    "certifications": [list of certifications as strings],
+    "awards": [list of awards as strings],
+    "publications": [{
+        "title": "string",
+        "publisher": "string",
+        "date": "string",
+        "description": "string"
+    }],
+    "languages": [{
+        "language": "string",
+        "level": "string"
+    }]
+}`;
+
+  const promptContent = `Extract the following sections from the resume:\n\n${extractedText}`;
+  const systemContent = `Respond in JSON format filling in this template: ${rSchema} where each field is filled in with the extracted information from the resume. Make sure to include as much information as possible in each section. Ensure that the JSON is valid and all fields are filled in correctly. If a field is not present in the resume, leave it as an empty version of the type (e.g., an empty list, an empty object, or an empty string). If an end date is not specified (or is not "Present"), use "N/A".`;
+
+  let resumeData = {};
+  for (let tries = 0; tries < 3; tries++) {
+    try {
+      resumeData = JSON.parse(await makeChatRequest(promptContent, systemContent));
+      break;
+    } catch (error) {
+      console.log(`try ${tries}:`, error);
+    }
+  }
+
+  if (Object.keys(resumeData).length === 0) {
+    throw new UnexpectedError("Error extracting resume data");
+  }
+
+  let pdfJSON = {
+    name: extractSection(mergedTexts, /([a-zA-Z]+[a-zA-Z\s]+)/).split(
+      "\n"
+    )[0],
+    email: extractSection(
+      mergedTexts,
+      /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/
+    ),
+    phone: extractSection(mergedTexts, /\(?\d{3}\)?[\s-]?\d{3}[\s-]\d{4}/),
+  };
+
+  pdfJSON = { ...pdfJSON, ...resumeData };
+
+  let resumeDataAI = {
+    userId: id,
+    resumeType: "pdf",
+    pdfName: filename,
+    extractedText: mergedTexts,
+    extractedSections: extractedSections,
+    created: new Date().toISOString().split("T")[0],
+    pdfJSON: pdfJSON,
+  };
+
+  if (upload) {
+    return await uploadToDatabase(resumeDataAI);
+  } else {
+    return resumeDataAI;
+  }
+};
+
 
 /**
  * Get all resumes by user ID.
@@ -758,6 +994,7 @@ const deleteResumeById = async (id) => {
 export {
   createResumeFromJSON,
   createResumeFromPDF,
+  createResumeFromPDFAI,
   getAllResumesById,
   getResumeById,
   updateResumeById,

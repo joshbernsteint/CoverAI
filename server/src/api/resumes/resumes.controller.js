@@ -16,7 +16,7 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage });
 
 const clerkAuth = ClerkExpressRequireAuth({
-  authorizedParties: [process.env.CLIENT_URL, ,process.env.WCLIENT_URL,process.env.LOCALHOST_URL],
+  authorizedParties: [process.env.CLIENT_URL, process.env.WCLIENT_URL, process.env.LOCALHOST_URL],
 });
 
 router.post(
@@ -45,13 +45,12 @@ router.post(
       if (!file) {
         throw new UnexpectedError("Invalid request");
       }
-      // get file from tmp folder
+      let filename = file.originalname;
       file = fs.readFileSync(file.path);
-      // console.log(file);
-      const data = await resumeService.createResumeFromPDF(
+      const data = await resumeService.createResumeFromPDFAI(
         file,
         id,
-        file.originalname
+        filename
       );
       return res.status(200).json(data);
     } catch (error) {
