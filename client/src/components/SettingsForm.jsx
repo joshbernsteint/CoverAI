@@ -56,6 +56,11 @@ export default function SettingForm() {
         );
 
         // console.log(response.data.settings)
+        if (response.data.settings.dark_mode === true) {
+          localStorage.setItem("theme", "dark");
+        } else {
+          localStorage.setItem("theme", "light");
+        }
         setSettings(response.data.settings);
         if (response.data.settings.dark_mode) {
           setIsDarkMode(true);
@@ -97,7 +102,6 @@ export default function SettingForm() {
             "Content-Type": "application/json",
           },
         });
-      // console.log(response.data.settings)
 
       //refetch updated settings
       const response1 = await axios.get(import.meta.env.VITE_API_URL + "/users/settings", {
@@ -108,13 +112,18 @@ export default function SettingForm() {
       }
       );
 
+      if (response1.data.settings.dark_mode === true) {
+        localStorage.setItem("theme", "dark");
+      } else {
+        localStorage.setItem("theme", "light");
+      }
+
       setIsDarkMode(response1.data.settings.dark_mode);
       setSettings(response.data.settings);
       setFormData({
         dark_mode: response.data.settings ? response.data.settings.dark_mode : true,
         auto_download_cl: response.data.settings ? response.data.settings.auto_download_cl : true,
       });
-      console.log(response1.data.settings);
 
       toast.success("Settings updated successfully.");
     } catch (error) {

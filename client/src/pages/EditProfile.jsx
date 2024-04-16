@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import UploadFile from "../components/UploadFile";
 import UserForm from "../components/UserForm";
 import FormFilled from "../components/FormFilled";
-
+import { toast } from "react-toastify";
 import axios from "axios";
 import { useAuth } from "@clerk/clerk-react";
 
@@ -116,6 +116,7 @@ export default function EditProfile() {
         console.log(response.data);
       } catch (error) {
         console.error(error);
+        toast.error("Error fetching resumes");
       }
     };
     fetchResumes();
@@ -139,12 +140,15 @@ export default function EditProfile() {
             )}
             {!uploadSuccess && <UserForm />}
             {uploadSuccess && resumeFile && (
-              <embed
-                src={resumeFile}
-                type="application/pdf"
-                width="400"
-                height="600"
-              />
+              <div className="flex flex-col items-center justify-center">
+                <embed
+                  src={resumeFile}
+                  type="application/pdf"
+                  width="400"
+                  height="600"
+                />
+                <button className="btn-outline w-[100px] my-2" onClick={() => setUploadSuccess(false)}>Back</button>
+              </div>
             )}
           </div>
         </div>

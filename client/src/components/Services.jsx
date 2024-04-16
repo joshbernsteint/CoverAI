@@ -10,7 +10,7 @@ const Services = () => {
       title: "Resume Parser",
       description:
         "Don't want to fill out forms? No problem! Just upload your resume and we'll do the rest.",
-      image: <AiOutlineFolderView/>,
+      image: <AiOutlineFolderView />,
       link: "/edit-profile",
     },
     {
@@ -18,7 +18,7 @@ const Services = () => {
       title: "Cover Letter Generator",
       description:
         "We'll generate a cover letter for you based on your resume and the job description.",
-      image: <AiOutlineCopy/>,
+      image: <AiOutlineCopy />,
       link: "/cover-letters",
     },
     {
@@ -26,7 +26,7 @@ const Services = () => {
       title: "Essay Questions",
       description:
         "Tired of writing the same essay questions over and over? We'll help you automate that too.",
-      image: <AiOutlineEdit/>,
+      image: <AiOutlineEdit />,
       link: "/coming-soon"
     },
   ];
@@ -47,7 +47,7 @@ const Services = () => {
           >
             <div>
               <div className="flex justify-center items-center h-20 w-20 bg-indigo-950  text-white rounded-full mx-auto">
-                {React.cloneElement(service.image, { className: "text-3xl" })} 
+                {React.cloneElement(service.image, { className: "text-3xl" })}
               </div>
               <h3 className="text-2xl font-semibold mt-4 text-indigo-950 dark:text-indigo-100">{service.title}</h3>
               <p className="text-indigo-700 dark:text-indigo-300 mt-2">{service.description}</p>

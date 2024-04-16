@@ -1,20 +1,30 @@
-
 header {
-    z-index: 10001 !important;
-    
+  z-index: 10001 !important;
+
+}
+
+.dark-mode {
+  background-color: rgb(20 20 20);
+}
+
+.light-mode {
+  background-color: white;
 }
 
 /* HTML: <div class="loader-orbit"></div> */
 .loader-orbit {
-    width: 50px;
-    aspect-ratio: 1;
-    border-radius: 50%;
-    padding: 3px;
-    background: 
-      radial-gradient(farthest-side,#130d02 95%,#0000) 50% 0/12px 12px no-repeat,
-      radial-gradient(farthest-side,#0000 calc(100% - 5px),#130d02 calc(100% - 4px)) content-box;
-    animation: l6 2s infinite ;
+  width: 50px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  padding: 3px;
+  background:
+    radial-gradient(farthest-side, #130d02 95%, #0000) 50% 0/12px 12px no-repeat,
+    radial-gradient(farthest-side, #0000 calc(100% - 5px), #130d02 calc(100% - 4px)) content-box;
+  animation: l6 2s infinite;
+}
+
+@keyframes l6 {
+  to {
+    transform: rotate(1turn)
   }
-  @keyframes l6 {to{transform: rotate(1turn)}}
-  
-  
+}

@@ -96,8 +96,11 @@ const genLetter = async (
 
       if (resumeData.pdfJSON) {
         const { education, experience } = resumeData.pdfJSON;
-        if (education) {
-          additionalInfo += `I graduated with a ${education.degree} in ${education.fieldOfStudy} from ${education.school}, achieving a GPA of ${education.gpa} on a ${education.scale} scale. `;
+        if (education && education.length) {
+          additionalInfo += "My educational background includes: ";
+          education.forEach((edu) => {
+            additionalInfo += `I graduated with a ${edu.degree} in ${edu.fieldOfStudy} from ${edu.school}, achieving a GPA of ${edu.gpa} on a ${edu.scale} scale. `;
+          })
         }
 
         // Experience assuming experience is an array of experiences
