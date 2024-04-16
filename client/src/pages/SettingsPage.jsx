@@ -8,7 +8,7 @@ import NoPage from "./NoPage";
 export default function SettingsPage() {
   return (
     <>
-      <div className="md:px-14 px-4 py-8 max-w-screen-2xl mx-auto text-center dark:bg-background_dark">
+      <div className="md:px-14 px-4 py-8 min-h-screen max-w-screen-2xl mx-auto text-center dark:bg-background_dark">
         <h1 className="font-bold text-3xl mt-11"> Settings Page</h1>
         <br />
         <SettingForm></SettingForm>

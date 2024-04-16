@@ -6,8 +6,10 @@ import DocumentManager from "../services/documentManager";
 import { useAuth } from "@clerk/clerk-react";
 import { HiInformationCircle } from "react-icons/hi";
 import { Alert } from "flowbite-react";
+import { useSettings } from '../context/SettingsContext'; // Import useSettings hook
 
 function CLForm(props) {
+  const { settings, setSettings } = useSettings(); // Access user settings from context
   const buttonRef = useRef(null);
   const formRef = useRef(null);
   const navigate = useNavigate();
@@ -51,6 +53,9 @@ function CLForm(props) {
         const doc = response;
         console.log(doc);
         console.log(doc.data.paragraphs);
+        if(settings.auto_download_cl) { 
+          navigate(`/text-editor/${doc.data._id}`); // Redirect to download page
+        }
         //navigate("/text-editor/1");
         //toggleVisibility(false);
       } catch (error) {

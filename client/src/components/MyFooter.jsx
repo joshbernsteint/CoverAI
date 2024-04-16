@@ -15,7 +15,7 @@ const MyFooter = () => {
           <div>
             <Footer.Brand
               href="self link"
-              src= {isDarkMode ? logoDark : logo}
+              src={isDarkMode ? logoDark : logo}
               alt="Cover.AI Logo"
               name="Cover.AI"
             />
@@ -42,7 +42,7 @@ const MyFooter = () => {
             </div>
           </div>
         </div>
-        <Footer.Divider className=''/>
+        <Footer.Divider className='' />
         <div className="w-full sm:flex sm:items-center sm:justify-between">
           <Footer.Copyright href="#" by="Cover.AI™" year={2024} />
           <div className="mt-4 flex space-x-6 sm:mt-0 sm:justify-center">

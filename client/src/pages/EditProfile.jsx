@@ -123,7 +123,7 @@ export default function EditProfile() {
 
   return (
     <>
-      <div className="flex justify-center dark:bg-background_dark">
+      <div className="flex justify-center min-h-screen dark:bg-background_dark">
         <div className="p-12 w-full">
           <div className="flex justify-center text-3xl font-semibold mb-4 mt-11">
             <h1>
