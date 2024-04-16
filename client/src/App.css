@@ -16,5 +16,9 @@ header {
     animation: l6 2s infinite ;
   }
   @keyframes l6 {to{transform: rotate(1turn)}}
-  
-  
+
+
+.cl-card:hover{
+  color: lightgray;
+  background-color: rgba(211, 211, 211, 0.5);
+}

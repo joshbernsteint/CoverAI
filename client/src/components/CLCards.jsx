@@ -80,7 +80,7 @@ const CLCards = () => {
           coverLetters.map((cover, i) => (
             <Card
               // href={`text-editor/${cover._id}`}
-              className="max-w px-4 mt-4 justify-between -z-10"
+              className="cl-card max-w px-4 mt-4 justify-between -z-10"
               key={i}
               onClick={() => navigate(`../text-editor/${cover._id}`)}
               style={{cursor: "pointer"}}
