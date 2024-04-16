@@ -19,13 +19,14 @@ export default function TextEditor() {
   //   console.log("Invalid ID");
   //   return <NoPage></NoPage>;
   // }
-  
+
   return (
-    <>
-      <div className="md:px-14 px-4 max-w-screen-2xl mx-auto text-center mt-11">
-        <h1 className="font-bold text-3xl py-4"> Your Cover Letter</h1>
-        <TextEdit id={id}></TextEdit>
-      </div>
-    </>
+    <div className="md:px-14 px-4 py-8 max-w-screen-2xl min-h-screen mx-auto text-center dark:bg-background_dark">
+
+      <h1 className="font-bold text-3xl mt-11">Your Cover Letter</h1>
+
+      <TextEdit id={id}></TextEdit>
+
+    </div>
   );
 }

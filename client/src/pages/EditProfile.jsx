@@ -4,10 +4,9 @@ import { useState, useEffect } from "react";
 import UploadFile from "../components/UploadFile";
 import UserForm from "../components/UserForm";
 import FormFilled from "../components/FormFilled";
-
+import { toast } from "react-toastify";
 import axios from "axios";
 import { useAuth } from "@clerk/clerk-react";
-
 
 export default function EditProfile() {
   const { getToken } = useAuth();
@@ -26,12 +25,11 @@ export default function EditProfile() {
     setUploadSuccess(true);
   };
 
-
   useEffect(() => {
     const fetchResumes = async () => {
       try {
         const response = await axios.get(
-          import.meta.env.VITE_API_URL+"/resumes/all",
+          import.meta.env.VITE_API_URL + "/resumes/all",
           {
             headers: {
               "Content-Type": "application/json",
@@ -43,6 +41,7 @@ export default function EditProfile() {
         setResumes(response.data);
       } catch (error) {
         console.error(error);
+        toast.error("Error fetching resumes");
       }
     };
     fetchResumes();
@@ -50,12 +49,14 @@ export default function EditProfile() {
 
   return (
     <>
-      <div className="flex justify-center">
+      <div className="flex justify-center min-h-screen dark:bg-background_dark">
         <div className="p-12 w-full">
-          <div className="flex justify-center text-3xl font-semibold mb-4">
-            {uploadSuccess
-              ? "Your resume has been successfully uploaded!"
-              : "Edit your profile"}
+          <div className="flex justify-center text-3xl font-semibold mb-4 mt-11">
+            <h1>
+              {uploadSuccess
+                ? "Your resume has been successfully uploaded!"
+                : "Get started by filling out your profile"}
+            </h1>
           </div>
 
           <div className="flex justify-center items-center">
@@ -64,12 +65,15 @@ export default function EditProfile() {
             )}
             {!uploadSuccess && <UserForm />}
             {uploadSuccess && resumeFile && (
-              <embed
-                src={resumeFile}
-                type="application/pdf"
-                width="400"
-                height="600"
-              />
+              <div className="flex flex-col items-center justify-center">
+                <embed
+                  src={resumeFile}
+                  type="application/pdf"
+                  width="400"
+                  height="600"
+                />
+                <button className="btn-outline w-[100px] my-2" onClick={() => setUploadSuccess(false)}>Back</button>
+              </div>
             )}
           </div>
         </div>

@@ -1,7 +1,14 @@
-
 header {
-    z-index: 10001 !important;
-    
+  z-index: 10001 !important;
+
+}
+
+.dark-mode {
+  background-color: rgb(20 20 20);
+}
+
+.light-mode {
+  background-color: white;
 }
 
 /* HTML: <div class="loader-orbit"></div> */

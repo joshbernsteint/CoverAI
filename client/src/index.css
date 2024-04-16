@@ -12,7 +12,7 @@
 
 @layer components {
     .btn {
-        @apply font-body bg-[#474CF3] px-4 border-2 border-[#474CF3] py-2 rounded-2xl text-white;
+        @apply font-body bg-[#474CF3] px-4 border-2 border-[#474CF3] py-2 rounded-2xl text-white  ;
     }
 
     .btn-outline {
@@ -20,7 +20,8 @@
     }
 
     h1, h2, h3, h4, h5, p, a, input, button, label, span {
-        @apply font-body;
+        @apply font-body text-black dark:text-white;
     }
+    
     
 }

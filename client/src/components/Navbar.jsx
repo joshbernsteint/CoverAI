@@ -1,10 +1,19 @@
-import React from "react";
+import { useContext } from "react";
 import logo from "../assets/iconblack.png";
-import { Link, NavLink } from "react-router-dom";
-import { Navbar } from "flowbite-react";
-import { SignIn, UserButton, SignInButton } from "@clerk/clerk-react";
+import logoDark from "../assets/iconwhite.png";
+import { NavLink } from "react-router-dom";
+import { UserButton } from "@clerk/clerk-react";
+import { Context } from "../App.jsx";
 
-const NavbarComp = ({ userAuthenticated }) => {
+import PropTypes from "prop-types";
+
+NavbarComp.propTypes = {
+  userAuthenticated: PropTypes.bool,
+};
+
+function NavbarComp({ userAuthenticated }) {
+  // eslint-disable-next-line no-unused-vars
+  const [isDarkMode, setIsDarkMode] = useContext(Context);
 
   const navItems = [
     { name: "Home", href: "/home" },
@@ -19,12 +28,12 @@ const NavbarComp = ({ userAuthenticated }) => {
   ];
 
   return (
-    <nav className="flex items-center justify-between px-4 py-2">
+    <nav className="flex sticky top-0 z-[50] items-center shadow-sm-light justify-between px-4 py-2 backdrop-blur-lg bg-white/50 dark:bg-background_dark/50 dark:shadow-sm">
       <ul className="flex items-center w-full justify-between">
         <div>
           <li>
             <NavLink to="/home" className="flex items-center">
-              <img src={logo} alt="logo" className="w-12" />
+              <img src={isDarkMode ? logoDark : logo} alt="logo" className="w-12" />
               <h1 className="font-bold text-3xl">Cover.AI</h1>
             </NavLink>
           </li>
@@ -33,34 +42,34 @@ const NavbarComp = ({ userAuthenticated }) => {
           <div className="flex gap-4 items-center">
             {userAuthenticated
               ? navItemsAuth.map((item, index) => (
-                  <li key={index}>
+                <li key={index}>
+                  <NavLink
+                    to={item.href}
+                    className="hover:text-gray-400 font-body"
+                  >
+                    {item.name}
+                  </NavLink>
+                </li>
+              ))
+              : navItems.map((item, index) => (
+                <li key={index}>
+                  {item.name === "Sign Up" ? (
+                    <NavLink
+                      to={item.href}
+                      className="hover:text-gray-400 font-body border-2 px-4 py-2 rounded-2xl border-[#474CF3]"
+                    >
+                      {item.name}
+                    </NavLink>
+                  ) : (
                     <NavLink
                       to={item.href}
                       className="hover:text-gray-400 font-body"
                     >
                       {item.name}
                     </NavLink>
-                  </li>
-                ))
-              : navItems.map((item, index) => (
-                  <li key={index}>
-                    {item.name === "Sign Up" ? (
-                      <NavLink
-                        to={item.href}
-                        className="hover:text-gray-400 font-body border-2 px-4 py-2 rounded-2xl border-[#474CF3]"
-                      >
-                        {item.name}
-                      </NavLink>
-                    ) : (
-                      <NavLink
-                        to={item.href}
-                        className="hover:text-gray-400 font-body"
-                      >
-                        {item.name}
-                      </NavLink>
-                    )}
-                  </li>
-                ))}
+                  )}
+                </li>
+              ))}
             {userAuthenticated ? (
               <></>
             ) : (
@@ -69,12 +78,12 @@ const NavbarComp = ({ userAuthenticated }) => {
             )}
           </div>
           <div>
-            <UserButton afterSignOutUrl="/"/>
+            <UserButton afterSignOutUrl="/" />
           </div>
         </div>
       </ul>
     </nav>
   );
-};
+}
 
 export default NavbarComp;
