@@ -21,6 +21,10 @@ function rePull(){
 let activeTimeout = undefined;
 const DELAY = 5000;
 
+app.get('/', async (req,res) => {
+    res.send("Ping route!");
+});
+
 app.post('/github', async (req,res) => {
     if(activeTimeout){
         res.send("In Timeout, Please try again later.");
