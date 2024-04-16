@@ -41,7 +41,6 @@ function App() {
         } else {
           setIsDarkMode(false);
         }
-        console.log("Theme set from local storage", theme);
       } else {
         const token = await getToken();
         if (isLoaded === true && !token) return;
@@ -55,7 +54,6 @@ function App() {
           );
           localStorage.setItem("theme", response.data.settings.dark_mode ? "dark" : "light");
           setIsDarkMode(response.data.settings.dark_mode);
-          console.log("Theme set from server", response.data.settings.dark_mode);
         } catch (error) {
           console.error("Error occurred while fetching theme settings:", error);
         }
