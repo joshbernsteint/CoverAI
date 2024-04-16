@@ -2,7 +2,9 @@ import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
 import NoPage from "./pages/NoPage";
-import SignUpClerk from "./pages/SignUpClerk";
+import SignUpClerk from "./pages/SignUpClerk.jsx";
+import SignUp from "./pages/SignUp.jsx";
+import Login from "./pages/Login.jsx";
 import LoginClerk from "./pages/LoginClerk";
 import NavbarComp from "./components/Navbar";
 import EditProfile from "./pages/EditProfile";
@@ -26,7 +28,7 @@ function App() {
   const [isDarkMode, setIsDarkMode] = React.useState(false);
 
   return (
-    <Context.Provider value={[ isDarkMode, setIsDarkMode ]}>
+    <Context.Provider value={[isDarkMode, setIsDarkMode]}>
       <BrowserRouter>
         <div className={isDarkMode ? "dark" : ""}>
           <SignedIn>
@@ -34,8 +36,8 @@ function App() {
             <Routes>
               <Route path="/" element={<Navigate to="/home" />} />
               <Route path="/home" element={<Home />} />
-              <Route path="/sign-up" element={<SignUpClerk />} />
-              <Route path="/login" element={<LoginClerk />} />
+              <Route path="/sign-up" element={<SignUp />} />
+              <Route path="/login" element={<Login />} />
               <Route path="/edit-profile" element={<EditProfile />} />
               <Route path="/cover-letters" element={<CoverLetters />} />
               <Route path="/text-editor/:id" element={<TextEditor />} />
@@ -50,8 +52,8 @@ function App() {
             <Routes>
               <Route path="/" element={<Navigate to="/home" />} />
               <Route path="/home" element={<Home />} />
-              <Route path="/sign-up" element={<SignUpClerk />} />
-              <Route path="/login" element={<LoginClerk />} />
+              <Route path="/sign-up" element={<SignUp />} />
+              <Route path="/login" element={<Login />} />
               <Route path="/about" element={<About />} />
               <Route path="*" element={<NoPage />} />
             </Routes>

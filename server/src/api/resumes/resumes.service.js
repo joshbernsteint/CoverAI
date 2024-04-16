@@ -294,6 +294,7 @@ const createResumeFromJSON = async (resume, id, upload = true) => {
     resumeType: "json",
     extractedText: "",
     extractedSections: [],
+    created: new Date().toISOString().split("T")[0],
     pdfJSON: {
       name: name || "",
       email: email || "",
@@ -598,6 +599,7 @@ const createResumeFromPDF = async (
     pdfName: filename,
     extractedText: pages[0].text,
     extractedSections: extractAllSections(modifiedText),
+    created: new Date().toISOString().split("T")[0],
     pdfJSON: {
       name: extractSection(modifiedText, /([a-zA-Z]+[a-zA-Z\s]+)/).split(
         "\n"
