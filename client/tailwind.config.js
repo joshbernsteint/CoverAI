@@ -14,7 +14,11 @@ export default {
         lightPurple: "#9290C3",
         lightGray: "#F7F7F7",
         coverLetterBlue: "#214ad0",
-        background_dark: "#201F1F",
+        background_dark: "#141414",
+        midGrey: "#282828",
+        deepPurple: "#230046",
+        midPurple: "#320064",
+
       },
       fontFamily: {
         body: ["Poppins"],
@@ -23,4 +27,5 @@ export default {
     },
   },
   plugins: [require('flowbite/plugin')],
+  darkMode: 'class',
 };

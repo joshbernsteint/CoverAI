@@ -69,7 +69,7 @@ const CLCards = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="md:px-14 px-4 py-16 max-w-screen-2xl mx-auto text-center mt-11">
+    <div className="md:px-14 px-4 py-16 max-w-screen-2xl mx-auto text-center mt-11 dark:bg-background_dark">
       <h1 className="font-bold text-3xl"> 
         Your Past Cover Letters 
         {/* add count of cover letters */}
@@ -80,12 +80,12 @@ const CLCards = () => {
           coverLetters.map((cover, i) => (
             <Card
               // href={`text-editor/${cover._id}`}
-              className="max-w px-4 mt-4 justify-between -z-10"
+              className="max-w px-4 mt-4 justify-between -z-10 "
               key={i}
               onClick={() => navigate(`../text-editor/${cover._id}`)}
               style={{cursor: "pointer"}}
             >
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between ">
                 <div>
                   <FiChevronRight className="text-3xl" />
                 </div>

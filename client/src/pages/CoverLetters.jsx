@@ -9,9 +9,9 @@ export default function CoverLetters() {
   // const { settings, setSettings } = useSettings(); // Access user settings from context
   // console.log(settings)
   return (
-    <>
+    <div className="dark:bg-background_dark">
       <CLForm/>
       <CLCards />
-    </>
+    </div>
   );
 }

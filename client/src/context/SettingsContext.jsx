@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect} from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useRef } from 'react';
 import axios from 'axios';
 
@@ -24,7 +24,7 @@ export const SettingsProvider = ({ children }) => {
         Authorization: `Bearer ${token}`,
       };
       try {
-        const response = await axios.get(import.meta.env.VITE_API_URL+"/users/settings", {
+        const response = await axios.get(import.meta.env.VITE_API_URL + "/users/settings", {
           headers: {
             ...headers,
             "Content-Type": "application/json",
@@ -32,7 +32,7 @@ export const SettingsProvider = ({ children }) => {
         });
 
         //setFormData(response.data.settings);
-        console.log(response.data.settings)
+        // console.log(response.data.settings)
         setSettings(response.data.settings);
       } catch (error) {
         console.log(error);
