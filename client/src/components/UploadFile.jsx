@@ -17,10 +17,6 @@ export default function UploadFile({ onUploadSuccess }) {
     formData.append("file", file);
     console.log("formData", formData);
 
-    const fileURL = URL.createObjectURL(file);
-    console.log("fileURL", fileURL);
-    onUploadSuccess(fileURL);
-
     const headers = {
       Authorization: `Bearer ${token}`,
     };
@@ -28,7 +24,7 @@ export default function UploadFile({ onUploadSuccess }) {
     try {
       console.log("Uploading file to database...");
       const response = await axios.post(
-        import.meta.env.VITE_API_URL+"/resumes",
+        import.meta.env.VITE_API_URL + "/resumes",
         formData,
         {
           headers: {
@@ -37,6 +33,10 @@ export default function UploadFile({ onUploadSuccess }) {
           },
         }
       );
+      const fileURL = URL.createObjectURL(file);
+      console.log("fileURL", fileURL);
+      onUploadSuccess(fileURL);
+
       console.log("File", file);
       console.log("type", typeof file);
       console.log(response.status);

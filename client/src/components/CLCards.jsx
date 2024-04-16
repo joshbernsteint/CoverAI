@@ -1,14 +1,22 @@
 import React from "react";
 import { Card, Button } from "flowbite-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import Requests from "../services/requests";
 import { useAuth } from "@clerk/clerk-react";
 import { FiTrash, FiChevronRight } from "react-icons/fi";
 import { Modal } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
-const CLCards = () => {
+import PropTypes from "prop-types";
+
+CLCards.propTypes = {
+  addedCoverLetter: PropTypes.object,
+  setAddedCoverLetter: PropTypes.func,
+};
+
+function CLCards({ addedCoverLetter }) {
   const { getToken } = useAuth();
   const [openModal, setOpenModal] = useState(false);
   const [coverIdToDelete, setCoverIdToDelete] = useState(null); // Changed to null to indicate no cover ID to delete
@@ -26,29 +34,39 @@ const CLCards = () => {
             },
           }
         );
-        console.log(response.data);
-        if(response.data)
+        // console.log(response.data);
+        if (response.data)
           setCoverLetters(response.data.reverse());
       } catch (error) {
         console.error(error);
+        toast.error("Error fetching cover letters");
       }
     };
     fetchCoverLetters();
   }, [coverIdToDelete]);
 
+  // Update cover letters if one is added
+  useEffect(() => {
+    if (addedCoverLetter) {
+      setCoverLetters((prevCoverLetters) => {
+        return [addedCoverLetter, ...prevCoverLetters];
+      });
+    }
+  }, [addedCoverLetter]);
+
   const handleDeleteCoverLetter = (event, coverId) => {
     setOpenModal(true);
-    setCoverIdToDelete(coverId); 
+    setCoverIdToDelete(coverId);
   };
 
   const handleDeleteCoverLetterConfirmed = async () => {
-    console.log("Deleting cover letter with ID confirmed: ", coverIdToDelete);
+    // console.log("Deleting cover letter with ID confirmed: ", coverIdToDelete);
 
     //TODO: api call to delete cover letter
     try {
-      console.log("coverIDToDelete: ", coverIdToDelete)
+      // console.log("coverIDToDelete: ", coverIdToDelete)
       const response = await axios.delete(
-        import.meta.env.VITE_API_URL+ `/covers/${coverIdToDelete}`,
+        import.meta.env.VITE_API_URL + `/covers/${coverIdToDelete}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -57,11 +75,12 @@ const CLCards = () => {
         }
       );
       console.log("response data", response.data);
-      console.log("after deleter")
+      // console.log("after deleter")
       setCoverIdToDelete(null);
     } catch (error) {
-      console.log("Error deleting cover letter with id: ", coverIdToDelete)
+      // console.log("Error deleting cover letter with id: ", coverIdToDelete)
       console.error(error);
+      toast.error("Error deleting cover letter");
     }
     setOpenModal(false);
   };
@@ -70,10 +89,10 @@ const CLCards = () => {
 
   return (
     <div className="md:px-14 px-4 py-16 max-w-screen-2xl mx-auto text-center mt-11 dark:bg-background_dark">
-      <h1 className="font-bold text-3xl"> 
-        Your Past Cover Letters 
+      <h1 className="font-bold text-3xl">
+        Your Past Cover Letters
         {/* add count of cover letters */}
-        { coverLetters ? `(${coverLetters.length})` : "" }
+        {coverLetters ? `(${coverLetters.length})` : ""}
       </h1>
       <div className="mt-4">
         {coverLetters ? (
@@ -83,7 +102,7 @@ const CLCards = () => {
               className="max-w px-4 mt-4 justify-between -z-10 "
               key={i}
               onClick={() => navigate(`../text-editor/${cover._id}`)}
-              style={{cursor: "pointer"}}
+              style={{ cursor: "pointer" }}
             >
               <div className="flex items-center justify-between ">
                 <div>

@@ -10,8 +10,16 @@ import { useAuth } from "@clerk/clerk-react";
 import { HiInformationCircle } from "react-icons/hi";
 // import { Alert } from "flowbite-react";
 import { useSettings } from '../context/SettingsContext'; // Import useSettings hook
+import { toast } from "react-toastify";
 
-function CLForm(props) {
+import PropTypes from "prop-types";
+
+CLForm.propTypes = {
+  addedCoverLetter: PropTypes.object,
+  setAddedCoverLetter: PropTypes.func,
+};
+
+function CLForm({ setAddedCoverLetter }) {
   const { settings, setSettings } = useSettings(); // Access user settings from context
   const buttonRef = useRef(null);
   const formRef = useRef(null);
@@ -37,6 +45,7 @@ function CLForm(props) {
         setResumes(response.data);
       } catch (error) {
         console.error(error);
+        toast.error("Failed to fetch resumes");
       }
     };
     fetchResumes();
@@ -88,9 +97,15 @@ function CLForm(props) {
           navigate(`/text-editor/${doc.data._id}`); // Redirect to download page
         }
         //navigate("/text-editor/1");
-        //toggleVisibility(false);
+        setAddedCoverLetter(doc.data);
+        toast.success("Cover letter created successfully");
+        toggleVisibility(false);
+        setTimeout(() => {
+          setAddedCoverLetter(null);
+        }, 5000);
       } catch (error) {
         console.error(error);
+        toast.error("Failed to create cover letter");
       }
     } else {
       console.log("Prompt too short");
@@ -154,7 +169,7 @@ function CLForm(props) {
             onChange={(e) => setSelectedResume(e.target.value)}
           >
             <option className=' text-black dark:text-white dark:bg-background_dark/20' value={"none"}>Write a prompt...</option>
-            {resumes.map((resume) => {
+            {resumes.length > 0 && resumes.map((resume) => {
               if (resume.resumeType === "pdf") {
                 return <option className=' text-black dark:text-white dark:bg-background_dark/20' key={resume._id} value={resume._id}>
                   {resume.pdfName}
