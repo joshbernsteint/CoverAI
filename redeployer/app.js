@@ -18,6 +18,7 @@ function rePull(){
     return stdout !== "Already up to date.\n"
 }
 
+//This is a comment
 function runServer(){
     spawnSync('screen -XS coverai quit', {shell: true});
     spawnSync('cd ../ && npm start', {shell: true});
