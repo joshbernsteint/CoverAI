@@ -7,14 +7,15 @@ import FormFilled from "../components/FormFilled";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { useAuth } from "@clerk/clerk-react";
+import { MobileContext } from "../App";
 
 export default function EditProfile() {
   const { getToken } = useAuth();
   const [showForm, setShowForm] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
+  const isMobile = React.useContext(MobileContext);
 
   //will be used for dropdown menu later
-
 
   const [resumeFile, setResumeFile] = useState(null);
   const [resumes, setResumes] = useState([]);
@@ -60,10 +61,16 @@ export default function EditProfile() {
           </div>
 
           <div className="flex justify-center items-center">
-            {!uploadSuccess && (
+            {!isMobile && !uploadSuccess && (
               <UploadFile onUploadSuccess={handleUploadSuccess} />
             )}
-            {!uploadSuccess && <UserForm />}
+            {!isMobile && !uploadSuccess && <UserForm />}
+            {isMobile && !uploadSuccess && (
+              <div className="flex flex-col items-center justify-between w-full m-0">
+                <UploadFile onUploadSuccess={handleUploadSuccess} />
+                <UserForm />
+              </div>
+            )}
             {uploadSuccess && resumeFile && (
               <div className="flex flex-col items-center justify-center">
                 <embed
@@ -72,7 +79,12 @@ export default function EditProfile() {
                   width="400"
                   height="600"
                 />
-                <button className="btn-outline w-[100px] my-2" onClick={() => setUploadSuccess(false)}>Back</button>
+                <button
+                  className="btn-outline w-[100px] my-2"
+                  onClick={() => setUploadSuccess(false)}
+                >
+                  Back
+                </button>
               </div>
             )}
           </div>

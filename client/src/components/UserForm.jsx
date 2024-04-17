@@ -1,12 +1,12 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
 import axios from "axios";
-import { useAuth } from '@clerk/clerk-react';
-import Select from 'react-select/creatable';
-import {validate} from "email-validator";
-import {phone} from 'phone';
+import { useAuth } from "@clerk/clerk-react";
+import Select from "react-select/creatable";
+import { validate } from "email-validator";
+import { phone } from "phone";
 
-const toUpperFirst = (s) => (s.charAt(0).toUpperCase() + s.slice(1));
+const toUpperFirst = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
 const skillsOptions = [
   { value: "python", label: "Python" },
@@ -113,7 +113,7 @@ export default function UserForm() {
   });
 
   useEffect(() => {
-    async function prePopulate(){
+    async function prePopulate() {
       const token = await getToken();
 
       //REAL API CALL GOES HERE THIS IS JUST A MOCK
@@ -121,12 +121,15 @@ export default function UserForm() {
         Authorization: `Bearer ${token}`,
       };
       try {
-        const {data} = await axios.get(import.meta.env.VITE_API_URL+"/users/profile", {
-          headers: {
-            ...headers,
-          },
-        });
-        const preForm = {...formData};
+        const { data } = await axios.get(
+          import.meta.env.VITE_API_URL + "/users/profile",
+          {
+            headers: {
+              ...headers,
+            },
+          }
+        );
+        const preForm = { ...formData };
         preForm.firstName = data.first_name ? data.first_name : "";
         preForm.lastName = data.last_name ? data.last_name : "";
         preForm.email = data.email ? data.email : "";
@@ -134,18 +137,21 @@ export default function UserForm() {
         preForm.description = data.description ? data.description : "";
         preForm.major = data.major ? data.major : "";
         preForm.schoolName = data.school_name ? data.school_name : "";
-        preForm.graduationDate = data.graduation_date ? data.graduation_date : "";
-        preForm.skills = data.skills.map(e => ({label: toUpperFirst(e), value: e}));
-        setFormData({...preForm});
+        preForm.graduationDate = data.graduation_date
+          ? data.graduation_date
+          : "";
+        preForm.skills = data.skills.map((e) => ({
+          label: toUpperFirst(e),
+          value: e,
+        }));
+        setFormData({ ...preForm });
       } catch (error) {
         // console.error("Error occurred:", error);
         console.log("Server error occurred.", error.toString());
       }
-    };
-    if(!showForm) prePopulate();
+    }
+    if (!showForm) prePopulate();
   }, [showForm]);
-
-
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -155,13 +161,12 @@ export default function UserForm() {
     });
   };
 
-  function handleSkillChange(e){
+  function handleSkillChange(e) {
     setFormData({
       ...formData,
       skills: e,
     });
   }
-
 
   const handleButtonClick = () => {
     setShowForm(true);
@@ -171,21 +176,31 @@ export default function UserForm() {
     e.preventDefault();
 
     //Error-checking
-    const statusCopy = {...failStatus};
+    const statusCopy = { ...failStatus };
     statusCopy.firstName = formData.firstName.length > 0;
     statusCopy.lastName = formData.lastName.length > 0;
     statusCopy.email = validate(formData.email);
     statusCopy.phoneNumber = phone(formData.phoneNumber).isValid;
     statusCopy.schoolName = formData.schoolName.length > 2;
     statusCopy.major = formData.major.length > 0;
-    statusCopy.graduationDate = new Date(formData.graduationDate).toString() !== "Invalid Date";
+    statusCopy.graduationDate =
+      new Date(formData.graduationDate).toString() !== "Invalid Date";
 
-    setStatus({...statusCopy});
-    if(!(statusCopy.firstName && statusCopy.lastName && statusCopy.email && statusCopy.phoneNumber && statusCopy.schoolName && statusCopy.graduationDate)){
+    setStatus({ ...statusCopy });
+    if (
+      !(
+        statusCopy.firstName &&
+        statusCopy.lastName &&
+        statusCopy.email &&
+        statusCopy.phoneNumber &&
+        statusCopy.schoolName &&
+        statusCopy.graduationDate
+      )
+    ) {
       return;
     }
 
-    formData.skills = formData.skills.map(e => e.value);
+    formData.skills = formData.skills.map((e) => e.value);
 
     const token = await getToken();
 
@@ -195,12 +210,16 @@ export default function UserForm() {
     };
 
     try {
-      const response = await axios.put(import.meta.env.VITE_API_URL+"/users/profile", formData, {
-        headers: {
-          ...headers,
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await axios.put(
+        import.meta.env.VITE_API_URL + "/users/profile",
+        formData,
+        {
+          headers: {
+            ...headers,
+            "Content-Type": "application/json",
+          },
+        }
+      );
       setShowForm(false);
     } catch (error) {
       // console.error("Error occurred:", error);
@@ -208,13 +227,12 @@ export default function UserForm() {
     }
   };
 
-
   return (
     <>
       {showForm && (
         <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-75 z-50">
-          <div className="bg-white p-8 rounded-lg">
-            <div className="mb-4 flex gap-2">
+          <div className="bg-white p-8 rounded-lg w-[80%] sm:w-auto dark:bg-zinc-800/50 backdrop-blur-lg">
+            <div className="mb-4 sm:flex sm:gap-2">
               <div>
                 <input
                   type="text"
@@ -222,7 +240,11 @@ export default function UserForm() {
                   value={formData.firstName}
                   onChange={handleChange}
                   placeholder="First Name"
-                  className={failStatus.firstName ? "px-4 py-2 border rounded-md" : "px-4 py-2 border-red-500 rounded-md"}
+                  className={
+                    failStatus.firstName
+                      ? "px-4 py-2 border rounded-md w-full mb-4 sm:mb-0 dark:bg-zinc-700/50"
+                      : "px-4 py-2 border-red-500 w-full rounded-md mb-4 sm:mb-0 dark:bg-zinc-700/50"
+                  }
                 />
               </div>
 
@@ -233,7 +255,11 @@ export default function UserForm() {
                   value={formData.lastName}
                   onChange={handleChange}
                   placeholder="Last Name"
-                  className={failStatus.lastName ? "px-4 py-2 border rounded-md" : "px-4 py-2 border-red-500 rounded-md"}
+                  className={
+                    failStatus.lastName
+                      ? "px-4 py-2 border w-full rounded-md dark:bg-zinc-700/50"
+                      : "px-4 py-2 border-red-500 w-full rounded-md dark:bg-zinc-700/50"
+                  }
                 />
               </div>
             </div>
@@ -245,7 +271,11 @@ export default function UserForm() {
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="Email"
-                className={failStatus.email ? "px-4 py-2 border rounded-md" : "px-4 py-2 border-red-500 rounded-md"}
+                className={
+                  failStatus.email
+                    ? "px-4 py-2 border w-full rounded-md dark:bg-zinc-700/50"
+                    : "px-4 py-2 border-red-500 w-full rounded-md dark:bg-zinc-700/50"
+                }
               />
             </div>
 
@@ -256,7 +286,11 @@ export default function UserForm() {
                 value={formData.phoneNumber}
                 onChange={handleChange}
                 placeholder="Phone Number"
-                className={failStatus.phoneNumber ? "px-4 py-2 border rounded-md" : "px-4 py-2 border-red-500 rounded-md"}
+                className={
+                  failStatus.phoneNumber
+                    ? "px-4 py-2 border w-full rounded-md dark:bg-zinc-700/50"
+                    : "px-4 py-2 border-red-500 w-full rounded-md dark:bg-zinc-700/50"
+                }
               />
             </div>
 
@@ -267,7 +301,11 @@ export default function UserForm() {
                 value={formData.schoolName}
                 onChange={handleChange}
                 placeholder="School Name"
-                className={failStatus.schoolName ? "px-4 py-2 border rounded-md" : "px-4 py-2 border-red-500 rounded-md"}
+                className={
+                  failStatus.schoolName
+                    ? "px-4 py-2 border w-full rounded-md dark:bg-zinc-700/50"
+                    : "px-4 py-2 border-red-500 w-full rounded-md dark:bg-zinc-700/50"
+                }
               />
             </div>
 
@@ -278,7 +316,11 @@ export default function UserForm() {
                 value={formData.major}
                 onChange={handleChange}
                 placeholder="Major"
-                className={failStatus.major ? "px-4 py-2 border rounded-md" : "px-4 py-2 border-red-500 rounded-md"}
+                className={
+                  failStatus.major
+                    ? "px-4 py-2 border w-full rounded-md dark:bg-zinc-700/50"
+                    : "px-4 py-2 border-red-500 w-full rounded-md dark:bg-zinc-700/50"
+                }
               />
             </div>
 
@@ -289,11 +331,15 @@ export default function UserForm() {
                 value={formData.graduationDate}
                 onChange={handleChange}
                 placeholder="Graduation Date"
-                className={failStatus.graduationDate ? "px-4 py-2 border rounded-md" : "px-4 py-2 border-red-500 rounded-md"}
+                className={
+                  failStatus.graduationDate
+                    ? "px-4 py-2 border w-full rounded-md dark:bg-zinc-700/50"
+                    : "px-4 py-2 border-red-500 w-full rounded-md dark:bg-zinc-700/50"
+                }
               />
             </div>
 
-            <div className="mb-4 w-[50%] border rounded-md">
+            <div className="mb-4 w-full border rounded-md">
               <Select
                 isMulti
                 isClearable
@@ -303,8 +349,10 @@ export default function UserForm() {
                 options={skillsOptions}
                 defaultValue={formData.skills}
                 classNames={{
-                  control: state => "px-0 py-0 border rounded-md",
-                  menu: state => "px-0 py-0 border rounded-md",
+                  control: (state) =>
+                    "px-0 py-0 border rounded-md dark:bg-zinc-700/50",
+                  menu: (state) =>
+                    "px-0 py-0 border rounded-md dark:bg-zinc-700/50",
                 }}
               />
             </div>
@@ -315,11 +363,15 @@ export default function UserForm() {
                 value={formData.description}
                 onChange={handleChange}
                 placeholder="Description"
-                className={failStatus.description ? "px-4 py-2 border rounded-md w-[50%]" : "px-4 py-2 border-red-500 rounded-md w-[50%]"}
+                className={
+                  failStatus.description
+                    ? "px-4 py-2 border rounded-md w-full dark:bg-zinc-700/50 dark:text-white"
+                    : "px-4 py-2 border-red-500 rounded-md w-full dark:bg-zinc-700/50 dark:text-white"
+                }
                 rows="4"
               ></textarea>
             </div>
-            <div className="flex gap-2 mt-4">
+            <div className="flex justify-center w-full gap-2 mt-4">
               <button
                 onClick={() => setShowForm(false)}
                 className="px-4 py-2 btn-outline"
@@ -345,7 +397,7 @@ export default function UserForm() {
           <div>
             <button
               onClick={handleButtonClick}
-              className="px-7 py-6 btn"
+              className="mt-5 w-full sm:w-auto px-7 py-6 sm:mt-0 btn"
             >
               Fill out this form
             </button>

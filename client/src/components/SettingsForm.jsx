@@ -10,7 +10,7 @@ import { useAuth } from "@clerk/clerk-react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Context } from "../App";
-import { useSettings } from '../context/SettingsContext'; // Import useSettings hook
+import { useSettings } from "../context/SettingsContext"; // Import useSettings hook
 
 export default function SettingForm() {
   const { settings, setSettings } = useSettings(); // Access user settings from context
@@ -32,7 +32,7 @@ export default function SettingForm() {
     });
     setSettings({
       ...settings,
-      [name]: value === 'true' ? true : false
+      [name]: value === "true" ? true : false,
     });
   };
 
@@ -66,8 +66,12 @@ export default function SettingForm() {
           setIsDarkMode(true);
         }
         setFormData({
-          dark_mode: response.data.settings ? response.data.settings.dark_mode : true,
-          auto_download_cl: response.data.settings ? response.data.settings.auto_download_cl : true,
+          dark_mode: response.data.settings
+            ? response.data.settings.dark_mode
+            : true,
+          auto_download_cl: response.data.settings
+            ? response.data.settings.auto_download_cl
+            : true,
         });
       } catch (error) {
         // console.error("Error occurred:", error);
@@ -92,24 +96,28 @@ export default function SettingForm() {
     };
 
     try {
-      const response = await axios.post(import.meta.env.VITE_API_URL + "/users/settings",
+      const response = await axios.post(
+        import.meta.env.VITE_API_URL + "/users/settings",
         {
-          settings: settings
+          settings: settings,
         },
         {
           headers: {
             ...headers,
             "Content-Type": "application/json",
           },
-        });
+        }
+      );
 
       //refetch updated settings
-      const response1 = await axios.get(import.meta.env.VITE_API_URL + "/users/settings", {
-        headers: {
-          ...headers,
-          "Content-Type": "application/json",
-        },
-      }
+      const response1 = await axios.get(
+        import.meta.env.VITE_API_URL + "/users/settings",
+        {
+          headers: {
+            ...headers,
+            "Content-Type": "application/json",
+          },
+        }
       );
 
       if (response1.data.settings.dark_mode === true) {
@@ -121,8 +129,12 @@ export default function SettingForm() {
       setIsDarkMode(response1.data.settings.dark_mode);
       setSettings(response.data.settings);
       setFormData({
-        dark_mode: response.data.settings ? response.data.settings.dark_mode : true,
-        auto_download_cl: response.data.settings ? response.data.settings.auto_download_cl : true,
+        dark_mode: response.data.settings
+          ? response.data.settings.dark_mode
+          : true,
+        auto_download_cl: response.data.settings
+          ? response.data.settings.auto_download_cl
+          : true,
       });
 
       toast.success("Settings updated successfully.");
@@ -141,10 +153,13 @@ export default function SettingForm() {
             </label>
             <select
               name="dark_mode"
+              className="font-body rounded-md dark:border-zinc-600 dark:bg-zinc-700 dark:text-white"
               value={formData.dark_mode}
               onChange={handleChange}
             >
-              <option value="true" className="font-body">True</option>
+              <option value="true" className="font-body">
+                True
+              </option>
               <option value="false">False</option>
             </select>
           </div>
@@ -154,6 +169,7 @@ export default function SettingForm() {
             </label>
             <select
               name="auto_download_cl"
+              className="font-body rounded-md dark:border-zinc-600 dark:bg-zinc-700 dark:text-white"
               value={formData.auto_download_cl}
               onChange={handleChange}
             >

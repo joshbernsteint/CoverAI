@@ -9,7 +9,8 @@ import { saveAs } from "file-saver";
 import axios from "axios";
 import { useAuth } from "@clerk/clerk-react";
 import { useEffect } from "react";
-import { useSettings } from '../context/SettingsContext'; // Import useSettings hook
+import { useSettings } from "../context/SettingsContext"; // Import useSettings hook
+import { MobileContext } from "../App";
 
 import { toast } from "react-toastify";
 
@@ -25,9 +26,10 @@ export default function TextEdit(props) {
   const navigate = useNavigate();
   // console.log("id: ", props.id);
   const { activeCL, setActiveCL } = useContext(CLContext);
+  const isMobile = useContext(MobileContext);
   const [editorContent, setEditorContent] = useState(activeCL);
   const quillRef = useRef(null);
-  const checkForAutoSave = useRef(false);//on load will check if we should autosave the cover letter after that do not 
+  const checkForAutoSave = useRef(false); //on load will check if we should autosave the cover letter after that do not
 
   useEffect(() => {
     // Trigger save function if auto download setting is enabled
@@ -36,7 +38,7 @@ export default function TextEdit(props) {
         checkForAutoSave.current = true;
         handleSave();
       }
-    }
+    };
     checkForAutoDownload();
   }, [settings.auto_download_cl]);
 
@@ -98,11 +100,14 @@ export default function TextEdit(props) {
           value={editorContent}
           onChange={setEditorContent}
           modules={{ toolbar: toolbarOptions }}
-          style={{ width: "60%" }}
+          style={{ width: `${isMobile ? "90%" : "60%"}` }}
           className=""
         />
         <div className="flex flex-row justify-between">
-          <button onClick={() => navigate("/cover-letters")} className="btn-outline my-4 mx-5">
+          <button
+            onClick={() => navigate("/cover-letters")}
+            className="btn-outline my-4 mx-5"
+          >
             Back
           </button>
           <button onClick={handleSave} className="btn my-4 mx-5">

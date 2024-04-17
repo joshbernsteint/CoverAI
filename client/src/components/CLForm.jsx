@@ -1,6 +1,8 @@
 import {
-  // useContext, 
-  useRef, useState, useEffect
+  // useContext,
+  useRef,
+  useState,
+  useEffect,
 } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -9,7 +11,7 @@ import DocumentManager from "../services/documentManager";
 import { useAuth } from "@clerk/clerk-react";
 import { HiInformationCircle } from "react-icons/hi";
 // import { Alert } from "flowbite-react";
-import { useSettings } from '../context/SettingsContext'; // Import useSettings hook
+import { useSettings } from "../context/SettingsContext"; // Import useSettings hook
 import { toast } from "react-toastify";
 
 import PropTypes from "prop-types";
@@ -59,7 +61,7 @@ function CLForm({ setAddedCoverLetter }) {
       typeof newValue === "undefined" ? !buttonRef.current.hidden : !newValue;
     formRef.current.reset();
     if (selectedResume !== "none" && resumes.length > 0) {
-      setSelectedResume(resumes[0]._id)
+      setSelectedResume(resumes[0]._id);
     }
   };
 
@@ -67,10 +69,17 @@ function CLForm({ setAddedCoverLetter }) {
 
   const makeCoverLetter = async (promptContent) => {
     console.log("makeCoverLetter: ", promptContent);
-    let use_scraper = (resumes.length === 0 ? true : false) || (selectedResume === "none" ? true : false);
-    let use_resume = (resumes.length === 0 ? false : true) && (selectedResume === "none" ? false : true);
+    let use_scraper =
+      (resumes.length === 0 ? true : false) ||
+      (selectedResume === "none" ? true : false);
+    let use_resume =
+      (resumes.length === 0 ? false : true) &&
+      (selectedResume === "none" ? false : true);
 
-    if ((use_scraper === true && promptContent.length > 25) || use_resume === true) {
+    if (
+      (use_scraper === true && promptContent.length > 25) ||
+      use_resume === true
+    ) {
       try {
         const response = await axios.post(
           import.meta.env.VITE_API_URL + "/covers/",
@@ -109,7 +118,7 @@ function CLForm({ setAddedCoverLetter }) {
       }
     } else {
       console.log("Prompt too short");
-      console.log("prompt: ", promptContent)
+      console.log("prompt: ", promptContent);
       setError(
         "Prompt too short. Please be more descriptive on what you want your cover letter to be about."
       );
@@ -157,36 +166,64 @@ function CLForm({ setAddedCoverLetter }) {
             className="max-w-screen-2xl mx-auto mt-2 mb-2 rounded-md dark:text-white dark:bg-background_dark/20"
           />
         </label>
-        <aria-label htmlFor="select-res" hidden>Select res</aria-label>
+        <aria-label htmlFor="select-res" hidden>
+          Select res
+        </aria-label>
         <div id="select-res">
           <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
             Select a resume:
           </h2>
-          {resumes.length > 0 ? (<select
-            className=" max-w-[100%] mx-auto mt-2 mb-2 rounded-md dark:text-white dark:bg-background_dark/20"
-            style={{ width: "auto" }}
-            value={selectedResume}
-            onChange={(e) => setSelectedResume(e.target.value)}
-          >
-            <option className=' text-black dark:text-white dark:bg-background_dark/20' value={"none"}>Write a prompt...</option>
-            {resumes.length > 0 && resumes.map((resume) => {
-              if (resume.resumeType === "pdf") {
-                return <option className=' text-black dark:text-white dark:bg-background_dark/20' key={resume._id} value={resume._id}>
-                  {resume.pdfName}
-                </option>
-              } else {
-                return <option className=' text-black dark:text-white dark:bg-background_dark/20' key={resume._id} value={resume._id}>
-                  {`Resume_${resume.created}`}
-                </option>
-              }
-            })}
-          </select>) :
-            (<div className="max-w-[100%] mx-auto mt-2 mb-2 rounded-md">
+          {resumes.length > 0 ? (
+            <select
+              className=" max-w-[100%] mx-auto mt-2 mb-2 rounded-md dark:text-white dark:bg-background_dark/20"
+              style={{ width: "auto" }}
+              value={selectedResume}
+              onChange={(e) => setSelectedResume(e.target.value)}
+            >
+              <option
+                className=" text-black dark:text-white dark:bg-background_dark/20"
+                value={"none"}
+              >
+                Write a prompt...
+              </option>
+              {resumes.length > 0 &&
+                resumes.map((resume) => {
+                  if (resume.resumeType === "pdf") {
+                    return (
+                      <option
+                        className=" text-black dark:text-white dark:bg-background_dark/20"
+                        key={resume._id}
+                        value={resume._id}
+                      >
+                        {resume.pdfName}
+                      </option>
+                    );
+                  } else {
+                    return (
+                      <option
+                        className=" text-black dark:text-white dark:bg-background_dark/20"
+                        key={resume._id}
+                        value={resume._id}
+                      >
+                        {`Resume_${resume.created}`}
+                      </option>
+                    );
+                  }
+                })}
+            </select>
+          ) : (
+            <div className="max-w-[100%] mx-auto mt-2 mb-2 rounded-md">
               <p className="align-center px-2">No resumes found.</p>
               <div>
-                <button className="btn" onClick={() => navigate("/edit-profile")}>Add a resume</button>
+                <button
+                  className="btn"
+                  onClick={() => navigate("/edit-profile")}
+                >
+                  Add a resume
+                </button>
               </div>
-            </div>)}
+            </div>
+          )}
         </div>
         <label>
           <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
@@ -194,7 +231,7 @@ function CLForm({ setAddedCoverLetter }) {
           </h2>
           <textarea
             className="max-w-screen-2xl mx-auto mt-2 mb-2 rounded-md dark:text-white dark:bg-background_dark/20"
-            style={{ width: "60%", height: "200px" }}
+            style={{ width: "80%", height: "200px" }}
             id="basic-input"
           />
         </label>

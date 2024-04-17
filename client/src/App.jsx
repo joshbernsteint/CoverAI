@@ -27,9 +27,11 @@ import MyFooter from "./components/MyFooter";
 import "./App.css";
 
 export const Context = React.createContext();
+export const MobileContext = React.createContext();
 
 function App() {
   const [isDarkMode, setIsDarkMode] = React.useState(false);
+  const [isMobile, setIsMobile] = React.useState(false);
   const { isLoaded, getToken } = useAuth();
 
   React.useEffect(() => {
@@ -52,14 +54,23 @@ function App() {
               headers: { ...headers, "Content-Type": "application/json" },
             }
           );
-          localStorage.setItem("theme", response.data.settings.dark_mode ? "dark" : "light");
+          localStorage.setItem(
+            "theme",
+            response.data.settings.dark_mode ? "dark" : "light"
+          );
           setIsDarkMode(response.data.settings.dark_mode);
         } catch (error) {
           console.error("Error occurred while fetching theme settings:", error);
         }
       }
     };
+    const checkWindowWidth = () => {
+      if (window.innerWidth < 720) {
+        setIsMobile(true);
+      }
+    };
     fetchTheme();
+    checkWindowWidth();
     // eslint-disable-next-line
   }, []);
 
@@ -74,40 +85,54 @@ function App() {
     }
   }, [isDarkMode]);
 
+  const handleResize = () => {
+    if (window.innerWidth < 720) {
+      setIsMobile(true);
+    } else {
+      setIsMobile(false);
+    }
+  };
+
+  React.useEffect(() => {
+    window.addEventListener("resize", handleResize);
+  });
+
   return (
     <Context.Provider value={[isDarkMode, setIsDarkMode]}>
-      <BrowserRouter>
-        <div className={isDarkMode ? "dark" : ""}>
-          <SignedIn>
-            <SettingsProvider>
-              <NavbarComp userAuthenticated={true} />
+      <MobileContext.Provider value={isMobile}>
+        <BrowserRouter>
+          <div className={isDarkMode ? "dark" : ""}>
+            <SignedIn>
+              <SettingsProvider>
+                <NavbarComp userAuthenticated={true} />
+                <Routes>
+                  <Route path="/" element={<Navigate to="/home" />} />
+                  <Route path="/home" element={<Home />} />
+                  <Route path="/edit-profile" element={<EditProfile />} />
+                  <Route path="/cover-letters" element={<CoverLetters />} />
+                  <Route path="/text-editor/:id" element={<TextEditor />} />
+                  <Route path="/settings" element={<SettingsPage />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/protected" element={<ProtectedPage />} />
+                  <Route path="*" element={<NoPage />} />
+                </Routes>
+              </SettingsProvider>
+            </SignedIn>
+            <SignedOut>
+              <NavbarComp userAuthenticated={false} />
               <Routes>
                 <Route path="/" element={<Navigate to="/home" />} />
                 <Route path="/home" element={<Home />} />
-                <Route path="/edit-profile" element={<EditProfile />} />
-                <Route path="/cover-letters" element={<CoverLetters />} />
-                <Route path="/text-editor/:id" element={<TextEditor />} />
-                <Route path="/settings" element={<SettingsPage />} />
+                <Route path="/sign-up" element={<SignUp />} />
+                <Route path="/login" element={<Login />} />
                 <Route path="/about" element={<About />} />
-                <Route path="/protected" element={<ProtectedPage />} />
                 <Route path="*" element={<NoPage />} />
               </Routes>
-            </SettingsProvider>
-          </SignedIn>
-          <SignedOut>
-            <NavbarComp userAuthenticated={false} />
-            <Routes>
-              <Route path="/" element={<Navigate to="/home" />} />
-              <Route path="/home" element={<Home />} />
-              <Route path="/sign-up" element={<SignUp />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/about" element={<About />} />
-              <Route path="*" element={<NoPage />} />
-            </Routes>
-          </SignedOut>
-          <MyFooter />
-        </div>
-      </BrowserRouter>
+            </SignedOut>
+            <MyFooter />
+          </div>
+        </BrowserRouter>
+      </MobileContext.Provider>
     </Context.Provider>
   );
 }
