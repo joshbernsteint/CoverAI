@@ -38,9 +38,9 @@ app.post('/github', async (req,res) => {
         //Restart the servers
         const body = req.body;
         const branchName = body.ref.split('/')[2];
-        console.log(branchName);
         if(branchName === "main"){
             runServer();
+            console.log("Reloading server!!");
             res.send("Server Reloading!");
             activeTimeout = setTimeout(() => {activeTimeout = undefined}, DELAY);
         }
