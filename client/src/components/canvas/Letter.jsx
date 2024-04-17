@@ -1,8 +1,10 @@
-import React, { Suspense } from "react";
+import React, { Suspense, useContext } from "react";
+import { MobileContext } from "../../App";
 
 const Spline = React.lazy(() => import("@splinetool/react-spline"));
 
 const Letter = () => {
+  const isMobile = useContext(MobileContext);
   return (
     <div className="z-0">
       <Suspense fallback={<div>Loading...</div>}>
@@ -12,7 +14,7 @@ const Letter = () => {
             width: "100%",
             height: "100%",
             position: "absolute",
-            top: "-20",
+            top: `${isMobile ? "80px" : "-20"}`,
             left: "",
             zIndex: "2",
             marginBottom: "10",

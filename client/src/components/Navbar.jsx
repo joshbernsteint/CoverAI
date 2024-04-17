@@ -115,7 +115,7 @@ function NavbarComp({ userAuthenticated }) {
         <div
           className={`${
             isMobileMenuOpen ? "flex" : "hidden"
-          } flex-col gap-4 items-center absolute top-16 left-0 w-full bg-white/50 dark:bg-background_dark/50 dark:shadow-sm p-4 backdrop-blur-lg z-[50]`}
+          } flex-col gap-4 items-center rounded-b-lg backdrop-blur-lg transition-all duration-75 ease-in list-none absolute top-12 left-0 w-full bg-white/80 dark:bg-background_dark/80 dark:shadow-sm p-4 z-[50]`}
         >
           {userAuthenticated
             ? navItemsAuth.map((item, index) => (
@@ -123,6 +123,7 @@ function NavbarComp({ userAuthenticated }) {
                   <NavLink
                     to={item.href}
                     className="hover:text-gray-400 font-body"
+                    onClick={() => setIsMobileMenuOpen(false)}
                   >
                     {item.name}
                   </NavLink>
@@ -133,6 +134,7 @@ function NavbarComp({ userAuthenticated }) {
                   {item.name === "Sign Up" ? (
                     <NavLink
                       to={item.href}
+                      onClick={() => setIsMobileMenuOpen(false)}
                       className="hover:text-gray-400 font-body border-2 px-4 py-2 rounded-2xl border-[#474CF3]"
                     >
                       {item.name}
@@ -140,6 +142,7 @@ function NavbarComp({ userAuthenticated }) {
                   ) : (
                     <NavLink
                       to={item.href}
+                      onClick={() => setIsMobileMenuOpen(false)}
                       className="hover:text-gray-400 font-body"
                     >
                       {item.name}
@@ -151,6 +154,7 @@ function NavbarComp({ userAuthenticated }) {
             <></>
           ) : (
             <NavLink
+              onClick={() => setIsMobileMenuOpen(false)}
               className={
                 "font-body bg-[#474CF3] px-4 py-2 rounded-2xl text-white"
               }
@@ -159,6 +163,15 @@ function NavbarComp({ userAuthenticated }) {
               Sign In
             </NavLink>
           )}
+          <div>
+            <UserButton
+              afterSignOutUrl="/"
+              onClick={() => {
+                setIsMobileMenuOpen(false);
+                localStorage.clear();
+              }}
+            />
+          </div>
         </div>
       )}
     </nav>

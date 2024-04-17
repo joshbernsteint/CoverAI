@@ -1,8 +1,8 @@
 import React from "react";
-import { useAuth } from '@clerk/clerk-react';
+import { useAuth } from "@clerk/clerk-react";
 import { FileInput, Label } from "flowbite-react";
 import { useState } from "react";
-
+import { toast } from "react-toastify";
 import axios from "axios";
 
 export default function UploadFile({ onUploadSuccess }) {
@@ -34,23 +34,25 @@ export default function UploadFile({ onUploadSuccess }) {
         }
       );
       const fileURL = URL.createObjectURL(file);
-      console.log("fileURL", fileURL);
+      // console.log("fileURL", fileURL);
       onUploadSuccess(fileURL);
 
-      console.log("File", file);
-      console.log("type", typeof file);
-      console.log(response.status);
-      console.log(response);
+      // console.log("File", file);
+      // console.log("type", typeof file);
+      // console.log(response.status);
+      // console.log(response);
+      toast.success("File uploaded successfully");
       setExtractedText(response.data.extractedText);
     } catch (error) {
       console.error("Error occurred:", error);
+      toast.error("Error uploading file");
     }
   };
 
   return (
     <div
       id="left-resume"
-      className="w-2/4 flex justify-center items-center border-r-2"
+      className="w-full sm:w-2/4 flex justify-center items-center sm:border-r-2 sm:mb-0"
     >
       <div className="text-center ">
         <div className="flex w-full items-center justify-center ">
