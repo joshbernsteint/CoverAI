@@ -4,7 +4,7 @@
   "description": "Browser Extension for AI-Generated Cover Letters",
   "scripts": {
     "start": "cd server/ && npm run full-start",
-    "redeployer": "cd redeployer/ && screen -L -d node app.js",
+    "redeployer": "cd redeployer/ && screen -L -dmS redeploy node app.js",
     "build": "cd client/ && npm run build",
     "setup": "npm i && cd chrome_extension/ && npm i && cd ../client/ && npm i && cd ../server/ && npm i",
     "dev": "concurrently \"cd client && npm run dev \" \"cd server && npm run dev \"",
