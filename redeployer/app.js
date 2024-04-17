@@ -40,9 +40,9 @@ app.post('/github', async (req,res) => {
         const body = req.body;
         const branchName = body.ref.split('/')[2];
         if(branchName === "main"){
+            console.log(`${new Date().toString()}: Reloading Server`);
             runServer();
-            console.log("Reloading server!!");
-            res.send("Server Reloading!");
+            res.send("Server reloaded!");
             activeTimeout = setTimeout(() => {activeTimeout = undefined}, DELAY);
         }
         else res.send("Invalid branch name.");
