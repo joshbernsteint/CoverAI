@@ -19,7 +19,7 @@ function rePull(){
 }
 
 function runServer(){
-    spawnSync('pkill screen', {shell: true});
+    spawnSync('-XS coverai quit', {shell: true});
     spawnSync('cd ../ && npm start', {shell: true});
 }
 
