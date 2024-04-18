@@ -1,6 +1,5 @@
 header {
   z-index: 10001 !important;
-
 }
 
 .dark-mode {
@@ -11,21 +10,40 @@ header {
   background-color: white;
 }
 
+.loading-text {
+  display: inline-block;
+  clip-path: inset(0 1ch 0 0);
+  animation: l 1s steps(4) infinite;
+}
+@keyframes l {
+  to {
+    clip-path: inset(0 -1ch 0 0);
+  }
+}
+
 /* HTML: <div class="loader-orbit"></div> */
 .loader-orbit {
-    width: 50px;
-    aspect-ratio: 1;
-    border-radius: 50%;
-    padding: 3px;
-    background: 
-      radial-gradient(farthest-side,#130d02 95%,#0000) 50% 0/12px 12px no-repeat,
-      radial-gradient(farthest-side,#0000 calc(100% - 5px),#130d02 calc(100% - 4px)) content-box;
-    animation: l6 2s infinite ;
+  width: 50px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  padding: 3px;
+  background: radial-gradient(farthest-side, #130d02 95%, #0000) 50% 0/12px 12px
+      no-repeat,
+    radial-gradient(
+        farthest-side,
+        #0000 calc(100% - 5px),
+        #130d02 calc(100% - 4px)
+      )
+      content-box;
+  animation: l6 2s infinite;
+}
+@keyframes l6 {
+  to {
+    transform: rotate(1turn);
   }
-  @keyframes l6 {to{transform: rotate(1turn)}}
+}
 
-
-.cl-card:hover{
+.cl-card:hover {
   color: lightgray;
   background-color: rgba(211, 211, 211, 0.5);
 }

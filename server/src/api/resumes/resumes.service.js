@@ -23,28 +23,30 @@ const resumeSchema = z.object({
   name: z.string().optional(),
   email: z.string().optional(),
   phone: z.string().optional(),
-  education: z.array(z
-    .object({
-      school: z.string(),
-      degree: z.string(),
-      fieldOfStudy: z.string(),
-      gpa: z.string(),
-      scale: z.string(),
-      awards: z.string().optional(),
-      activities: z.string().optional(),
-      from: z
-        .object({
+  education: z
+    .array(
+      z.object({
+        school: z.string(),
+        degree: z.string(),
+        fieldOfStudy: z.string(),
+        gpa: z.string(),
+        scale: z.string(),
+        awards: z.string().optional(),
+        activities: z.string().optional(),
+        from: z
+          .object({
+            month: z.string(),
+            year: z.string(),
+          })
+          .optional(),
+        to: z.object({
           month: z.string(),
           year: z.string(),
-        })
-        .optional(),
-      to: z.object({
-        month: z.string(),
-        year: z.string(),
-      }),
-      description: z.string().optional(),
-      courses: z.string().optional(),
-    }))
+        }),
+        description: z.string().optional(),
+        courses: z.string().optional(),
+      })
+    )
     .optional(),
   experience: z.array(
     z
@@ -402,7 +404,8 @@ function extractAllSections(text) {
     },
     {
       name: "Skills or Extracurriculars",
-      pattern: /(^skills$)|(.skills$)|(^extracurriculars$)|(.extracurriculars$)/i,
+      pattern:
+        /(^skills$)|(.skills$)|(^extracurriculars$)|(.extracurriculars$)/i,
     },
     {
       name: "Summary or Objective",
@@ -422,8 +425,9 @@ function extractAllSections(text) {
     },
     {
       name: "Conferences",
-      pattern: /(^conference$)|(.conference$)|(^conference.)|(^conferences$)|(.conferences$)|(^conferences.)/i,
-    }
+      pattern:
+        /(^conference$)|(.conference$)|(^conference.)|(^conferences$)|(.conferences$)|(^conferences.)/i,
+    },
   ];
 
   const sections = [];
@@ -692,7 +696,12 @@ const makeChatRequest = async (promptContent, systemContent) => {
  * @example createResumeFromPDFAI(resumepdf, "60f2c4d9b8b3f6e1d8b1e1f3", "resume.pdf", false);
  * @example createResumeFromPDFAI(resumepdf, "60f2c4d9b8b3f6e1d8b1e1f3", "resume.pdf", true);
  */
-const createResumeFromPDFAI = async (resumepdf, id, filename = "resume.pdf", upload = true) => {
+const createResumeFromPDFAI = async (
+  resumepdf,
+  id,
+  filename = "resume.pdf",
+  upload = true
+) => {
   if (!id) {
     throw new BadRequestError("User id is required");
   }
@@ -817,24 +826,28 @@ const createResumeFromPDFAI = async (resumepdf, id, filename = "resume.pdf", upl
   const promptContent = `Extract the following sections from the resume:\n\n${extractedText}`;
   const systemContent = `Respond in JSON format filling in this template: ${rSchema} where each field is filled in with the extracted information from the resume. Make sure to include as much information as possible in each section. Ensure that the JSON is valid and all fields are filled in correctly. If a field is not present in the resume, leave it as an empty version of the type (e.g., an empty list, an empty object, or an empty string). If an end date is not specified (or is not "Present"), use "N/A".`;
 
-  let resumeData = {};
-  for (let tries = 0; tries < 3; tries++) {
+  let resumeData = null;
+  for (let tries = 0; tries < 10; tries++) {
     try {
-      resumeData = JSON.parse(await makeChatRequest(promptContent, systemContent));
+      resumeData = JSON.parse(
+        await makeChatRequest(promptContent, systemContent)
+      );
       break;
     } catch (error) {
-      console.log(`try ${tries}:`, error);
+      console.log(`try ${tries + 1}:`, error);
     }
   }
 
-  if (Object.keys(resumeData).length === 0) {
+  if (!resumeData) {
+    throw new UnexpectedError("Error extracting resume data");
+  }
+
+  if (typeof resumeData === "object" && Object.keys(resumeData).length === 0) {
     throw new UnexpectedError("Error extracting resume data");
   }
 
   let pdfJSON = {
-    name: extractSection(mergedTexts, /([a-zA-Z]+[a-zA-Z\s]+)/).split(
-      "\n"
-    )[0],
+    name: extractSection(mergedTexts, /([a-zA-Z]+[a-zA-Z\s]+)/).split("\n")[0],
     email: extractSection(
       mergedTexts,
       /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/
@@ -860,7 +873,6 @@ const createResumeFromPDFAI = async (resumepdf, id, filename = "resume.pdf", upl
     return resumeDataAI;
   }
 };
-
 
 /**
  * Get all resumes by user ID.
