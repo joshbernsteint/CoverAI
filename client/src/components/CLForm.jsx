@@ -32,6 +32,7 @@ function CLForm({ setAddedCoverLetter }) {
   const [role, setRole] = useState(""); // State to hold role value
   const [resumes, setResumes] = useState([]);
   const [selectedResume, setSelectedResume] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchResumes = async () => {
@@ -76,6 +77,7 @@ function CLForm({ setAddedCoverLetter }) {
       (resumes.length === 0 ? false : true) &&
       (selectedResume === "none" ? false : true);
 
+    setIsLoading(true);
     if (
       (use_scraper === true && promptContent.length > 25) ||
       use_resume === true
@@ -109,12 +111,14 @@ function CLForm({ setAddedCoverLetter }) {
         setAddedCoverLetter(doc.data);
         toast.success("Cover letter created successfully");
         toggleVisibility(false);
+        setIsLoading(false);
         setTimeout(() => {
           setAddedCoverLetter(null);
         }, 5000);
       } catch (error) {
         console.error(error);
         toast.error("Failed to create cover letter");
+        setIsLoading(false);
       }
     } else {
       console.log("Prompt too short");
@@ -122,6 +126,7 @@ function CLForm({ setAddedCoverLetter }) {
       setError(
         "Prompt too short. Please be more descriptive on what you want your cover letter to be about."
       );
+      setIsLoading(false);
     }
   };
 
@@ -239,8 +244,13 @@ function CLForm({ setAddedCoverLetter }) {
         <div className="flex justify-center gap-12">
           <div>
             <button
-              className="btn-outline"
+              className={`btn-outline ${
+                isLoading
+                  ? "cursor-not-allowed text-gray-400 border-gray-400"
+                  : ""
+              }`}
               type="button"
+              disabled={isLoading}
               onClick={() => {
                 toggleVisibility(false);
                 setError(null);
@@ -250,9 +260,15 @@ function CLForm({ setAddedCoverLetter }) {
             </button>
           </div>
           <div>
-            <button type="submit" className="btn">
-              Submit
-            </button>
+            {!isLoading ? (
+              <button type="submit" className="btn">
+                Submit
+              </button>
+            ) : (
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <div className="loader-orbit w-[40px]"></div>
+              </div>
+            )}
           </div>
         </div>
       </form>
