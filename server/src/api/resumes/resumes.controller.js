@@ -5,7 +5,6 @@ import * as resumeService from "./resumes.service.js";
 import { UnexpectedError } from "../../utils/errors.js";
 import multer from "multer";
 import fs from "fs";
-import path from 'path';
 
 
 const TEMP_STORAGE = "/tmp/coverai";
@@ -54,20 +53,19 @@ router.post(
   async (req, res) => {
     try {
       let file = req.file;
-      console.log(file);
       const id = req.auth.sessionClaims.sub;
       if (!file) {
         throw new UnexpectedError("Invalid request");
       }
-      let filename = file.filename;
-      const filePath = file.path;
-      file = fs.readFileSync(filePath);
+      console.log(file);
+      let filename = file.originalname;
+      file = fs.readFileSync(file.path);
       const data = await resumeService.createResumeFromPDFAI(
         file,
         id,
         filename
       );
-      // fs.renameSync(filePath, `${TEMP_STORAGE}/${Date.now()}.pdf`);
+      // fs.renameSync(file.path, `${TEMP_STORAGE}/${Date.now()}.pdf`);
       return res.status(200).json(data);
     } catch (error) {
       console.log("ERROR:", error.toString());
