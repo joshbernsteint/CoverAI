@@ -54,6 +54,7 @@ router.post(
   async (req, res) => {
     try {
       let file = req.file;
+      console.log(file);
       const id = req.auth.sessionClaims.sub;
       if (!file) {
         throw new UnexpectedError("Invalid request");
