@@ -6,11 +6,23 @@ import { UnexpectedError } from "../../utils/errors.js";
 import multer from "multer";
 import fs from "fs";
 
-// var storage = multer.memoryStorage();
+
+const TEMP_STORAGE = "/tmp/coverai";
+
+// Clears the temporary storage directory
+function clearStorage(){
+  const files = fs.readdirSync(TEMP_STORAGE);
+  for (const file of files) {
+    fs.rmSync(`${TEMP_STORAGE}/${file}`);
+  }
+}
+
+clearStorage();
+
 var storage = multer.diskStorage({
-  destination: "/tmp",
+  destination: TEMP_STORAGE,
   filename: function (req, file, cb) {
-    cb(null, file.originalname);
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
   },
 });
 var upload = multer({ storage: storage });
