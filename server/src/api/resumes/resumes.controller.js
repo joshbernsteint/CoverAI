@@ -5,6 +5,7 @@ import * as resumeService from "./resumes.service.js";
 import { UnexpectedError } from "../../utils/errors.js";
 import multer from "multer";
 import fs from "fs";
+import path from 'path';
 
 
 const TEMP_STORAGE = "/tmp/coverai";

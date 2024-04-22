@@ -24,7 +24,7 @@ const setSkills = async (user_id, skills) => {
 const getSettings = async (user_id) => {
   const userCollection = await users();
   const user = await userCollection.findOne({ _id: user_id });
-  return user.settings;
+  return user ? user.settings : {};
 };
 
 const setSettings = async (user_id, settings) => {
