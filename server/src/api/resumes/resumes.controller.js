@@ -60,13 +60,14 @@ router.post(
         throw new UnexpectedError("Invalid request");
       }
       let filename = file.filename;
-      file = fs.readFileSync(file.path);
+      const filePath = file.path;
+      file = fs.readFileSync(filePath);
       const data = await resumeService.createResumeFromPDFAI(
         file,
         id,
         filename
       );
-      fs.renameSync(file.path, `${TEMP_STORAGE}/${Date.now()}.pdf`);
+      fs.renameSync(filePath, `${TEMP_STORAGE}/${Date.now()}.pdf`);
       return res.status(200).json(data);
     } catch (error) {
       console.log("ERROR:", error.toString());
