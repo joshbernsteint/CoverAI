@@ -11,9 +11,14 @@ const TEMP_STORAGE = "/tmp/coverai";
 
 // Clears the temporary storage directory
 function clearStorage(){
-  const files = fs.readdirSync(TEMP_STORAGE);
-  for (const file of files) {
-    fs.rmSync(`${TEMP_STORAGE}/${file}`);
+  if(fs.existsSync(TEMP_STORAGE)){
+      const files = fs.readdirSync(TEMP_STORAGE);
+      for (const file of files) {
+        fs.rmSync(`${TEMP_STORAGE}/${file}`);
+      }
+  }
+  else{
+    fs.mkdirSync(TEMP_STORAGE);
   }
 }
 
