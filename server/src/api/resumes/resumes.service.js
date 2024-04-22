@@ -680,7 +680,6 @@ const makeChatRequest = async (promptContent, systemContent) => {
     model: "gpt-3.5-turbo",
   });
 
-  console.log(completion.choices[0].message.content);
   return completion.choices[0].message.content;
 };
 
@@ -827,14 +826,18 @@ const createResumeFromPDFAI = async (
   const promptContent = `Extract the following sections from the resume:\n\n${extractedText}`;
   const systemContent = `Respond in JSON format filling in this template: ${rSchema} where each field is filled in with the extracted information from the resume. Make sure to include as much information as possible in each section. Ensure that the JSON is valid and all fields are filled in correctly. If a field is not present in the resume, leave it as an empty version of the type (e.g., an empty list, an empty object, or an empty string). If an end date is not specified (or is not "Present"), use "N/A".`;
 
+  let rawData = undefined;
   let resumeData = null;
   for (let tries = 0; tries < 10; tries++) {
     try {
-      resumeData = JSON.parse(
-        await makeChatRequest(promptContent, systemContent)
-      );
+        rawData = await makeChatRequest(promptContent, systemContent);
+        resumeData = JSON.parse(rawData);
       break;
     } catch (error) {
+      if(error.charAt(0) === 'I'){
+        resumeData = undefined;
+        break;
+      }
       console.log(`try ${tries + 1}:`, error);
     }
   }
