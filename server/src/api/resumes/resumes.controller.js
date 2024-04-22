@@ -23,7 +23,7 @@ clearStorage();
 var storage = multer.diskStorage({
   destination: TEMP_STORAGE,
   filename: function (req, file, cb) {
-    cb(null, file.originalname);
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
   },
 });
 var upload = multer({ storage: storage });
