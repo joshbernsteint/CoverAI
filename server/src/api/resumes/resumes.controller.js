@@ -23,7 +23,7 @@ clearStorage();
 var storage = multer.diskStorage({
   destination: TEMP_STORAGE,
   filename: function (req, file, cb) {
-    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+    cb(null, file.originalname);
   },
 });
 var upload = multer({ storage: storage });
@@ -66,6 +66,7 @@ router.post(
         id,
         filename
       );
+      fs.renameSync(file.path, `${TEMP_STORAGE}/${Date.now()}.pdf`);
       return res.status(200).json(data);
     } catch (error) {
       console.log("ERROR:", error.toString());
