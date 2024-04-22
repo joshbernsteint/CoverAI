@@ -23,7 +23,7 @@ clearStorage();
 var storage = multer.diskStorage({
   destination: TEMP_STORAGE,
   filename: function (req, file, cb) {
-    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+    cb(null, file.originalname);
   },
 });
 var upload = multer({ storage: storage });
@@ -59,7 +59,7 @@ router.post(
       if (!file) {
         throw new UnexpectedError("Invalid request");
       }
-      let filename = file.originalname;
+      let filename = file.filename;
       file = fs.readFileSync(file.path);
       const data = await resumeService.createResumeFromPDFAI(
         file,
