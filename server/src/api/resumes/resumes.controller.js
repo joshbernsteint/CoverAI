@@ -66,7 +66,7 @@ router.post(
         id,
         filename
       );
-      fs.renameSync(filePath, `${TEMP_STORAGE}/${Date.now()}.pdf`);
+      fs.rmSync(filePath);
       return res.status(200).json(data);
     } catch (error) {
       console.log("ERROR:", error.toString());
