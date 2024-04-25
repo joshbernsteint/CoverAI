@@ -1,40 +1,59 @@
 import { useEffect, useState } from 'react';
 import { SignedIn, SignedOut, SignIn, useAuth } from '@clerk/chrome-extension';
-import { Button } from 'react-bootstrap';
+import axios from 'axios';
 
-
+const LETTER_BUTTON_STYLE = 'like-button bg-white text-black w-[33%] hover:text-blue-500 dark:bg-[#1a1a1a] dark:text-white dark:hover:text-blue-500';
 
 function PastLetters({requester, env, ...props}){
+    const [list, setList] = useState([]);
     const { isSignedIn } = useAuth();
+
+
     async function downloadById(id){
         const URL = `${requester.baseUrl}/covers/makeFileFromId/${id}`;
         await chrome.downloads.download({method: "GET", url:URL, saveAs: true, headers: [{name: "Authorization", value: `Bearer ${await requester.getToken()}`}]});
     }
 
+    async function deleteById(id){
+        const {data} = await requester.delete(`/covers/${id}`);
+        setList(l => l.filter(e => e._id !== id));
+    }
+
 
     function Letter({id, date, employer}){
         const [isFocused, setFocus] = useState(false);
+        const [prepDelete, setPrepDelete] = useState(false);
         const editorLink = `${import.meta.env.VITE_WEBSITE_URL || "http://localhost:5173/"}/text-editor/${id}`
+
+        // #1a1a1a
+
         return (
-            <div className='past_cl' onMouseLeave={() => setFocus(false)} onClick={() => setFocus(true)}>
+            <div className='past_cl text-black dark:text-white' onMouseLeave={() => setFocus(false)} onClick={() => setFocus(true)}>
                 {
-                    isFocused ? (
+                    prepDelete ? (
                     <>
-                        <a style={{width: "70%", height: "100%",color: "rgba(255, 255, 255, 0.87)", padding: ".6em 4em"}} href={editorLink} target='_blank' className='like-button'>Edit</a>
-                        <Button style={{width: "50%"}} onClick={() => downloadById(id)}>Download</Button>
+                        <button onClick={() => deleteById(id)} className='like-button bg-white text-black dark:text-white w-[50%] hover:text-red-500 dark:bg-[#1a1a1a] dark:hover:text-red-500'>Confirm</button>
+                        <button onClick={() => setPrepDelete(false)} className='like-button w-[50%] bg-white text-black hover:text-blue-500 dark:text-white dark:bg-[#1a1a1a] dark:hover:text-blue-500'>Cancel</button>
                     </>
-                    
                     ) : (
+                        isFocused ? (
                         <>
-                            <span>{employer}</span><br/>
-                            <span>{date}</span>
+                            <button className={LETTER_BUTTON_STYLE} onClick={() => window.open(editorLink)}>Edit</button>
+                            <button className={LETTER_BUTTON_STYLE} onClick={() => downloadById(id)}>Download</button>
+                            <button className={LETTER_BUTTON_STYLE} onClick={() => setPrepDelete(true)}>Delete</button>
                         </>
+                        
+                        ) : (
+                            <>
+                                <span>{employer}</span><br/>
+                                <span>{date}</span>
+                            </>
+                        )
                     )
                 }
             </div>
         );
     }
-    const [list, setList] = useState([]);
 
     useEffect(() => {
         async function getPastLetters(){
@@ -46,11 +65,9 @@ function PastLetters({requester, env, ...props}){
 
 
     return (
-        <div>
-        <SignedIn>
-        <div>
-        <div style={{maxWidth: "450px"}}>
-            <h2>Your Past Cover Letters:</h2>
+        <div style={{maxWidth: "450px"}} className='text-black dark: text-white'>
+            <h1 className='text-3xl text-center text-black dark:text-white'>Your Letters:</h1>
+            <div className='h-[150px] w-[100%] overflow-y-scroll m-4'>
             {
                 list.length === 0 ? (<p>Huh, nothing here...</p>) : ( 
                     list.map((e,i) => (
@@ -58,17 +75,8 @@ function PastLetters({requester, env, ...props}){
                     ))
                 )
             }
+            </div>
         </div>
-        </div>
-      </SignedIn>
-      <SignedOut>
-        <SignIn
-          afterSignInUrl='/'
-          signUpUrl='/signup'
-        />
-      </SignedOut>
-        </div>
-
     );
 }
 
