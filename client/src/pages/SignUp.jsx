@@ -72,7 +72,7 @@ export default function SignUp(e) {
 
         const response = await axios.put(
           import.meta.env.VITE_API_URL + "/users/profile",
-          {firstName, lastName},
+          {firstName: firstName, lastName: lastName},
           {
             headers: {
               ...headers,
