@@ -1,4 +1,4 @@
-<img src="client/src/assets/hero.png" alt="CoverAI Logo" width="25%">
+<img src="client/src/assets/letter-mobile.png" alt="CoverAI Logo" width="25%">
 
 # CoverAI: AI-Assisted Cover Letter Generation
 CoverAI is a tool to craft personalized cover letters for all your job application desires! Utilizing the power of ChatGPT and web scraping technology, we are able generate cover letters for all possible job fields.
