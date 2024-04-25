@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
 import NoPage from "./pages/NoPage";
+// import ForgotPassword from './pages/ForgotPassword.jsx';
 // import SignUpClerk from "./pages/SignUpClerk.jsx";
 import SignUp from "./pages/SignUp.jsx";
 import Login from "./pages/Login.jsx";
@@ -124,6 +125,7 @@ function App() {
                 <Route path="/" element={<Navigate to="/home" />} />
                 <Route path="/home" element={<Home />} />
                 <Route path="/sign-up" element={<SignUp />} />
+                {/* <Route path="/forgot-password" element={<ForgotPassword/>} /> */}
                 <Route path="/login" element={<Login />} />
                 <Route path="/about" element={<About />} />
                 <Route path="*" element={<NoPage />} />
