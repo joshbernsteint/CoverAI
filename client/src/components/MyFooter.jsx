@@ -24,20 +24,21 @@ const MyFooter = () => {
             <div>
               <Footer.Title title="about" />
               <Footer.LinkGroup col>
-                <Footer.Link href="#">Our Project</Footer.Link>
-                <Footer.Link href="#">Our Developers</Footer.Link>
+                <Footer.Link href="/poster">Our Project</Footer.Link>
+                <Footer.Link href="/about">Our Developers</Footer.Link>
               </Footer.LinkGroup>
             </div>
             <div>
               <Footer.Title title="Follow us" />
               <Footer.LinkGroup col>
-                <Footer.Link href="#">Instagram</Footer.Link>
+                <Footer.Link href="https://www.instagram.com/_cover.ai_?igsh=dXJyZmh2emxuNGN4&utm_source=qr">Instagram</Footer.Link>
               </Footer.LinkGroup>
             </div>
             <div>
               <Footer.Title title="Legal" />
               <Footer.LinkGroup col>
                 <Footer.Link href="#">Terms &amp; Conditions</Footer.Link>
+                <Footer.Link href="/privacy-policy">Privacy Policy</Footer.Link>
               </Footer.LinkGroup>
             </div>
           </div>

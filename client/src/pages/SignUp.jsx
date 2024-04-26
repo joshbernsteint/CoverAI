@@ -15,6 +15,7 @@ export default function SignUp(e) {
   const [isDarkMode, setIsDarkMode] = useContext(Context);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { getToken } = useAuth();
 
@@ -53,7 +54,7 @@ export default function SignUp(e) {
     if (!isLoaded) {
       return;
     }
-
+    setLoading(true);
     try {
       const completeSignUp = await signUp.attemptEmailAddressVerification({
         code,
@@ -62,27 +63,32 @@ export default function SignUp(e) {
         console.log(JSON.stringify(completeSignUp, null, 2));
       }
       if (completeSignUp.status === "complete") {
-        await setActive({ session: completeSignUp.createdSessionId });
-        navigate("/");
-        const token = getToken();
+        setTimeout(async () => {
+          await setActive({ session: completeSignUp.createdSessionId });
+          const token = await getToken();
 
-        const headers = {
-          Authorization: `Bearer ${token}`,
-        };
+          const headers = {
+            Authorization: `Bearer ${token}`,
+          };
 
-        const response = await axios.put(
-          import.meta.env.VITE_API_URL + "/users/profile",
-          {firstName: firstName, lastName: lastName},
-          {
-            headers: {
-              ...headers,
-              "Content-Type": "application/json",
-            },
-          }
-        );
+          const response = await axios.put(
+            import.meta.env.VITE_API_URL + "/users/profile/set-name",
+            { firstName: firstName, lastName: lastName },
+            {
+              headers: {
+                ...headers,
+                "Content-Type": "application/json",
+              },
+            }
+          );
+
+          setLoading(false);
+          navigate("/");
+        }, 5000);
       }
     } catch (err) {
-      setSignUpError(err.errors[0].longMessage);
+      setLoading(false);
+      setSignUpError(err.errors ? err.errors[0].longMessage : err.message);
       console.error(JSON.stringify(err, null, 2));
     }
   };
@@ -107,28 +113,30 @@ export default function SignUp(e) {
             </div>
             <div className="mb-6">
               <label
-                htmlFor="email"
+                htmlFor="firstname"
                 className="block text-black text-sm font-bold mb-2 dark:text-white"
               >
                 First Name
               </label>
               <input
-                id="email"
+                id="firstname"
                 onChange={(e) => setFirstName(e.target.value)}
                 className="appearance-none border-0 border-t-1 border-b-2 border-black w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:border-black rounded-md dark:bg-zinc-400"
+                placeholder="John"
               />
             </div>
             <div className="mb-6">
               <label
-                htmlFor="email"
+                htmlFor="lastname"
                 className="block text-black text-sm font-bold mb-2 dark:text-white"
               >
                 Last Name
               </label>
               <input
-                id="email"
+                id="lastname"
                 onChange={(e) => setLastName(e.target.value)}
                 className="appearance-none border-0 border-t-1 border-b-2 border-black w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:border-black rounded-md dark:bg-zinc-400"
+                placeholder="Doe"
               />
             </div>
             <div className="mb-6">
@@ -186,8 +194,8 @@ export default function SignUp(e) {
       )}
       {pendingVerification && (
         <>
-          <div className="flex items-center justify-center h-screen bg-white">
-            <form className="p-8 max-w-sm bg-white rounded-lg border border-gray-100 shadow-md w-full max-w-xs">
+          <div className="flex items-center justify-center h-screen bg-white dark:bg-background_dark">
+            {!loading ? (<form className="p-8 max-w-sm bg-white rounded-lg border border-gray-100 shadow-md w-full max-w-xs dark:backdrop-blur-lg dark:bg-zinc-600/50 dark:text-white dark:border-black">
               <button
                 onClick={() => {
                   setPendingVerification(false);
@@ -202,7 +210,8 @@ export default function SignUp(e) {
                 <input
                   id="code"
                   onChange={(e) => setCode(e.target.value)}
-                  className="appearance-none border-0 border-t-1 border-b-2 border-black w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:border-black"
+                  className="appearance-none border-0 border-t-1 border-b-2 border-black w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:border-black rounded-md dark:bg-zinc-400"
+                  placeholder="000000"
                 />
               </div>
               <button
@@ -217,7 +226,9 @@ export default function SignUp(e) {
                   <p className="text-red-700">{signUpError}</p>
                 )}
               </div>
-            </form>
+            </form>) : (<div style={{ display: "flex", justifyContent: "center" }}>
+              <div className="loader-orbit"></div>
+            </div>)}
           </div>
         </>
       )}

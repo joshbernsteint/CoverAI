@@ -109,6 +109,8 @@ export default function SettingForm() {
         }
       );
 
+      console.log("first response: ", response.data);
+
       //refetch updated settings
       const response1 = await axios.get(
         import.meta.env.VITE_API_URL + "/users/settings",

@@ -27,6 +27,7 @@ function NavbarComp({ userAuthenticated }) {
     { name: "Cover Letters", href: "/cover-letters" },
     { name: "Settings", href: "/settings" },
     { name: "Profile", href: "/edit-profile" },
+    { name: "About Us", href: "/about"}
   ];
 
   return (
@@ -51,34 +52,34 @@ function NavbarComp({ userAuthenticated }) {
             <div className="flex gap-4 items-center">
               {userAuthenticated
                 ? navItemsAuth.map((item, index) => (
-                    <li key={index}>
+                  <li key={index}>
+                    <NavLink
+                      to={item.href}
+                      className="hover:text-gray-400 font-body"
+                    >
+                      {item.name}
+                    </NavLink>
+                  </li>
+                ))
+                : navItems.map((item, index) => (
+                  <li key={index}>
+                    {item.name === "Sign Up" ? (
+                      <NavLink
+                        to={item.href}
+                        className="hover:text-gray-400 font-body border-2 px-4 py-2 rounded-2xl border-[#474CF3]"
+                      >
+                        {item.name}
+                      </NavLink>
+                    ) : (
                       <NavLink
                         to={item.href}
                         className="hover:text-gray-400 font-body"
                       >
                         {item.name}
                       </NavLink>
-                    </li>
-                  ))
-                : navItems.map((item, index) => (
-                    <li key={index}>
-                      {item.name === "Sign Up" ? (
-                        <NavLink
-                          to={item.href}
-                          className="hover:text-gray-400 font-body border-2 px-4 py-2 rounded-2xl border-[#474CF3]"
-                        >
-                          {item.name}
-                        </NavLink>
-                      ) : (
-                        <NavLink
-                          to={item.href}
-                          className="hover:text-gray-400 font-body"
-                        >
-                          {item.name}
-                        </NavLink>
-                      )}
-                    </li>
-                  ))}
+                    )}
+                  </li>
+                ))}
               {userAuthenticated ? (
                 <></>
               ) : (
@@ -113,43 +114,42 @@ function NavbarComp({ userAuthenticated }) {
       </ul>
       {isMobile && isMobileMenuOpen && (
         <div
-          className={`${
-            isMobileMenuOpen ? "flex" : "hidden"
-          } flex-col gap-4 items-center rounded-b-lg backdrop-blur-lg transition-all duration-75 ease-in list-none absolute top-12 left-0 w-full bg-white/80 dark:bg-background_dark/80 dark:shadow-sm p-4 z-[50]`}
+          className={`${isMobileMenuOpen ? "flex" : "hidden"
+            } flex-col gap-4 items-center rounded-b-lg backdrop-blur-lg transition-all duration-75 ease-in list-none absolute top-12 left-0 w-full bg-white/80 dark:bg-background_dark/80 dark:shadow-sm p-4 z-[50]`}
         >
           {userAuthenticated
             ? navItemsAuth.map((item, index) => (
-                <li key={index}>
+              <li key={index}>
+                <NavLink
+                  to={item.href}
+                  className="hover:text-gray-400 font-body"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {item.name}
+                </NavLink>
+              </li>
+            ))
+            : navItems.map((item, index) => (
+              <li key={index}>
+                {item.name === "Sign Up" ? (
                   <NavLink
                     to={item.href}
-                    className="hover:text-gray-400 font-body"
                     onClick={() => setIsMobileMenuOpen(false)}
+                    className="hover:text-gray-400 font-body border-2 px-4 py-2 rounded-2xl border-[#474CF3]"
                   >
                     {item.name}
                   </NavLink>
-                </li>
-              ))
-            : navItems.map((item, index) => (
-                <li key={index}>
-                  {item.name === "Sign Up" ? (
-                    <NavLink
-                      to={item.href}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="hover:text-gray-400 font-body border-2 px-4 py-2 rounded-2xl border-[#474CF3]"
-                    >
-                      {item.name}
-                    </NavLink>
-                  ) : (
-                    <NavLink
-                      to={item.href}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="hover:text-gray-400 font-body"
-                    >
-                      {item.name}
-                    </NavLink>
-                  )}
-                </li>
-              ))}
+                ) : (
+                  <NavLink
+                    to={item.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="hover:text-gray-400 font-body"
+                  >
+                    {item.name}
+                  </NavLink>
+                )}
+              </li>
+            ))}
           {userAuthenticated ? (
             <></>
           ) : (
@@ -168,7 +168,6 @@ function NavbarComp({ userAuthenticated }) {
               afterSignOutUrl="/"
               onClick={() => {
                 setIsMobileMenuOpen(false);
-                localStorage.clear();
               }}
             />
           </div>
