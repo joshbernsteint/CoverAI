@@ -8,14 +8,12 @@
       "default_title": "Cover AI"
   },
   "permissions": [
-      "https://www.coverai.dev/api",
       "scripting",
       "tabs",
-      "notifications",
       "downloads",
       "webNavigation"
       ],
-  "host_permissions": ["<all_urls>"],
+  "host_permissions": ["https://www.coverai.dev/api"],
   "background": { "service_worker": "background.js" },
   "icons": {
       "16": "iconwhite.png",

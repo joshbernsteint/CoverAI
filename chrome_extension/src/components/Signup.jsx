@@ -87,6 +87,32 @@ function SignUp({settings, ...props}) {
                 htmlFor="email"
                 className="block text-black text-sm font-bold mb-2 dark:text-white"
               >
+                First Name
+              </label>
+              <input
+                id="email"
+                onChange={(e) => setFirstName(e.target.value)}
+                className="appearance-none border-0 border-t-1 border-b-2 border-black w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:border-black rounded-md dark:bg-zinc-400"
+              />
+            </div>
+            <div className="mb-6">
+              <label
+                htmlFor="email"
+                className="block text-black text-sm font-bold mb-2 dark:text-white"
+              >
+                Last Name
+              </label>
+              <input
+                id="email"
+                onChange={(e) => setLastName(e.target.value)}
+                className="appearance-none border-0 border-t-1 border-b-2 border-black w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:border-black rounded-md dark:bg-zinc-400"
+              />
+            </div>
+            <div className="mb-6">
+              <label
+                htmlFor="email"
+                className="block text-black text-sm font-bold mb-2 dark:text-white"
+              >
                 Email
               </label>
               <input

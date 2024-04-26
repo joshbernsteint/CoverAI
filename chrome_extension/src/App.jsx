@@ -60,14 +60,20 @@ function ProviderBody({ userSettings, handleChangeSettings, ...props}){
         return false;
       }
     }
-    if(prevLogin === -1 && isSignedIn){
-      setPrevLogin(true);
+    if(!isLoaded){
+      return;
+    }
+    else if(prevLogin === -1 && !isSignedIn){
+      setPrevLogin(0);
+    }
+    else if(isSignedIn && prevLogin === -1){
+      setPrevLogin(1);
       isLoggedIn();
     }
-    else if(prevLogin !== -1 && isSignedIn){
+    else if(isSignedIn && prevLogin !== -1){
       window.close();
     }
-  }, [isSignedIn]);
+  }, [isSignedIn, isLoaded]);
 
 
   function LocationTracker(){
@@ -83,13 +89,8 @@ function ProviderBody({ userSettings, handleChangeSettings, ...props}){
       <LocationTracker />
       <div style={{marginBottom: "2rem"}}>
       <Routes>
-<<<<<<< Updated upstream
         <Route path='/signup/*' element={<SignUp signInUrl='/'/>}/>
         <Route path='/' element={<Home env={env} settings={userSettings} requester={requester} scrapeData={activeScrapeData} setScrape={handleSetScrape} activeCL={activeCL} setCL={handleSetCL}/>}/>
-=======
-        <Route path='/signup/*' element={<CustomSignUp signInUrl='/'/>}/>
-        <Route path='/' element={<Home env={env} requester={requester} scrapeData={activeScrapeData} setScrape={handleSetScrape} activeCL={activeCL} setCL={handleSetCL}/>}/>
->>>>>>> Stashed changes
         <Route path='/past' element={<PastLetters env={env} requester={requester}/>}/>
         <Route path='/signup' element={<Signup env={env} requester={requester}/>} settings={userSettings}/>
         <Route path='/login' element={<Login env={env} requester={requester}/>} settings={userSettings}/>
@@ -128,13 +129,6 @@ function ClerkProviderWithRoutes() {
       styleSheet: newSettings.darkMode ? darkMode : lightMode,
     });
   }
-
-  console.log(userSettings);
-
-
-
-
-
 
   return (
     <div className={userSettings.darkMode ? "dark" : ""}>

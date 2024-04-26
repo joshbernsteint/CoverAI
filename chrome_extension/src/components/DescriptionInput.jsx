@@ -23,7 +23,7 @@ function DescriptionInput({settings, requester, value, setValue, hideThis, setCL
   const [scrapeError, setScrapeError] = useState(value.raw.length === 0);
   const [textData, setTextData] = useState(value.raw.length === 0 ? getFromStorage("scrapeData", {raw: "", employer: "", jobName: ""}) : value );
   const [loadingAPI, setLoading] = useState(false);
-  const [resumeData, setResumeData] = useState(undefined);
+  const [resumeData, setResumeData] = useState([]);
   const [selectedResume, setSelectedResume] = useState(undefined);
   const navigate = useNavigate();
 
@@ -33,7 +33,6 @@ function DescriptionInput({settings, requester, value, setValue, hideThis, setCL
       const {data} = await requester.get('/resumes/all');
       setResumeData(data);
       setSelectedResume(data.length > 0 ? data[0]._id : undefined);
-      console.log(data);
     }
     getResumeData();
   }, []);
@@ -45,6 +44,7 @@ function DescriptionInput({settings, requester, value, setValue, hideThis, setCL
   
   async function handleCreate(){
     setLoading(true);
+    console.log(selectedResume);
     try {
       const {data} = await requester.post("/covers/", {
         company_name: textData.employer,
