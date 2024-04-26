@@ -1,8 +1,8 @@
-import React from "react";
-import { Card, Button } from "flowbite-react";
-import { useState, useEffect, useRef } from "react";
+// import React from "react";
+import { Card } from "flowbite-react";
+import { useState, useEffect } from "react";
 import axios from "axios";
-import Requests from "../services/requests";
+// import Requests from "../services/requests";
 import { useAuth } from "@clerk/clerk-react";
 import { FiTrash, FiChevronRight } from "react-icons/fi";
 import { Modal } from "flowbite-react";
@@ -43,6 +43,7 @@ function CLCards({ addedCoverLetter }) {
       }
     };
     fetchCoverLetters();
+    // eslint-disable-next-line
   }, [coverIdToDelete]);
 
   // Update cover letters if one is added
@@ -139,20 +140,20 @@ function CLCards({ addedCoverLetter }) {
           </div>
         )}
       </div>
-      <Modal show={openModal} onClose={() => setOpenModal(false)}>
+      <Modal show={openModal} onClose={() => setOpenModal(false)} className="backdrop-blur-lg dark:bg-background_dark/70">
         <Modal.Header>Delete Cover Letter</Modal.Header>
         <Modal.Body>
           Are you sure you want to delete this cover letter?
         </Modal.Body>
         <Modal.Footer>
-          <button onClick={() => setOpenModal(false)} className="btn-outline border-black text-black">Cancel</button>
-          <button onClick={handleDeleteCoverLetterConfirmed} className="btn bg-red-500 border-red-500">
+          <button onClick={() => setOpenModal(false)} className="btn-outline border-black text-black hover:border-gray-300 hover:text-gray-300 transition-colors duration-100">Cancel</button>
+          <button onClick={handleDeleteCoverLetterConfirmed} className="btn bg-red-500 border-red-500 hover:bg-red-800 hover:border-red-800 transition-colors duration-100">
             Delete
           </button>
         </Modal.Footer>
       </Modal>
     </div>
   );
-};
+}
 
 export default CLCards;

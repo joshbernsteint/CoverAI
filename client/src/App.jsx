@@ -12,6 +12,8 @@ import EditProfile from "./pages/EditProfile";
 import CoverLetters from "./pages/CoverLetters";
 import TextEditor from "./pages/TextEditor";
 import SettingsPage from "./pages/SettingsPage";
+import ComingSoon from "./pages/ComingSoon";
+import PrivacyPolicy from "./pages/PrivacyPolicy.jsx";
 import About from "./pages/About";
 import ProtectedPage from "./pages/ProtectedPage";
 import { SettingsProvider } from "./context/SettingsContext";
@@ -115,6 +117,8 @@ function App() {
                   <Route path="/settings" element={<SettingsPage />} />
                   <Route path="/about" element={<About />} />
                   <Route path="/protected" element={<ProtectedPage />} />
+                  <Route path="/coming-soon" element={<ComingSoon />} />
+                  <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                   <Route path="*" element={<NoPage />} />
                 </Routes>
               </SettingsProvider>
@@ -128,6 +132,8 @@ function App() {
                 {/* <Route path="/forgot-password" element={<ForgotPassword/>} /> */}
                 <Route path="/login" element={<Login />} />
                 <Route path="/about" element={<About />} />
+                <Route path="/coming-soon" element={<ComingSoon />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="*" element={<NoPage />} />
               </Routes>
             </SignedOut>

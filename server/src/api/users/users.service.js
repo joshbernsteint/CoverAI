@@ -97,14 +97,16 @@ const setName = async (user_id, firstName, lastName) => {
 
   if (changes === 0) throw new UnexpectedError("No changes detected.");
 
+  // only set the first name and last name
   const updateResult = await userCollection.updateOne(
     { _id: user_id },
     { $set: toBeUpdated }
   );
+
   if (updateResult.modifiedCount === 0)
     throw new UnexpectedError("Failed to update user name.");
   const updatedUser = await userCollection.findOne({
-    _id: new ObjectId(user_id),
+    _id: user_id,
   });
 
   return updatedUser;

@@ -70,7 +70,7 @@ router
             _id: id,
             first_name: evt.data.first_name,
             last_name: evt.data.last_name,
-            email: "",
+            email: evt.data.email_addresses ? evt.data.email_addresses[0] ? evt.data.email_addresses[0].email_address : "" : "",
             phone_number: "",
             school_name: "",
             major: "",
