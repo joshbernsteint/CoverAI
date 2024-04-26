@@ -8,7 +8,7 @@ export default function PrivacyPolicy() {
       <div className="flex flex-col items-center w-3/4 m-12">
         <div className="m-12">
           <h2 className="text-2xl">1. Information We Collect</h2>
-          <ul className="mt-5">
+          <ul className="mt-5 dark:text-white">
             <li className="text-lg"><span className="font-bold">Name and Email:</span> When you sign up for our services or subscribe to our newsletter, we collect your name and email address.</li>
             <li className="text-lg"><span className="font-bold">Voluntarily Provided Information:</span> You may choose to provide additional information voluntarily when using our services, such as demographic information or preferences.</li>
           </ul>
@@ -16,7 +16,7 @@ export default function PrivacyPolicy() {
         <div className="m-12">
           <h2 className="text-2xl">2. Use of Information</h2>
           <p className="mt-5">We use the collected information for the following purposes:</p>
-          <ul className="mt-5">
+          <ul className="mt-5 dark:text-white">
             <li className="text-lg"><span className="font-bold">Communication:</span> We use your name and email address to communicate with you, send updates, respond to inquiries, and provide customer support.</li>
             <li className="text-lg"><span className="font-bold">Service Improvement:</span> We may use the information to improve our services, customize your experience, and develop new features.</li>
             <li className="text-lg"><span className="font-bold">Marketing:</span> With your consent, we may send you promotional emails about new products, special offers, or other information we think you may find interesting.</li>
