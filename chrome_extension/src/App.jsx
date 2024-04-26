@@ -83,8 +83,13 @@ function ProviderBody({ userSettings, handleChangeSettings, ...props}){
       <LocationTracker />
       <div style={{marginBottom: "2rem"}}>
       <Routes>
+<<<<<<< Updated upstream
         <Route path='/signup/*' element={<SignUp signInUrl='/'/>}/>
         <Route path='/' element={<Home env={env} settings={userSettings} requester={requester} scrapeData={activeScrapeData} setScrape={handleSetScrape} activeCL={activeCL} setCL={handleSetCL}/>}/>
+=======
+        <Route path='/signup/*' element={<CustomSignUp signInUrl='/'/>}/>
+        <Route path='/' element={<Home env={env} requester={requester} scrapeData={activeScrapeData} setScrape={handleSetScrape} activeCL={activeCL} setCL={handleSetCL}/>}/>
+>>>>>>> Stashed changes
         <Route path='/past' element={<PastLetters env={env} requester={requester}/>}/>
         <Route path='/signup' element={<Signup env={env} requester={requester}/>} settings={userSettings}/>
         <Route path='/login' element={<Login env={env} requester={requester}/>} settings={userSettings}/>

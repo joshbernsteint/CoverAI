@@ -25,7 +25,7 @@ class Requests{
         }
         return (await axios.post(endPoint, body, {headers: {...otherHeaders, "Authorization": `Bearer ${this.token}`}}));
     }
-
+    
     async getAuthHeader(){
         if(!this.token) this.token = await this.getToken();
         return {"Authorization": `Bearer ${this.token}`};

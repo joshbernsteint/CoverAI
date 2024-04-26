@@ -1,9 +1,10 @@
-import { useSignUp } from "@clerk/clerk-react";
+import { useSignUp, useAuth } from "@clerk/clerk-react";
 import { useState, useRef, useEffect, useContext } from "react";
 import CoverAI from "../assets/iconblack.png";
 import CoverAIDark from "../assets/iconwhite.png";
 import { Link, useNavigate } from "react-router-dom";
 import { Context } from "../App.jsx";
+import axios from 'axios';
 
 export default function SignUp(e) {
   const [emailAddress, setEmailAddress] = useState("");
@@ -12,7 +13,10 @@ export default function SignUp(e) {
   const [pendingVerification, setPendingVerification] = useState(false);
   const [code, setCode] = useState("");
   const [isDarkMode, setIsDarkMode] = useContext(Context);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const navigate = useNavigate();
+  const { getToken } = useAuth();
 
   const { isLoaded, signUp, setActive } = useSignUp();
 
@@ -23,7 +27,7 @@ export default function SignUp(e) {
       return;
     }
 
-    if (!emailAddress || !password) {
+    if (!emailAddress || !password || !firstName || !lastName) {
       setSignUpError("Fill in all fields");
       return;
     }
@@ -60,6 +64,22 @@ export default function SignUp(e) {
       if (completeSignUp.status === "complete") {
         await setActive({ session: completeSignUp.createdSessionId });
         navigate("/");
+        const token = getToken();
+
+        const headers = {
+          Authorization: `Bearer ${token}`,
+        };
+
+        const response = await axios.put(
+          import.meta.env.VITE_API_URL + "/users/profile",
+          {firstName: firstName, lastName: lastName},
+          {
+            headers: {
+              ...headers,
+              "Content-Type": "application/json",
+            },
+          }
+        );
       }
     } catch (err) {
       setSignUpError(err.errors[0].longMessage);
@@ -84,6 +104,32 @@ export default function SignUp(e) {
               <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
                 Cover.AI
               </span>
+            </div>
+            <div className="mb-6">
+              <label
+                htmlFor="email"
+                className="block text-black text-sm font-bold mb-2 dark:text-white"
+              >
+                First Name
+              </label>
+              <input
+                id="email"
+                onChange={(e) => setFirstName(e.target.value)}
+                className="appearance-none border-0 border-t-1 border-b-2 border-black w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:border-black rounded-md dark:bg-zinc-400"
+              />
+            </div>
+            <div className="mb-6">
+              <label
+                htmlFor="email"
+                className="block text-black text-sm font-bold mb-2 dark:text-white"
+              >
+                Last Name
+              </label>
+              <input
+                id="email"
+                onChange={(e) => setLastName(e.target.value)}
+                className="appearance-none border-0 border-t-1 border-b-2 border-black w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:border-black rounded-md dark:bg-zinc-400"
+              />
             </div>
             <div className="mb-6">
               <label
