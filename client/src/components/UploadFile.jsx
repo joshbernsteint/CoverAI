@@ -5,7 +5,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
 
-export default function UploadFile({ onUploadSuccess }) {
+export default function UploadFile({ onUploadSuccess, handleAddedResume }) {
   const { getToken, isLoaded, isSignedIn } = useAuth();
   const [extractedText, setExtractedText] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -37,6 +37,7 @@ export default function UploadFile({ onUploadSuccess }) {
       const fileURL = URL.createObjectURL(file);
       // console.log("fileURL", fileURL);
       onUploadSuccess(fileURL);
+      handleAddedResume(response.data);
 
       // console.log("File", file);
       // console.log("type", typeof file);

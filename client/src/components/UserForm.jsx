@@ -397,7 +397,7 @@ export default function UserForm() {
           <div>
             <button
               onClick={handleButtonClick}
-              className="mt-5 w-full sm:w-auto px-7 py-6 sm:mt-0 btn"
+              className="mt-5 w-full sm:w-auto px-7 py-6 sm:mt-0 btn hover:border-1"
             >
               Fill out this form
             </button>

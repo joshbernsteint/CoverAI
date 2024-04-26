@@ -38,6 +38,7 @@ const MyFooter = () => {
               <Footer.Title title="Legal" />
               <Footer.LinkGroup col>
                 <Footer.Link href="#">Terms &amp; Conditions</Footer.Link>
+                <Footer.Link href="/privacy-policy">Privacy Policy</Footer.Link>
               </Footer.LinkGroup>
             </div>
           </div>
