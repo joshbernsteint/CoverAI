@@ -16,6 +16,7 @@ import ComingSoon from "./pages/ComingSoon";
 import PrivacyPolicy from "./pages/PrivacyPolicy.jsx";
 import About from "./pages/About";
 import ProtectedPage from "./pages/ProtectedPage";
+import PosterPage from "./pages/PosterPage";
 import { SettingsProvider } from "./context/SettingsContext";
 import axios from "axios";
 import { useAuth } from "@clerk/clerk-react";
@@ -119,6 +120,7 @@ function App() {
                   <Route path="/protected" element={<ProtectedPage />} />
                   <Route path="/coming-soon" element={<ComingSoon />} />
                   <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                  <Route path="/poster" element={<PosterPage />} />
                   <Route path="*" element={<NoPage />} />
                 </Routes>
               </SettingsProvider>
@@ -134,6 +136,7 @@ function App() {
                 <Route path="/about" element={<About />} />
                 <Route path="/coming-soon" element={<ComingSoon />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/poster" element={<PosterPage />} />
                 <Route path="*" element={<NoPage />} />
               </Routes>
             </SignedOut>
