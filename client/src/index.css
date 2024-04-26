@@ -12,7 +12,7 @@
 
 @layer components {
     .btn {
-        @apply font-body bg-[#474CF3] px-4 border-2 border-[#474CF3] py-2 rounded-2xl text-white  ;
+        @apply font-body bg-[#474CF3] px-4 border-2 border-[#474CF3] py-2 rounded-2xl text-white;
     }
 
     .btn-outline {

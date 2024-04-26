@@ -14,6 +14,7 @@ import TextEditor from "./pages/TextEditor";
 import SettingsPage from "./pages/SettingsPage";
 import About from "./pages/About";
 import ProtectedPage from "./pages/ProtectedPage";
+import PosterPage from "./pages/PosterPage";
 import { SettingsProvider } from "./context/SettingsContext";
 import axios from "axios";
 import { useAuth } from "@clerk/clerk-react";
@@ -115,6 +116,7 @@ function App() {
                   <Route path="/settings" element={<SettingsPage />} />
                   <Route path="/about" element={<About />} />
                   <Route path="/protected" element={<ProtectedPage />} />
+                  <Route path="/poster" element={<PosterPage />} />
                   <Route path="*" element={<NoPage />} />
                 </Routes>
               </SettingsProvider>
@@ -128,6 +130,7 @@ function App() {
                 {/* <Route path="/forgot-password" element={<ForgotPassword/>} /> */}
                 <Route path="/login" element={<Login />} />
                 <Route path="/about" element={<About />} />
+                <Route path="/poster" element={<PosterPage />} />
                 <Route path="*" element={<NoPage />} />
               </Routes>
             </SignedOut>

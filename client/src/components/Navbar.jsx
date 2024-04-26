@@ -27,6 +27,7 @@ function NavbarComp({ userAuthenticated }) {
     { name: "Cover Letters", href: "/cover-letters" },
     { name: "Settings", href: "/settings" },
     { name: "Profile", href: "/edit-profile" },
+    { name: "About Us", href: "/about"}
   ];
 
   return (
